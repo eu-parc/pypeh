@@ -43,3 +43,10 @@ class FileTypeEnum(Enum):
 
 class AdapterEnum(Enum):
     DATAFRAME = "dataframe"
+
+
+class ValidationErrorLevel(Enum):
+    INFO = auto()
+    WARNING = auto()
+    ERROR = auto()
+    FATAL = auto()
