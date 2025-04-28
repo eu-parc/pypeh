@@ -1,37 +1,56 @@
 from typing import Any, NewType
-
 from pydantic import BaseModel
 
 from pypeh.core.models.constants import ValidationErrorLevel
 
 
-class GenericValidationError(BaseModel):
+T_DataFrameID = NewType("T_DataFrameID", str)
+
+
+class ValidationInterfaceError(BaseModel):
+    message: str
+    type: str  # type or checkname
+    level: ValidationErrorLevel
+
+
+class GenericValidationError(ValidationInterfaceError):
     """Generic validation error model.
 
-    Validation errors that are not from validation checks.
+    Errors happening during validation that are not a direct consequence
+    of failing one or more validation checks.
     """
 
-    type: str
     message: str
+    type: str
     level: ValidationErrorLevel
+
     traceback: str
     context: str | None = None
     source: str | None = None
 
 
-class ValidationError(BaseModel):
+class ValidationError(ValidationInterfaceError):
     """Validation error model.
 
     Validation errors that are from validation checks.
     """
 
-    check_name: str
-    level: ValidationErrorLevel
     message: str
-    column_id: str
+    check_name: str  # change to type here, no need to name this differently I think.
+    level: ValidationErrorLevel
+
+    cases: dict[str, Any]  # Can you specify what cases are
+    data_ids: Any  # identifier/location of the data that is causing the validation error ## TODO: typing should be improved upon.
+
+
+class DataFrameDataId(BaseModel):
     dataframe_ids: list[str]
+    column_id: str
     row_ids: list[str]
-    cases: dict[str, Any]
+
+
+class DataFrameValidationError(ValidationError):
+    data_ids: DataFrameDataId
 
 
 class GroupedErrors(BaseModel):
@@ -43,9 +62,6 @@ class GroupedErrors(BaseModel):
     metadata: dict[str, Any]
     errors: list[ValidationError]
     group_id: str
-
-
-T_DataFrameID = NewType("T_DataFrameID", str)
 
 
 class DataFrameErrors(GroupedErrors):
