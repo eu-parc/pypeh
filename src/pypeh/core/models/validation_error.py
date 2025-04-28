@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, NewType
 
 from pydantic import BaseModel
 
@@ -34,19 +34,27 @@ class ValidationError(BaseModel):
     cases: dict[str, Any]
 
 
-class DataFrameErrors(BaseModel):
-    """DataFrame validation error model.
+class GroupedErrors(BaseModel):
+    """Grouped validation errors model.
 
-    Group validation errors by dataframe.
-    """
+    Group list of errors given a group_id."""
 
     name: str
     metadata: dict[str, Any]
     errors: list[ValidationError]
+    group_id: str
+
+
+T_DataFrameID = NewType("T_DataFrameID", str)
+
+
+class DataFrameErrors(GroupedErrors):
+    """Grouped validation errors model for DataFrame group_id."""
+
+    group_id: T_DataFrameID
 
 
 class ValidationErrorReport(BaseModel):
     """Validation error report model."""
 
-    dataframe_errors: list[DataFrameErrors]
-    generic_errors: list[GenericValidationError]
+    errors: list[GroupedErrors | GenericValidationError]
