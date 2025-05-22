@@ -14,9 +14,10 @@ class ValidationExpression(BaseModel):
     subject: list[str] | None = None
 
 
-class ValidationDesign(ValidationExpression):
+class ValidationDesign(BaseModel):
     name: str
     error_level: str
+    expression: ValidationExpression
 
 
 class ColumnValidation(BaseModel):
