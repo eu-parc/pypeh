@@ -7,12 +7,13 @@ from pypeh.dataframe_adapter.validation.parsers import (
     parse_config,
 )
 from pypeh.dataframe_adapter.validation.check_functions import decimals_precision  # TODO test required
-from pypeh.core.models.validation_interface_objects import (
+from pypeh.core.models.validation_config import (
     ValidationExpression,
     ValidationDesign,
     ColumnValidation,
     DataFrameValidationConfig,
 )
+from pypeh.core.models.constants import ValidationErrorLevel
 
 
 @pytest.mark.dataframe
@@ -143,7 +144,7 @@ def test_parse_validation_expression(input_data, expected_output):
                     validations=[
                         ValidationDesign(
                             name="name",
-                            error_level="error",
+                            error_level=ValidationErrorLevel.ERROR,
                             expression=ValidationExpression(
                                 command="is_greater_than",
                                 arg_columns=["col1"],
@@ -196,7 +197,7 @@ def test_parse_columns(columns, expected_output):
                         validations=[
                             ValidationDesign(
                                 name="name",
-                                error_level="error",
+                                error_level=ValidationErrorLevel.ERROR,
                                 expression=ValidationExpression(
                                     command="is_greater_than",
                                     arg_columns=["col1"],
@@ -209,7 +210,7 @@ def test_parse_columns(columns, expected_output):
                 validations=[
                     ValidationDesign(
                         name="name",
-                        error_level="error",
+                        error_level=ValidationErrorLevel.ERROR,
                         expression=ValidationExpression(
                             command="is_greater_than",
                             arg_columns=["col2"],

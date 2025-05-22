@@ -4,6 +4,9 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from pypeh.core.models.constants import ValidationErrorLevel
+from pypeh.core.models.dto import MetaData
+
 
 class ValidationExpression(BaseModel):
     conditional_expression: ValidationExpression | None = None
@@ -16,7 +19,7 @@ class ValidationExpression(BaseModel):
 
 class ValidationDesign(BaseModel):
     name: str
-    error_level: str
+    error_level: ValidationErrorLevel
     expression: ValidationExpression
 
 
@@ -29,7 +32,7 @@ class ColumnValidation(BaseModel):
     validations: list[ValidationDesign] | None = None
 
 
-class DataFrameValidationConfig(BaseModel):
+class DataFrameValidationConfig(MetaData):
     name: str
     columns: list[ColumnValidation]
     identifying_column_names: list[str] | None = None

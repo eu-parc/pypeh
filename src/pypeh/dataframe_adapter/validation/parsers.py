@@ -1,7 +1,7 @@
 from typing import Mapping, Sequence
 import importlib
 
-from pypeh.core.models.validation_interface_objects import (
+from pypeh.core.models.validation_config import (
     ValidationDesign,
     ValidationExpression,
     ColumnValidation,
@@ -50,7 +50,7 @@ def parse_validation_expression(expression: ValidationExpression) -> Mapping:
 def parse_validation_design(validation_design: ValidationDesign) -> Mapping:
     return {
         "name": validation_design.name,
-        "error_level": validation_design.error_level,
+        "error_level": validation_design.error_level.name.lower(),
     } | parse_validation_expression(validation_design.expression)
 
 
