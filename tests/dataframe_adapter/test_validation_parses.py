@@ -7,7 +7,12 @@ from pypeh.dataframe_adapter.validation.parsers import (
     parse_config,
 )
 from pypeh.dataframe_adapter.validation.check_functions import decimals_precision  # TODO test required
-from pypeh.core.models.validation_interface_objects import ValidationExpression, ValidationDesign, ColumnValidation, DataFrameValidationConfig
+from pypeh.core.models.validation_interface_objects import (
+    ValidationExpression,
+    ValidationDesign,
+    ColumnValidation,
+    DataFrameValidationConfig,
+)
 
 
 @pytest.mark.dataframe
@@ -16,8 +21,8 @@ from pypeh.core.models.validation_interface_objects import ValidationExpression,
     [
         (
             ValidationExpression(
-                    command = "is_greater_than",
-                    arg_columns = ["col1"],
+                command="is_greater_than",
+                arg_columns=["col1"],
             ),
             {"command": "is_greater_than", "arg_values": None, "subject": None, "arg_columns": ["col1"]},
         ),
@@ -80,10 +85,11 @@ from pypeh.core.models.validation_interface_objects import ValidationExpression,
                             subject=["col2"],
                             arg_values=[10],
                         ),
-                    ],),
+                    ],
+                ),
                 command="is_equal_to",
                 arg_values=[5],
-                ),
+            ),
             {
                 "check_case": "conditional",
                 "expressions": [
@@ -115,13 +121,7 @@ def test_parse_validation_expression(input_data, expected_output):
     "columns, expected_output",
     [
         (
-            [ColumnValidation(
-                unique_name= "col1", 
-                data_type= "string", 
-                required= True, 
-                nullable= False, 
-                validations= []
-            )],
+            [ColumnValidation(unique_name="col1", data_type="string", required=True, nullable=False, validations=[])],
             [
                 {
                     "id": "col1",
@@ -145,10 +145,13 @@ def test_parse_validation_expression(input_data, expected_output):
                             name="name",
                             error_level="error",
                             expression=ValidationExpression(
-                            command="is_greater_than",
-                            arg_columns=["col1"],
-                            )),]
-            )],
+                                command="is_greater_than",
+                                arg_columns=["col1"],
+                            ),
+                        ),
+                    ],
+                )
+            ],
             [
                 {
                     "id": "col1",
@@ -190,14 +193,16 @@ def test_parse_columns(columns, expected_output):
                         data_type="string",
                         required=True,
                         nullable=False,
-                        validations=[ValidationDesign(
-                            name="name",
-                            error_level="error",
-                            expression=ValidationExpression(
-                                command="is_greater_than",
-                                arg_columns=["col1"],
-                            ),
-                        )],
+                        validations=[
+                            ValidationDesign(
+                                name="name",
+                                error_level="error",
+                                expression=ValidationExpression(
+                                    command="is_greater_than",
+                                    arg_columns=["col1"],
+                                ),
+                            )
+                        ],
                     )
                 ],
                 identifying_column_names=["col1"],

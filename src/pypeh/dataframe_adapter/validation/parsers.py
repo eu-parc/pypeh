@@ -2,7 +2,10 @@ from typing import Mapping, Sequence
 import importlib
 
 from pypeh.core.models.validation_interface_objects import (
-    ValidationDesign, ValidationExpression, ColumnValidation, DataFrameValidationConfig
+    ValidationDesign,
+    ValidationExpression,
+    ColumnValidation,
+    DataFrameValidationConfig,
 )
 from pypeh.core.models.validation_errors import ValidationReport
 
@@ -74,9 +77,7 @@ def parse_config(config: DataFrameValidationConfig) -> Mapping:
         "name": config.name,
         "columns": parse_columns(config.columns),
         "ids": config.identifying_column_names,
-        "checks": [parse_validation_design(check) for check in config.validations]
-        if config.validations
-        else None,
+        "checks": [parse_validation_design(check) for check in config.validations] if config.validations else None,
     }
 
 

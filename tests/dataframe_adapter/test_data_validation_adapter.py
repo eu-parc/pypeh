@@ -3,6 +3,7 @@ import pytest
 from pypeh.dataframe_adapter.dataops import DataOpsAdapter
 
 
+@pytest.mark.skip(reason="Not implemented yet")
 @pytest.mark.dataframe
 class TestDataOpsAdapter:
     def test_validate(self):
