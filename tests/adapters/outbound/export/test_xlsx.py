@@ -11,7 +11,7 @@ STUDYINFO_HEADERS = ["THIS INFORMATION IS PROVIDED BY PARC DATA MANAGEMENT TEAM"
 CODEBOOK_METADATA = {"Codebook Reference": "PARCAlignedStudies_adults_v2.4", "Codebook Name": "PARCAlignedStudies_adults", "Codebook Version": "2.4"}
 
 class TestExportXlsx:
-    @pytest.mark.other
+    @pytest.mark.export
     def test_export_data_template(self, monkeypatch):
         monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_TYPE", "LocalFile")
         monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT", get_absolute_path("./input/data_template"))
