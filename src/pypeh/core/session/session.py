@@ -2,15 +2,22 @@ from __future__ import annotations
 
 import logging
 import os
+import fsspec
+
+from peh_model.peh import DataLayout
 
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
 from pypeh.core.models.settings import LocalFileConfig, ImportConfig, SettingsConfig, ValidatedImportConfig
 from pypeh.core.models.settings import LocalFileSettings
 from pypeh.core.models.typing import T_NamedThingLike
+from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel
+
 from typing import TYPE_CHECKING
 
-from tests.test_utils.dirutils import get_absolute_path
 from pypeh.adapters.outbound.persistence.hosts import DirectoryIO, FileIO
+from pypeh.core.interfaces.outbound.persistence import PersistenceInterface
+
+from tests.test_utils.dirutils import get_absolute_path
 from pypeh.core.cache.utils import load_entities_from_tree
 
 logger = logging.getLogger(__name__)
@@ -101,6 +108,20 @@ class Session:
         else:
             raise NotImplementedError
 
+    def load_tabular_data(self, persistence_adapter: PersistenceInterface, path: str, layout_to_check: DataLayout = None):
+        """Load a binary resource and return its content as tabular data in a dataframe"""
+        result = None
+        io_adapter = persistence_adapter()
+        with fsspec.open(path, "rb") as f:
+            try:
+                result = io_adapter.load(f)  # type: ignore
+                if layout_to_check is not None:
+                    layout_section_names = {section.label for section in layout_to_check.sections}
+                    if not layout_section_names.issuperset(set(result.keys())):
+                        result = ValidationError(message="File sections missing from layout", type="File Validation Error", level=ValidationErrorLevel.FATAL)
+            except:
+                result = ValidationError(message="File could not be read by the adapter", type="File Processing Error", level=ValidationErrorLevel.FATAL)
+        return result
 
     def get_resource(self, resource_identifier: str, resource_type: str) -> T_NamedThingLike | None:
         """Get resource from cache"""

@@ -7,7 +7,7 @@ from pypeh.core.models.settings import SettingsConfig, LocalFileConfig, LocalFil
 
 from tests.test_utils.dirutils import get_absolute_path
 
-@pytest.mark.core
+@pytest.mark.session
 class TestSessionDefaultLocalFile:
     def test_session_default_localfile_settings(self, monkeypatch):
         monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_TYPE", "LocalFile")
@@ -19,7 +19,7 @@ class TestSessionDefaultLocalFile:
 
     def test_session_default_localfile_cache(self, monkeypatch):
         monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_TYPE", "LocalFile")
-        monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT", get_absolute_path("default_localfile_data"))
+        monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT", get_absolute_path("./input/default_localfile_data"))
 
         session = Session()
         session.load_cache()
