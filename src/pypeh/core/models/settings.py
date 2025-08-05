@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import logging
+import os
 
 from abc import abstractmethod
 from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource
@@ -22,7 +23,7 @@ class DataBaseSettings(BaseSettings):
 
 
 class LocalFileSettings(FileSystemSettings):
-    pass
+    root_folder: Optional[str] = None
 
 
 class S3Settings(FileSystemSettings):
@@ -51,7 +52,10 @@ class SettingsConfig(BaseModel):
 
 class LocalFileConfig(SettingsConfig):
     def make_settings(self) -> LocalFileSettings:
-        return LocalFileSettings()
+        settings = LocalFileSettings()
+        if "DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT" in os.environ:
+            settings.root_folder = os.environ["DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT"]
+        return settings
 
 
 class S3Config(SettingsConfig):

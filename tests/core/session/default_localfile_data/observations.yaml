@@ -1,0 +1,25 @@
+observations:
+- id: peh:OBSERVATION_ADULTS_URINE_LAB
+  name: OBSERVATION_ADULTS_URINE_LAB
+  observation_type: sampling
+  observation_design:
+    observable_entity_property_sets:
+    - observation_result_type: measurement
+      observable_entity_type: sample
+      identifying_observable_property_id_list:
+      - peh:adults_id_subject
+      required_observable_property_id_list:
+      - peh:adults_u_matrix
+      - peh:adults_u_crt
+      - peh:adults_u_sg
+- id: peh:OBSERVATION_ADULTS_ANALYTICALINFO
+  name: OBSERVATION_ADULTS_ANALYTICALINFO
+  observation_type: metadata
+  observation_design:
+    observable_entity_property_sets:
+    - observation_result_type: measurement
+      observable_entity_type: samplegroup
+      required_observable_property_id_list:
+      - peh:adults_anl_biomarkercode
+      - peh:adults_anl_matrix
+      - peh:adults_anl_labinstitution

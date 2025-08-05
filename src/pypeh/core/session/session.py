@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 import logging
+import os
 
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
-from pypeh.core.models.settings import ImportConfig, SettingsConfig, ValidatedImportConfig
+from pypeh.core.models.settings import LocalFileConfig, ImportConfig, SettingsConfig, ValidatedImportConfig
+from pypeh.core.models.settings import LocalFileSettings
 from pypeh.core.models.typing import T_NamedThingLike
 from typing import TYPE_CHECKING
+
+from tests.test_utils.dirutils import get_absolute_path
+from pypeh.adapters.outbound.persistence.hosts import DirectoryIO, FileIO
+from pypeh.core.cache.utils import load_entities_from_tree
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +24,10 @@ class Session:
     def __init__(
         self,
         *,
-        connection_config: SettingsConfig | Dict[str, SettingsConfig] | None,
-        import_map: Dict[str, str] | None,
-        default_storage: str | SettingsConfig | None,
-        cache_type: str | None,
+        connection_config: SettingsConfig | Dict[str, SettingsConfig] | None = None,
+        import_map: Dict[str, str] | None = None,
+        default_storage: str | SettingsConfig | None = None,
+        cache_type: str | None = None,
     ):
         """
         Initializes a new pypeh Session.
@@ -45,7 +51,13 @@ class Session:
         """
 
         if connection_config is None:
-            logger.debug("All resources will be loaded as linked open data")
+            if "DEFAULT_CACHE_PERSISTENCE_TYPE" in os.environ:
+                if os.environ["DEFAULT_CACHE_PERSISTENCE_TYPE"]=="LocalFile":
+                    connection_config = LocalFileConfig()
+                else:
+                    raise NotImplementedError
+            else:
+                logger.debug("All resources will be loaded as linked open data")
 
         else:
             if import_map is not None and connection_config is None:
@@ -61,7 +73,7 @@ class Session:
 
         if connection_config is not None:
             if isinstance(connection_config, SettingsConfig):
-                raise NotImplementedError
+                default_storage = connection_config
             else:
                 self.import_config: ValidatedImportConfig = ImportConfig(
                     connection_map=connection_config,
@@ -77,6 +89,18 @@ class Session:
                 self.default_storage: BaseSettings = connection
 
         self.cache: CacheContainer = CacheContainerFactory.new(cache_type)
+
+    def load_cache(self):
+        """Load all resources from the default cache persistence location into cache"""
+        if isinstance(self.default_storage, LocalFileSettings):
+            host = DirectoryIO()
+            roots = host.load(self.default_storage.root_folder, format="yaml")
+            for root in roots:
+                for entity in load_entities_from_tree(root):
+                    self.cache.add(entity)
+        else:
+            raise NotImplementedError
+
 
     def get_resource(self, resource_identifier: str, resource_type: str) -> T_NamedThingLike | None:
         """Get resource from cache"""
