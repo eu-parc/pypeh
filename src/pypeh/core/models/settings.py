@@ -53,8 +53,8 @@ class SettingsConfig(BaseModel):
 class LocalFileConfig(SettingsConfig):
     def make_settings(self) -> LocalFileSettings:
         settings = LocalFileSettings()
-        if "DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT" in os.environ:
-            settings.root_folder = os.environ["DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT"]
+        if "DEFAULT_PERSISTED_CACHE_ROOT_FOLDER" in os.environ:
+            settings.root_folder = os.environ["DEFAULT_PERSISTED_CACHE_ROOT_FOLDER"]
         return settings
 
 

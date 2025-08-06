@@ -13,8 +13,8 @@ CODEBOOK_METADATA = {"Codebook Reference": "PARCAlignedStudies_adults_v2.4", "Co
 class TestExportXlsx:
     @pytest.mark.export
     def test_export_data_template(self, monkeypatch):
-        monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_TYPE", "LocalFile")
-        monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT", get_absolute_path("./input/data_template"))
+        monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_TYPE", "LocalFile")
+        monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_ROOT_FOLDER", get_absolute_path("./input/data_template"))
         session = Session()
         session.load_cache()
         data_layout = session.cache.get("TEST_DATA_LAYOUT", "DataLayout")

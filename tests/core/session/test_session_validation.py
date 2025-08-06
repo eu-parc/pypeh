@@ -26,8 +26,8 @@ class TestSessionValidation:
         assert len(result) == 1
 
     def test_invalid_sheets(self, monkeypatch):
-        monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_TYPE", "LocalFile")
-        monkeypatch.setenv("DEFAULT_CACHE_PERSISTENCE_LOCALFILE_ROOT", get_absolute_path("./input/validation_config"))
+        monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_TYPE", "LocalFile")
+        monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_ROOT_FOLDER", get_absolute_path("./input/validation_config"))
         excel_path = get_absolute_path("./input/validation_files/valid_excel_wrong_format.xlsx")
 
         session = Session()
