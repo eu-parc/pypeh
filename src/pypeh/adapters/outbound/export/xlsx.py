@@ -11,8 +11,6 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-import xlsxwriter
-
 ANALYTICALINFO_EXCLUSION_LIST = ["id_subject", "matrix", "analysisyear", "analysismonth", "analysisday", "density", "osm", "sg", "uvolume", "lipid_enz"]
 ANALYTICALINFO_MATRIX_TRANSLATION = {"urine_lab": "US;UM", "bloodserum_lab": "BS", "bloodwholeblood_lab":"BWB", "hair_lab":"H"}
 
@@ -113,6 +111,13 @@ def fill_excel_worksheet_from_section(worksheet, section, observable_property_di
         worksheet.autofit()
 
 def write_excel_datatemplate(layout, path, observable_property_dict=None, studyinfo_header_list=None, codebook_metadata_dict=None):
+    
+    try:
+        import xlsxwriter
+    except ImportError:
+        logging.error("Install the 'xlsxwriter' module in order to use the ExportXlsx Adapter.")
+        raise
+
     def create_analyticalinfo_dataset(layout):
         dataset = []
         for section in layout.sections:
