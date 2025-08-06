@@ -8,9 +8,9 @@ readme = "README.md"
 license = "MIT"
 dependencies = [
     "linkml>=1.9.1",
-	"peh-model",
-	"pydantic-settings",
-	"fsspec",
+    "peh-model",
+    "pydantic-settings",
+    "fsspec",
 ]
 
 [project.optional-dependencies]
@@ -23,6 +23,7 @@ dataframe-adapter = [
 ]
 s3-adapter = ["s3fs"]
 polars-adapter=["polars", "fastexcel"]
+export-adapter=["xlsxwriter"]
 test-core = ["pytest>=8.2.0,<9"]
 
 [dependency-groups]
@@ -33,6 +34,9 @@ test-dataframe = [
     "dataguard",
 	"polars",
 	"fastexcel",
+]
+test-export = [
+    "xlsxwriter",
 ]
 test-rocrate = [
     "rocrate",
@@ -82,9 +86,10 @@ markers = [
 	"core: tests for core functionality",
     "dataframe: tests for dataframe-based adapters",
     "export: tests for export adapters",
-    "rocrate: tests for rocrate-based adapter",
     "interface: tests for shared interfaces",
+    "rocrate: tests for rocrate-based adapter",
 	"s3: tests for the s3 adapter",
+	"session: tests for stateful, end-to-end functionality",
 	"web: tests for web IO, requires internet connection",
 	"other: placeholder",
 ]
