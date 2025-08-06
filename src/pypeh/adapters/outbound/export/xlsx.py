@@ -112,10 +112,10 @@ def fill_excel_worksheet_from_section(worksheet, section, observable_property_di
     if autofit:
         worksheet.autofit()
 
-def write_excel_datatemplate(data_layout, path, observable_property_dict=None, studyinfo_header_list=None, codebook_metadata_dict=None):
-    def create_analyticalinfo_dataset(data_layout):
+def write_excel_datatemplate(layout, path, observable_property_dict=None, studyinfo_header_list=None, codebook_metadata_dict=None):
+    def create_analyticalinfo_dataset(layout):
         dataset = []
-        for section in data_layout.sections:
+        for section in layout.sections:
             matrix = ANALYTICALINFO_MATRIX_TRANSLATION.get(section.label)
             if matrix:
                 dataset.extend([(element.varname, matrix) for element in section.elements if not(element.varname in ANALYTICALINFO_EXCLUSION_LIST or element.varname[-4:] in ["_lod", "_loq"])])
@@ -130,21 +130,21 @@ def write_excel_datatemplate(data_layout, path, observable_property_dict=None, s
     worksheet = workbook.add_worksheet("studyinfo")
     worksheet.autofit()
     fill_excel_form_sheet(worksheet, style_dict, header_list=studyinfo_header_list, metadata_record_dict=codebook_metadata_dict)
-    for section in data_layout.sections:
+    for section in layout.sections:
         worksheet = workbook.add_worksheet(section.label)
-        data_list = create_analyticalinfo_dataset(data_layout) if section.label=="analyticalinfo" else None
+        data_list = create_analyticalinfo_dataset(layout) if section.label=="analyticalinfo" else None
         fill_excel_worksheet_from_section(worksheet, section, observable_property_dict, style_dict, data_list=data_list)
     workbook.close()
 
-class XlsxAdapter(ExportInterface):
+class ExportXlsxAdapter(ExportInterface):
     """Adapter for exporting data, schema and/or templates as xlsx files."""
 
-    def export_data(self, data: list, destination: str) -> bool:
-        raise NotImplementedError
-
-    def export_data_dictionary(self, destination: str) -> bool:
-        raise NotImplementedError
-
-    def export_data_template(self, data_layout, destination: str, observable_property_dict: dict = None, studyinfo_header_list: list = None, codebook_metadata_dict: dict = None) -> bool:
-        write_excel_datatemplate(data_layout, destination, observable_property_dict=observable_property_dict, studyinfo_header_list=studyinfo_header_list, codebook_metadata_dict=codebook_metadata_dict)
+    def export_data_template(self, layout, destination: str, observable_property_dict: dict = None, studyinfo_header_list: list = None, codebook_metadata_dict: dict = None) -> bool:
+        write_excel_datatemplate(layout, destination, observable_property_dict=observable_property_dict, studyinfo_header_list=studyinfo_header_list, codebook_metadata_dict=codebook_metadata_dict)
         return True
+
+    def export_data_dictionary(self, observation_design, layout, destination: str, observable_property_dict: dict = None, studyinfo_header_list: list = None, codebook_metadata_dict: dict = None) -> bool:
+        raise NotImplementedError
+
+    def export_data(self, observation_result, layout, destination: str, observable_property_dict: dict = None, studyinfo_header_list: list = None, codebook_metadata_dict: dict = None) -> bool:
+        raise NotImplementedError

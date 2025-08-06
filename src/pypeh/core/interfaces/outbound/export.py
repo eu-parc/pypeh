@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 class ExportInterface:
     @abstractmethod
-    def export_data(self, data: dict[str, Sequence]) -> bool:
+    def export_data(self) -> bool:
         raise NotImplementedError
 
     @abstractmethod
