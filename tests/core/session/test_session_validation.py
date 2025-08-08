@@ -33,6 +33,6 @@ class TestSessionValidation:
         session = Session()
         session.load_cache()
         layout = session.cache.get("TEST_DATA_LAYOUT", "DataLayout")
-        result = session.load_tabular_data(ExcelIO, excel_path, layout_to_check=layout)
+        result = session.load_tabular_data(ExcelIO, excel_path, validation_layout=layout)
         assert isinstance(result, ValidationError)
-        assert result.type == "File Validation Error"
+        assert result.type == "File Processing Error"

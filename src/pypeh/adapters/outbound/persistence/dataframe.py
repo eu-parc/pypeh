@@ -8,9 +8,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Union, IO
 
 from pypeh.adapters.outbound.persistence.serializations import IOAdapter
+from pypeh.adapters.outbound.persistence.serializations import validate_tabular_layout
 
 if TYPE_CHECKING:
-    pass
+    from peh_model.peh import DataLayout
 
 
 logger = logging.getLogger(__name__)
@@ -42,8 +43,9 @@ class CsvIOImpl(IOAdapter):
 
 
 class ExcelIOImpl(IOAdapter):
-    def load(self, source: Union[str, Path, IO[str], IO[bytes]], **kwargs) -> dict[str, pl.DataFrame]:
+    def load(self, source: Union[str, Path, IO[str], IO[bytes]], validation_layout: DataLayout = None, **kwargs) -> dict[str, pl.DataFrame]:
         try:
+            result = None
             default = {
                 "sheet_id": 0,
                 "engine": "calamine",
@@ -54,16 +56,19 @@ class ExcelIOImpl(IOAdapter):
                 if isinstance(source, IO) and "b" not in getattr(source, "mode", "b"):
                     raise ValueError("Excel source must be opened in binary mode")
                 data = source.read()
-                return pl.read_excel(  # type: ignore
+                result = pl.read_excel(  # type: ignore
                     source=io.BytesIO(data),  # type: ignore
                     **options,
                 )
-
             else:
-                return pl.read_excel(  # type: ignore
+                result = pl.read_excel(  # type: ignore
                     source=str(source),  # type: ignore
                     **options,
                 )
+            if validation_layout is None or validate_tabular_layout(result, validation_layout):
+                return result
+            else:
+                raise Exception("Excel layout validation failed while loading tabular data")
         except Exception as e:
             logger.error(f"Error in ExcelIOImpl: {e}")
             raise

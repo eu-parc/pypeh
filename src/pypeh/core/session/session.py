@@ -108,20 +108,13 @@ class Session:
         else:
             raise NotImplementedError
 
-    def load_tabular_data(self, persistence_adapter: PersistenceInterface, path: str, layout_to_check: DataLayout = None):
+    def load_tabular_data(self, persistence_adapter: PersistenceInterface, path: str, validation_layout: DataLayout = None):
         """Load a binary resource and return its content as tabular data in a dataframe"""
-        result = None
-        io_adapter = persistence_adapter()
-        with fsspec.open(path, "rb") as f:
-            try:
-                result = io_adapter.load(f)  # type: ignore
-                if layout_to_check is not None:
-                    layout_section_names = {section.label for section in layout_to_check.sections}
-                    if not layout_section_names.issuperset(set(result.keys())):
-                        result = ValidationError(message="File sections missing from layout", type="File Validation Error", level=ValidationErrorLevel.FATAL)
-            except:
-                result = ValidationError(message="File could not be read by the adapter", type="File Processing Error", level=ValidationErrorLevel.FATAL)
-        return result
+        try:
+            io_adapter = persistence_adapter()
+            return io_adapter.load(path, validation_layout=validation_layout)
+        except:
+            return ValidationError(message="File could not be read or validated", type="File Processing Error", level=ValidationErrorLevel.FATAL)
 
     def get_resource(self, resource_identifier: str, resource_type: str) -> T_NamedThingLike | None:
         """Get resource from cache"""

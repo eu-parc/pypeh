@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Union, Any, IO, get_type_hints, cast
 
 from pypeh.core.interfaces.outbound.persistence import PersistenceInterface
 from pypeh.core.utils.linkml_schema import get_schema_view
-from peh_model.peh import EntityList, YAMLRoot
+from peh_model.peh import EntityList, YAMLRoot, DataLayout
 from pypeh.core.models.typing import T_Dataclass, IOLike
 
 if TYPE_CHECKING:
@@ -79,6 +79,13 @@ def validate_pydantic(
     """
     return target_class.model_validate(data)
 
+
+def validate_tabular_layout(data: dict, layout: DataLayout) -> bool:
+    """
+    Validate newly loaded data against a PEH DataLayout.
+    """
+    layout_section_names = {section.label for section in layout.sections}
+    return layout_section_names.issuperset(set(data.keys()))
 
 class IOAdapter(PersistenceInterface):
     read_mode: str = NotImplementedError  # type: ignore
@@ -312,14 +319,14 @@ class ExcelIO(IOAdapter):
     # source = StringIO(response.text)
     # df = pd.read_csv(source)
 
-    def load(self, source: Union[str, Path, IO[str], IO[bytes]], **kwargs) -> dict:
+    def load(self, source: Union[str, Path, IO[str], IO[bytes]], validation_layout: DataLayout = None, **kwargs) -> dict:
         try:
             from pypeh.adapters.outbound.persistence.dataframe import ExcelIOImpl
         except ImportError:
             message = "The ExcelIO class requires the 'dataframe_adapter' module. Please install it."
             logging.error(message)
             raise
-        return ExcelIOImpl().load(source, **kwargs)
+        return ExcelIOImpl().load(source, validation_layout=validation_layout, **kwargs)
 
     def dump(self, source: str, **kwargs):
         pass
