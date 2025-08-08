@@ -117,7 +117,7 @@ class TestXlsIO:
         assert isinstance(data, dict)
 
     def test_invalid_excel(self):
-        source = get_absolute_path("./input/config_basic/_Tabular_Data/invalid_excel.xlsx")
+        source = get_absolute_path("./input/config_invalid/_Tabular_Data/invalid_excel.xlsx")
         excel_io = ExcelIO()
         with fsspec.open(source, "rb") as f:
             with pytest.raises(Exception) as excinfo:
