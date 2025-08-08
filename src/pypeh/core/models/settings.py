@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import dataclasses
 import logging
-import os
 
 from abc import abstractmethod
 from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource
@@ -98,7 +97,7 @@ class SettingsConfig(BaseModel, Generic[T_BaseSettings]):
 
 
 class LocalFileConfig(SettingsConfig[LocalFileSettings]):
-    env_prefix: str = "DEFAULT_PERSISTED_CACHE_"
+    env_prefix: str = "LOCALFILE_"
     config_dict: dict[str, str] = Field(default_factory=dict)
 
     def settings_class(self) -> Type[LocalFileSettings]:

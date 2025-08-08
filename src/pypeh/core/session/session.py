@@ -60,7 +60,7 @@ class Session:
         if connection_config is None:
             if "DEFAULT_PERSISTED_CACHE_TYPE" in os.environ:
                 if os.environ["DEFAULT_PERSISTED_CACHE_TYPE"].upper()=="LOCALFILE":
-                    connection_config = LocalFileConfig()
+                    connection_config = LocalFileConfig(env_prefix="DEFAULT_PERSISTED_CACHE_")
                 else:
                     raise NotImplementedError
             else:
