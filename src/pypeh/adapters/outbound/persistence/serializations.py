@@ -80,7 +80,7 @@ def validate_pydantic(
     return target_class.model_validate(data)
 
 
-def validate_tabular_layout(data: dict, layout: DataLayout) -> bool:
+def is_consistent_with_layout(data: dict, layout: DataLayout) -> bool:
     """
     Validate newly loaded data against a PEH DataLayout.
     """
