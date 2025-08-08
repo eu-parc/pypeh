@@ -7,11 +7,13 @@ import os
 from abc import abstractmethod
 from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource
 from pydantic import BaseModel, Field, ValidationError, model_validator
-from typing import Optional
+from typing import Optional, Type, TypeVar, Generic, cast
 
 from pypeh.core.utils.namespaces import ImportMap
 
 logger = logging.getLogger(__name__)
+
+T_BaseSettings = TypeVar("T_BaseSettings", bound=BaseSettings)
 
 
 class FileSystemSettings(BaseSettings):
@@ -31,9 +33,8 @@ class S3Settings(FileSystemSettings):
     aws_secret_access_key: Optional[str] = None
     aws_session_token: Optional[str] = None
     aws_region: Optional[str] = "us-east-1"
+    endpoint_url: Optional[str] = None
     bucket_name: str
-
-    model_config = SettingsConfigDict(env_file=".env")
 
     def to_s3fs(self):
         return {
@@ -41,53 +42,75 @@ class S3Settings(FileSystemSettings):
             "secret": self.aws_secret_access_key,
             "token": self.aws_session_token,
             "client_kwargs": {"region_name": self.aws_region},
+            "endpoint_url": self.endpoint_url,
         }
 
 
-class SettingsConfig(BaseModel):
-    @abstractmethod
-    def make_settings(self) -> FileSystemSettings:
-        raise NotImplementedError
-
-
-class LocalFileConfig(SettingsConfig):
-    def make_settings(self) -> LocalFileSettings:
-        settings = LocalFileSettings()
-        if "DEFAULT_PERSISTED_CACHE_ROOT_FOLDER" in os.environ:
-            settings.root_folder = os.environ["DEFAULT_PERSISTED_CACHE_ROOT_FOLDER"]
-        return settings
-
-
-class S3Config(SettingsConfig):
-    env_prefix: str = "S3_"
+class SettingsConfig(BaseModel, Generic[T_BaseSettings]):
+    env_prefix: str = "DEFAULT_"
     config_dict: Optional[dict[str, str]] = Field(default_factory=dict)
 
-    def make_settings(self) -> S3Settings:
-        """
-        Translate config dict into S3Settings with the option to
-        specify the prefix to be used to find the correct details in the .env
-        Needed in case we need to connect to different S3 buckets.
-        """
-        config_data = self.config_dict or {}
+    @abstractmethod
+    def settings_class(cls) -> Type[T_BaseSettings]:
+        """Return the settings class this config is for."""
+        ...
 
-        class CustomisedSettings(S3Settings):
+    def _create_customised_settings_class(self, _env_file: Optional[str]) -> Type[T_BaseSettings]:
+        base_cls = self.settings_class()
+        env_prefix = self.env_prefix
+
+        class CustomisedSettings(base_cls):  # type: ignore
+            model_config = SettingsConfigDict(
+                env_prefix=env_prefix,
+                env_file=_env_file,
+                extra="ignore",
+            )
+
             @classmethod
             def settings_customise_sources(
                 cls, settings_cls, init_settings, env_settings, dotenv_settings, file_secret_settings
             ) -> tuple[PydanticBaseSettingsSource, ...]:
-                return (
-                    init_settings,
-                    dotenv_settings,
-                    env_settings,
-                    file_secret_settings,
-                )
+                if _env_file is not None:
+                    return (
+                        init_settings,
+                        dotenv_settings,
+                        env_settings,
+                        file_secret_settings,
+                    )
+                else:
+                    return (
+                        init_settings,
+                        env_settings,
+                        file_secret_settings,
+                    )
 
-        CustomisedSettings.model_config = SettingsConfigDict(env_prefix=self.env_prefix, env_file=".env")
+        return cast(Type[T_BaseSettings], CustomisedSettings)
+
+    def make_settings(self, _env_file: Optional[str] = ".env") -> T_BaseSettings:
+        config_data = self.config_dict or {}
+
+        settings_cls = self._create_customised_settings_class(_env_file)
 
         try:
-            return CustomisedSettings(**config_data)
+            return settings_cls.model_validate(config_data)
         except ValidationError as e:
             raise ValueError(f"Failed to load config with prefix '{self.env_prefix}': {e}") from e
+
+
+class LocalFileConfig(SettingsConfig[LocalFileSettings]):
+    env_prefix: str = "DEFAULT_PERSISTED_CACHE_"
+    config_dict: dict[str, str] = Field(default_factory=dict)
+
+    def settings_class(self) -> Type[LocalFileSettings]:
+        return LocalFileSettings
+
+
+class S3Config(SettingsConfig[S3Settings]):
+    env_prefix: str = "S3_"
+    config_dict: dict[str, str] = Field(default_factory=dict)
+
+    def settings_class(self) -> Type[S3Settings]:
+        return S3Settings
 
 
 @dataclasses.dataclass

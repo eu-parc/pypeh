@@ -66,6 +66,7 @@ include = [
 [tool.hatch.build.targets.wheel]
 include = [
     "src/pypeh/",
+	"src/pypeh/py.typed",
 ]
 
 [tool.hatch.build.targets.wheel.sources]

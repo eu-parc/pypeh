@@ -1,0 +1,78 @@
+name: Build and Publish Python Package
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/publish.yml'
+  push:
+    branches: [ main ]
+    tags: '*'
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install build tools
+        run: |
+          pip install hatch twine check-wheel-contents uv
+
+      - name: Build package using Hatch
+        run: |
+          hatch build
+
+      - name: Check wheel contents
+        run: |
+          check-wheel-contents dist/*.whl
+
+      - name: Verify package can be installed
+        run: |
+          pip install dist/*.whl
+
+      - name: Test package import
+        run: |
+          python -c "import pypeh; print('Successfully imported pypeh')"
+          python -c "from pypeh import Session; print('Session class importable')"
+
+      - name: Check package metadata
+        run: |
+          python -m twine check dist/*
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  PyPI-upload:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish package to TestPyPI (on tag push)
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+      - name: Publish package to PyPI (on release)
+        if: github.event_name == 'release' && github.event.action == 'published'
+        uses: pypa/gh-action-pypi-publish@release/v1

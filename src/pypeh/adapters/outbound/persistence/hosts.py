@@ -30,7 +30,6 @@ if TYPE_CHECKING:
     from typing import Optional, Any, Dict, List, Generator, Type, Union
     from pydantic import BaseModel
     from pydantic_settings import BaseSettings
-
     from pypeh.core.models.transform import FieldMapping
 
 
@@ -68,10 +67,22 @@ class FileIO(HostAdapter):
 
 
 class DirectoryIO(HostAdapter):
+    """The DirectoryIO logic only accepts absolute paths"""
+
     supported_formats = serializations.IOAdapterFactory._adapters.keys()
 
-    def __init__(self, protocol: str = "file", **storage_options):
-        self.file_system = fsspec.filesystem(protocol, **storage_options)
+    def __init__(self, root: str | None = None, protocol: str = "file", **storage_options):
+        self.root = root.rstrip("/") if root is not None else None
+        self.file_system: fsspec.AbstractFileSystem = fsspec.filesystem(protocol, **storage_options)
+
+    def _resolve_path(self, path: Union[str, Path]) -> str:
+        if self.root is not None:
+            return f"{self.root}/{str(path)}"
+        else:
+            return f"{str(path)}"
+
+    def _join_paths(self, root: Any, path: str) -> str:
+        return f"{root}/{path}"
 
     def walk(
         self, source: Union[str, Path], format: Optional[str] = None, maxdepth: int | None = None, **load_options
@@ -81,15 +92,16 @@ class DirectoryIO(HostAdapter):
         This implementation assumes that all supported file formats (jsonn, yaml, csv, xslx, xls)
         should be loaded.
         """
+        full_source = self._resolve_path(source)
         file_io = FileIO(file_system=self.file_system)
-        for root, _, files in self.file_system.walk(source, maxdepth=maxdepth):
-            for file in files:
-                file_path = os.path.join(root, file)
 
+        for root, _, files in self.file_system.walk(full_source, maxdepth=maxdepth):
+            for file in files:
+                file_path = self._join_paths(root, file)
                 inferred_format = FileIO.get_format(file_path)
                 if format is not None:
                     if inferred_format != format:
-                        continue  # Skip different formats
+                        continue  # Skip formats other than format
                     yield file_io.load(file_path, format=format, **load_options)
 
                 else:
@@ -99,13 +111,12 @@ class DirectoryIO(HostAdapter):
                         continue  # Skip unsupported formats
 
     def load(self, source: Union[str, Path], format: Optional[str] = None, maxdepth: int = 1, **load_options) -> Any:
-        path = Path(source)
-
-        if path.is_file():
-            file_io = FileIO(file_system=self.file_system)
-            return file_io.load(source, format=format, **load_options)
-        elif path.is_dir():
-            return list(self.walk(path, format=format, maxdepth=maxdepth, **load_options))
+        full_source = self._resolve_path(source)
+        file_io = FileIO(file_system=self.file_system)
+        if self.file_system.isfile(full_source):
+            return file_io.load(full_source, format=format, **load_options)
+        elif self.file_system.isdir(full_source):
+            return list(self.walk(source=source, format=format, maxdepth=maxdepth, **load_options))
         else:
             logger.error(f"Source {source} could not be resolved as a path")
             raise ValueError
@@ -114,13 +125,16 @@ class DirectoryIO(HostAdapter):
         pass
 
 
+class LocalStorageProvider(DirectoryIO):
+    def __init__(self, settings: LocalFileSettings, **storage_options):
+        super().__init__(root=settings.root_folder, protocol="file", **storage_options)
+
+
 class S3StorageProvider(DirectoryIO):
     def __init__(self, settings: S3Settings, **storage_options):
         session_kwargs = {**storage_options, **settings.to_s3fs()}
         self.bucket = settings.bucket_name
-        super().__init__(protocol="s3", storage_options=session_kwargs)
-
-    ## TODO: check how should bucket names, ... be dealt with?
+        super().__init__(root=settings.bucket_name, protocol="s3", **session_kwargs)
 
 
 ## WebIO implementation
@@ -399,7 +413,7 @@ class HostFactory:
             if isinstance(settings, S3Settings):
                 return S3StorageProvider(settings, **kwargs)
             elif isinstance(settings, LocalFileSettings):
-                return FileIO()
+                return LocalStorageProvider(settings, **kwargs)
             else:
                 me = f"No adapter registered for settings: {type(settings)}"
                 logger.warning(me)
