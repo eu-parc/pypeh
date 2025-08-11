@@ -7,7 +7,7 @@ import yaml
 
 from dataclasses import is_dataclass
 from linkml_runtime.loaders import YAMLLoader, JSONLoader, RDFLibLoader
-from linkml_runtime.dumpers import YAMLDumper, JSONDumper
+from linkml_runtime.dumpers import YAMLDumper
 from pydantic import TypeAdapter, BaseModel, ConfigDict
 from pathlib import Path
 from rdflib import Graph

@@ -1,5 +1,4 @@
 import pytest
-import logging
 import fsspec
 
 from pypeh.adapters.outbound.persistence.serializations import (
@@ -121,5 +120,5 @@ class TestXlsIO:
         excel_io = ExcelIO()
         with fsspec.open(source, "rb") as f:
             with pytest.raises(Exception) as excinfo:
-                data = excel_io.load(f)  # type: ignore
+                _ = excel_io.load(f)  # type: ignore
         assert isinstance(excinfo.value, Exception)

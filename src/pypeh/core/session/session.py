@@ -145,9 +145,9 @@ class Session:
             return ret
         # setup ContextService
 
-        # check importmap
-        if self.import_config is not None:
-            _ = self.import_config.get_connection(resource_identifier)
+        # TODO: check importmap and create connection
+        # if self.import_config is not None:
+            # connection = self.import_config.get_connection(resource_identifier)
             # connection.do_stuff()
 
         # TODO: final step resolve as linked data

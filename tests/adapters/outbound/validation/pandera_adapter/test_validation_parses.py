@@ -2,7 +2,6 @@ import pytest
 
 from pypeh.adapters.outbound.validation.pandera_adapter.parsers import (
     parse_validation_expression,
-    parse_validation_design,  # TODO separate test required
     parse_columns,
     parse_config,
 )

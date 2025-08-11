@@ -27,4 +27,5 @@ class TestExportXlsx:
         result = adapter.export_data_template(
             data_layout, output_path, studyinfo_header_list=STUDYINFO_HEADERS, codebook_metadata_dict=CODEBOOK_METADATA
         )
+        assert isinstance(result, bool)
         assert result

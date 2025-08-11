@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING, Sequence
 from peh_model import peh
 
 from pypeh.core.interfaces.inbound.dataops import InDataOpsInterface
-from pypeh.core.interfaces.outbound.dataops import OutDataOpsInterface, ValidationInterface, DataImportInterface
+from pypeh.core.interfaces.outbound.dataops import OutDataOpsInterface, ValidationInterface
+from pypeh.core.interfaces.outbound.persistence import PersistenceInterface
 from pypeh.core.models.settings import SettingsConfig
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
 from pypeh.core.models.validation_dto import ValidationConfig
@@ -86,12 +87,12 @@ class ValidationService(DataOpsService):
 class DataImportService(DataOpsService):
     def __init__(
         self,
-        outbound_adapter: DataImportInterface,
+        outbound_adapter: PersistenceInterface,
         inbound_adapter: InDataOpsInterface | None = None,
         cache: CacheContainer = CacheContainerFactory.new(),
     ):
         super().__init__(inbound_adapter, outbound_adapter, cache)
-        self.outbound_adapter: DataImportInterface = outbound_adapter
+        self.outbound_adapter: PersistenceInterface = outbound_adapter
 
     def import_data(
         self, source: str, config: SettingsConfig, data_layout: str, layout_config: SettingsConfig | None = None
@@ -109,6 +110,6 @@ class DataImportService(DataOpsService):
             layout_settings,
         )
         # import data
-        data = self.outbound_adapter.import_data(source, settings)
-
-        # apply layout to data
+        # verify data with layout
+        data = self.outbound_adapter.load(source, validation_layout=layout_object)
+        return data

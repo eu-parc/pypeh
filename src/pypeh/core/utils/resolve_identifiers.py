@@ -106,7 +106,7 @@ def assign_location_enum(s: str) -> Optional[LocationEnum]:
         return LocationEnum.LOCAL
 
 
-def resolve_curie(input_str: str, namespaces: Mapping) -> str:
+def resolve_curie(input_str: str, namespaces: Mapping[str, str|None]) -> str:
     prefix, suffix = input_str.split(":")
     resolved_prefix = namespaces.get(prefix, None)
     if resolved_prefix is None:

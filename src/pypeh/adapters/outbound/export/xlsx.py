@@ -2,12 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from typing import TYPE_CHECKING
-
 from pypeh.core.interfaces.outbound.export import ExportInterface
-
-if TYPE_CHECKING:
-    from typing import Any, Generator
 
 logger = logging.getLogger(__name__)
 

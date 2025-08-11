@@ -4,7 +4,7 @@ from peh_model.peh import ObservableProperty, Observation
 
 from pypeh.core.cache.containers import CacheContainerFactory
 from pypeh.core.cache.utils import load_entities_from_tree
-from pypeh.adapters.outbound.persistence.hosts import DirectoryIO, FileIO
+from pypeh.adapters.outbound.persistence.hosts import DirectoryIO
 
 from tests.test_utils.dirutils import get_absolute_path
 

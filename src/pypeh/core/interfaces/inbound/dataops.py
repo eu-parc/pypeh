@@ -11,13 +11,13 @@ if TYPE_CHECKING:
 
 class InDataOpsInterface:
     @abstractmethod
-    def validate(self, project_name: str, config_path: str, data_layout: str, data_path: str):
+    def validate(self, project_name: str, config_path: str, data_layout: str, data_path: str): # type: ignore[no-untyped-def]
         raise NotImplementedError
 
     @abstractmethod
-    def load(self, project_name: str, config_path: str, data_layout: str, data_path: str):
+    def load(self, project_name: str, config_path: str, data_layout: str, data_path: str): # type: ignore[no-untyped-def]
         raise NotImplementedError
 
     @abstractmethod
-    def extract(self, project_name: str, config_path: str, data_layout: str, data_extract: str, target_path: str):
+    def extract(self, project_name: str, config_path: str, data_layout: str, data_extract: str, target_path: str): # type: ignore[no-untyped-def]
         raise NotImplementedError
