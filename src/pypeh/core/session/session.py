@@ -14,20 +14,23 @@ from pypeh.core.models.settings import (
     ValidatedImportConfig,
 )
 from pypeh.core.models.typing import T_NamedThingLike
-from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel
+from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel, ValidationErrorReport
 
 from typing import TYPE_CHECKING
 
 from pypeh.adapters.outbound.persistence.hosts import HostFactory, LocalStorageProvider
+from pypeh.adapters.outbound.validation.pandera_adapter.dataops import DataFrameAdapter
 from pypeh.core.interfaces.outbound.persistence import PersistenceInterface
-
+from pypeh.core.services.dataops import ValidationService
 from pypeh.core.cache.utils import load_entities_from_tree
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from typing import Dict
+    import peh_model.peh as peh
+    from typing import Dict, Sequence
     from pydantic_settings import BaseSettings
+    from polars import DataFrame
 
 
 class Session:
@@ -162,3 +165,55 @@ class Session:
 
     def dump_project(self, project_identifier: str, version: str | None) -> bool:
         return self.dump_resource(project_identifier, resource_type="Project", version=version)
+
+    def validate_tabular_data(
+        self,
+        data: dict[str, Sequence] | DataFrame,
+        observation_id: str | None = None,
+        observable_property_id_list: list[str] | None = None,
+        observation: peh.Observation | None = None,
+        observable_property_dict: dict[str, peh.ObservableProperty] | None = None,
+    ) -> ValidationErrorReport:
+        # input checks
+        if observation_id is not None and observable_property_id_list is not None:
+            if observation is not None or observable_property_dict is not None:
+                raise ValueError(
+                    "Specify either (observation_id and observable_property_id_list) "
+                    "or (observation and observable_property_dict), not both."
+                )
+            id_based = True
+        elif observation is not None and observable_property_dict is not None:
+            if observation_id is not None or observable_property_id_list is not None:
+                raise ValueError(
+                    "Specify either (observation_id and observable_property_id_list) "
+                    "or (observation and observable_property_dict), not both."
+                )
+            id_based = False
+        else:
+            raise ValueError(
+                "You must specify either (observation_id and observable_property_id_list) "
+                "or (observation and observable_property_dict)."
+            )
+
+        # Proceed with validation
+        validation_service = ValidationService(
+            outbound_adapter=DataFrameAdapter(),  # currently only implementation
+            cache=self.cache,
+        )
+        if id_based:
+            assert observation_id is not None
+            assert observable_property_id_list is not None
+            result = validation_service.validate_data(
+                data, observation_id=observation_id, observable_property_id_list=observable_property_id_list
+            )
+        else:
+            assert observation is not None
+            assert observable_property_dict is not None
+            result = validation_service._validate_data(
+                data,
+                observation=observation,
+                observable_property_dict=observable_property_dict,
+            )
+
+        # You can now use `id_based` later in the method
+        return ValidationErrorReport.model_validate(result)
