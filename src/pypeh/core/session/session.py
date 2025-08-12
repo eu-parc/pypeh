@@ -3,9 +3,12 @@ from __future__ import annotations
 import logging
 import os
 
-from peh_model.peh import DataLayout
+from peh_model.peh import DataLayout, Observation, NamedThing
+from typing import TYPE_CHECKING, cast
 
+from pypeh.adapters.outbound.validation.pandera_adapter.dataops import DataFrameAdapter
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
+from pypeh.core.models.proxy import TypedLazyProxy
 from pypeh.core.models.settings import (
     LocalFileConfig,
     ImportConfig,
@@ -14,20 +17,17 @@ from pypeh.core.models.settings import (
     ValidatedImportConfig,
 )
 from pypeh.core.models.typing import T_NamedThingLike
-from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel
-
-from typing import TYPE_CHECKING
-
+from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel, ValidationErrorReportCollection
 from pypeh.adapters.outbound.persistence.hosts import HostFactory, LocalStorageProvider
 from pypeh.core.interfaces.outbound.persistence import PersistenceInterface
-
 from pypeh.core.cache.utils import load_entities_from_tree
 
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from typing import Dict
+    from polars import DataFrame
     from pydantic_settings import BaseSettings
+    from typing import Dict, Sequence
 
 
 class Session:
@@ -158,21 +158,17 @@ class Session:
 
         return ret
 
-    def load_resource(self, resource_identifier: str, resource_type: str) -> T_NamedThingLike | None:
+    def resolve_typed_lazy_proxy(self, proxy: TypedLazyProxy) -> NamedThing:
+        raise NotImplementedError()
+
+    def load_resource(self, resource_identifier: str, resource_type: str) -> NamedThing | None:
         """Load resource into cache. First checks the cache,
         then configured persisted cache, and finally the `ImportConfig`"""
-        # cache
         ret = self.get_resource(resource_identifier, resource_type)
+        if isinstance(ret, TypedLazyProxy):
+            ret = self.resolve_typed_lazy_proxy(ret)
         if ret is not None:
             return ret
-        # setup ContextService
-
-        # TODO: check importmap and create connection
-        # if self.import_config is not None:
-        # connection = self.import_config.get_connection(resource_identifier)
-        # connection.do_stuff()
-
-        # TODO: final step resolve as linked data
 
         return ret
 
@@ -184,3 +180,27 @@ class Session:
 
     def dump_project(self, project_identifier: str, version: str | None) -> bool:
         return self.dump_resource(project_identifier, resource_type="Project", version=version)
+
+    def validate_tabular_data(
+        self,
+        data: dict[str, Sequence] | DataFrame,
+        observation: Observation | None = None,
+        observation_id: str | None = None,
+    ) -> ValidationErrorReportCollection:
+        # input checks
+        if observation is None and observation_id is None:
+            raise ValueError("Either observation or observation_id should be provided")
+        elif observation is not None and observation_id is not None:
+            raise ValueError("Either observation or observation_id should be provided")
+
+        # make objects
+        if observation_id is not None:
+            resource = self.load_resource(observation_id, "Observation")
+            if not isinstance(resource, Observation):
+                raise TypeError(f"Resource with id {observation_id} did not return an Observation object")
+            observation = cast(Observation, resource)
+
+        assert observation is not None
+        # run validation
+        adapter = DataFrameAdapter()
+        return adapter.validate(data, observation, self.cache)

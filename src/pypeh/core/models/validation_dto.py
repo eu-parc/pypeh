@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from typing import Any, Dict, Generator
 
 from pypeh.core.models.constants import ValidationErrorLevel
+from pypeh.core.cache.containers import CacheContainer
 from peh_model import peh
 
 
@@ -140,7 +141,7 @@ class ValidationConfig(BaseModel):
         cls,
         oep_set: peh.ObservableEntityPropertySet,
         oep_set_name: str,
-        observable_property_dict: Dict[str, peh.ObservableProperty],
+        cache: CacheContainer,
     ) -> "ValidationConfig":
         if isinstance(oep_set.required_observable_property_id_list, list) and isinstance(
             oep_set.optional_observable_property_id_list, list
@@ -149,16 +150,19 @@ class ValidationConfig(BaseModel):
         else:
             raise TypeError
 
+        observable_property_dict = {}
+        for op_id in all_op_ids:
+            obs_prop = cache.get(op_id, "ObservableProperty")
+            if not isinstance(obs_prop, peh.ObservableProperty):
+                me = f"Provided observable_property_id {op_id} does not point to an ObservableProperty"
+                logger.error(me)
+                raise TypeError(me)
+            observable_property_dict[op_id] = obs_prop
+
         columns = [
             ColumnValidation.from_peh(op_id, observable_property_dict[op_id])
-            for op_id in all_op_ids
-            if op_id in observable_property_dict
+            for op_id in observable_property_dict.keys()
         ]
-
-        # Optional: log or raise error if some op_ids are missing
-        missing = set(all_op_ids) - observable_property_dict.keys()
-        if missing:
-            raise ValueError(f"Missing observable properties for IDs: {missing}")
 
         assert isinstance(oep_set.identifying_observable_property_id_list, list)
         return cls(
@@ -172,7 +176,7 @@ class ValidationConfig(BaseModel):
     def from_observation(
         cls,
         observation: peh.Observation,
-        observable_property_dict: dict[str, peh.ObservableProperty],
+        cache: CacheContainer,
     ) -> Generator[tuple[str, ValidationConfig], None, None]:
         observation_design = observation.observation_design
         observable_entity_property_sets = getattr(observation_design, "observable_entity_property_sets", None)
@@ -188,7 +192,7 @@ class ValidationConfig(BaseModel):
                 ValidationConfig.from_peh(
                     oep_set,
                     oep_set_name,
-                    observable_property_dict,
+                    cache,
                 ),
             )
 
