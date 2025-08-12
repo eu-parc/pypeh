@@ -49,6 +49,7 @@ class TestValidationService:
                 container.add(entity)
         observation_id = "OBSERVATION_ADULTS_CONSIDERATIONS"
         observable_property_id_list = [
+            "adults_id_subject",
             "adults_id_household",
             "adults_con_cst_ipchem",
             "adults_con_parc_300",

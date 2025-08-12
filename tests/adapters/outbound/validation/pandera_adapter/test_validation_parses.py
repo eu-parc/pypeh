@@ -128,7 +128,7 @@ def test_parse_validation_expression(input_data, expected_output):
                     "required": True,
                     "nullable": False,
                     "unique": False,
-                    "checks": None,
+                    "checks": [],
                 }
             ],
         ),

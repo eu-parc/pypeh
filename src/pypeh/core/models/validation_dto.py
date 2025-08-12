@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from decimal import Decimal
 
 from pydantic import BaseModel
 from typing import Any, Dict, Generator
@@ -100,6 +101,34 @@ class ValidationDesign(BaseModel):
             expression=expression,
         )
 
+    @classmethod
+    def list_from_metadata(cls, metadata: list[Any]) -> "ValidationDesign":
+        expression_list = []
+        for metadatum in metadata:
+            match metadatum.field.lower():
+                case "min":
+                    expression_list.append(
+                        ValidationExpression.from_peh(
+                            peh.ValidationExpression(
+                                validation_command=peh.ValidationCommand.is_greater_than_or_equal_to,
+                                validation_arg_values=[Decimal(metadatum.value)],
+                            )
+                        )
+                    )
+                case "max":
+                    expression_list.append(
+                        ValidationExpression.from_peh(
+                            peh.ValidationExpression(
+                                validation_command=peh.ValidationCommand.is_less_than_or_equal_to,
+                                validation_arg_values=[Decimal(metadatum.value)],
+                            )
+                        )
+                    )
+        return [
+            cls(name=metadatum.field.lower(), error_level=ValidationErrorLevel.ERROR, expression=expression)
+            for expression in expression_list
+        ]
+
 
 class ColumnValidation(BaseModel):
     unique_name: str
@@ -112,10 +141,26 @@ class ColumnValidation(BaseModel):
     def from_peh(cls, column_name: str, observable_property: peh.ObservableProperty) -> "ColumnValidation":
         required = observable_property.default_required
         nullable = not required
-        validation_designs = getattr(observable_property, "validation_designs", None)
-        if validation_designs is None:
-            validation_designs = []
-        validations = [ValidationDesign.from_peh(vd) for vd in validation_designs]
+        validations = []
+        if validation_designs := getattr(observable_property, "validation_designs", None):
+            validations.extend([ValidationDesign.from_peh(vd) for vd in validation_designs])
+        if value_metadata := getattr(observable_property, "value_metadata", None):
+            validations.extend(ValidationDesign.list_from_metadata(value_metadata))
+        if getattr(observable_property, "categorical", None):
+            validations.append(
+                ValidationDesign.from_peh(
+                    peh.ValidationDesign(
+                        validation_name="check_categorical",
+                        validation_expression=peh.ValidationExpression(
+                            validation_command=peh.ValidationCommand.is_in,
+                            validation_arg_values=[
+                                vo.key for vo in getattr(observable_property, "value_options", None)
+                            ],
+                        ),
+                        validation_error_level=peh.ValidationErrorLevel.error,
+                    )
+                )
+            )
 
         assert isinstance(observable_property.value_type, str)
         data_type = convert_peh_value_type_to_validation_dto_datatype(observable_property.value_type)
@@ -145,7 +190,11 @@ class ValidationConfig(BaseModel):
         if isinstance(oep_set.required_observable_property_id_list, list) and isinstance(
             oep_set.optional_observable_property_id_list, list
         ):
-            all_op_ids = oep_set.required_observable_property_id_list + oep_set.optional_observable_property_id_list
+            all_op_ids = (
+                oep_set.identifying_observable_property_id_list
+                + oep_set.required_observable_property_id_list
+                + oep_set.optional_observable_property_id_list
+            )
         else:
             raise TypeError
 

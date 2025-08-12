@@ -86,11 +86,12 @@ addopts = [
 markers = [
 	"core: tests for core functionality",
     "dataframe: tests for dataframe-based adapters",
+    "end_to_end: tests for stateful, configuration based, end-to-end functionality",
     "export: tests for export adapters",
     "interface: tests for shared interfaces",
     "rocrate: tests for rocrate-based adapter",
 	"s3: tests for the s3 adapter",
-	"session: tests for stateful, end-to-end functionality",
+	"session: tests for stateful session interactions",
 	"web: tests for web IO, requires internet connection",
 	"other: placeholder",
 ]
