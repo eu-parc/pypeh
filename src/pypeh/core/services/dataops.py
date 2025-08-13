@@ -1,20 +1,24 @@
 from __future__ import annotations
+import importlib
+import os
 
 import logging
 
-from typing import TYPE_CHECKING, Sequence
-from peh_model import peh
+from typing import TYPE_CHECKING, TypeVar
+from peh_model.peh import Observation, ObservableProperty
 
 from pypeh.core.interfaces.inbound.dataops import InDataOpsInterface
 from pypeh.core.interfaces.outbound.dataops import OutDataOpsInterface, ValidationInterface
 from pypeh.core.interfaces.outbound.persistence import PersistenceInterface
-from pypeh.core.models.settings import SettingsConfig
+from pypeh.core.models.settings import AdapterConfig, SettingsConfig
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
-from pypeh.core.models.validation_dto import ValidationConfig
 
 
 if TYPE_CHECKING:
-    from polars import DataFrame
+    from typing import Sequence, List
+    from pypeh.core.models.validation_errors import ValidationErrorReportCollection
+
+T_DataType = TypeVar("T_DataType")
 
 logger = logging.getLogger(__name__)
 
@@ -31,57 +35,34 @@ class DataOpsService:
         self.cache = cache
 
 
-class ValidationService(DataOpsService):
+class ValidationService:
+    adapter: ValidationInterface = None
+
     def __init__(
         self,
-        outbound_adapter: ValidationInterface,
-        inbound_adapter: InDataOpsInterface | None = None,
-        cache: CacheContainer = CacheContainerFactory.new(),
+        adapter: PersistenceInterface | None = None,
     ):
-        super().__init__(inbound_adapter, outbound_adapter, cache)
-        self.outbound_adapter: ValidationInterface = outbound_adapter
+        if adapter:
+            self.adapter = adapter
+        elif os.environ.get("VALIDATION_ADAPTER_MODULE_IMPORT_NAME"):
+            adapter_import_prefix = "VALIDATION_ADAPTER_"
+            adapter_config = AdapterConfig(env_prefix=adapter_import_prefix)
+            adapter_settings = adapter_config.make_settings()
 
-    def _validate_data(
+            adapter_module = importlib.import_module(adapter_settings.module_import_name)
+            adapter_class = getattr(adapter_module, adapter_settings.class_import_name)
+            self.adapter = adapter_class()
+
+    def register_adapter(self, adapter: ValidationInterface):
+        self.adapter = adapter
+
+    def validate(
         self,
-        data: dict[str, Sequence] | DataFrame,
-        observation: peh.Observation,
-        observable_property_dict: dict[str, peh.ObservableProperty],
-    ) -> dict:
-        result_dict = {}
-        for oep_set_name, validation_config in ValidationConfig.from_observation(
-            observation,
-            observable_property_dict,
-        ):
-            result_dict[oep_set_name] = self.outbound_adapter.validate(data, validation_config)
-
-        return result_dict
-
-    def validate_data(
-        self,
-        data: dict[str, Sequence] | DataFrame,
-        observation_id: str,
-        observable_property_id_list: list[str],
-    ) -> dict:
-        observation_entity = self.cache.get(observation_id, "Observation")
-        if not isinstance(observation_entity, peh.Observation):
-            me = f"Provided observation_id {observation_id} does not point to an Observation"
-            logger.error(me)
-            raise TypeError(me)
-        observable_property_dict = {}
-
-        for _id in observable_property_id_list:
-            entity = self.cache.get(_id, "ObservableProperty")
-            if not isinstance(entity, peh.ObservableProperty):
-                me = f"Provided observable_property_id {_id} does not point to an ObservableProperty"
-                logger.error(me)
-                raise TypeError(me)
-            observable_property_dict[_id] = entity
-
-        return self._validate_data(
-            data,
-            observation_entity,
-            observable_property_dict,
-        )
+        data: dict[str, Sequence] | T_DataType,
+        observation: Observation,
+        observable_properties: List[ObservableProperty],
+    ) -> ValidationErrorReportCollection:
+        return self.adapter.validate(data, observation, observable_properties)
 
 
 class DataImportService(DataOpsService):

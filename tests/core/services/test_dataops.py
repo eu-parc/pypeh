@@ -1,17 +1,14 @@
 import pytest
 
-from pypeh.adapters.outbound.persistence.hosts import DirectoryIO
-from pypeh.core.cache.containers import CacheContainerFactory
-from pypeh.core.cache.utils import load_entities_from_tree
 from pypeh.core.interfaces.inbound.dataops import InDataOpsInterface
 from pypeh.core.interfaces.outbound.dataops import ValidationInterface
 
 from typing import Sequence
 
-from pypeh.core.models.validation_dto import ValidationConfig
 from pypeh.core.models.validation_errors import ValidationErrorReport
 from pypeh.core.services.dataops import ValidationService
-from tests.test_utils.dirutils import get_absolute_path
+
+from peh_model import peh
 
 
 class InboundTestAdapter(InDataOpsInterface):
@@ -20,7 +17,12 @@ class InboundTestAdapter(InDataOpsInterface):
 
 
 class OutboundTestAdapter(ValidationInterface):
-    def validate(self, data: dict[str, Sequence], config: ValidationConfig) -> ValidationErrorReport:
+    def validate(
+        self,
+        data: dict[str, Sequence],
+        observation: peh.Observation,
+        observable_properties: Sequence[peh.ObservableProperty],
+    ) -> ValidationErrorReport:
         return ValidationErrorReport(
             timestamp="test",
             total_errors=0,
@@ -29,32 +31,13 @@ class OutboundTestAdapter(ValidationInterface):
 
 @pytest.mark.core
 class TestValidationService:
-    outbound_adapter: None
-    inbound_adapter: None
+    adapter: None
 
     @pytest.fixture(scope="class")
     def mockdata(self):
         return {"test": list(range(10))}
 
     def test_validate_data(self, mockdata):
-        service = ValidationService(outbound_adapter=OutboundTestAdapter())
-        # populate cache
-        source = get_absolute_path("../../input/roundtrip")
-        container = CacheContainerFactory.new()
-        host = DirectoryIO()
-        roots = host.load(source, format="yaml")
-        container = service.cache
-        for root in roots:
-            for entity in load_entities_from_tree(root):
-                container.add(entity)
-        observation_id = "OBSERVATION_ADULTS_CONSIDERATIONS"
-        observable_property_id_list = [
-            "adults_id_subject",
-            "adults_id_household",
-            "adults_con_cst_ipchem",
-            "adults_con_parc_300",
-        ]
-        result_dict = service.validate_data(
-            mockdata, observation_id=observation_id, observable_property_id_list=observable_property_id_list
-        )
+        service = ValidationService(adapter=OutboundTestAdapter())
+        result_dict = service.validate(mockdata, observation=None, observable_properties=[])
         assert result_dict is not None

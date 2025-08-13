@@ -1,6 +1,6 @@
 import pytest
 
-from pypeh.core.models.settings import S3Config, LocalFileConfig
+from pypeh.core.models.settings import S3Config, LocalFileConfig, AdapterConfig
 
 
 @pytest.mark.core
@@ -42,3 +42,12 @@ class TestLocalFileEnv:
         config_base = LocalFileConfig(env_prefix="MY_DEFAULT_ROOT_FOLDER_", config_dict=override)
         settings = config_base.make_settings()
         assert settings.root_folder == "actually/it/is/here"
+
+
+@pytest.mark.core
+class TestAdapterEnv:
+    def test_custom_env_prefix(self, monkeypatch):
+        monkeypatch.setenv("ADAPTER_MODULE_IMPORT_NAME", "module.to.be.imported")
+        config_base = AdapterConfig(env_prefix="ADAPTER_")
+        settings = config_base.make_settings()
+        assert settings.module_import_name == "module.to.be.imported"

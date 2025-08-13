@@ -77,7 +77,7 @@ class TestValidation(abc.ABC):
             ],
         )
 
-        result = adapter.validate(data, config)
+        result = adapter._validate(data, config)
 
         assert result is not None
         assert result.total_errors == 3

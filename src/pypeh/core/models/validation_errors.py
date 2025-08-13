@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional, TypedDict
 from pydantic import BaseModel, Field
 
 from pypeh.core.models.constants import ValidationErrorLevel
@@ -60,3 +60,8 @@ class ValidationErrorReport(BaseModel):
     error_counts: Dict[ValidationErrorLevel, int] = Field(default_factory=dict)
     groups: List[ValidationErrorGroup] = Field(default_factory=list)
     unexpected_errors: List[ValidationError] = Field(default_factory=list)
+
+
+class ValidationErrorReportCollection(TypedDict, total=False):
+    observable_property_set: str
+    report: ValidationErrorReport
