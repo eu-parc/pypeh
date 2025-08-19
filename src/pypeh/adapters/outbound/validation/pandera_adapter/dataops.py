@@ -19,7 +19,7 @@ from pypeh.core.interfaces.outbound.dataops import (
     DataImportInterface,
 )
 from pypeh.core.models.validation_errors import ValidationErrorReport
-from pypeh.core.models.validation_dto import ValidationDTO, ValidationConfig
+from pypeh.core.models.validation_dto import ValidationConfig
 from pypeh.adapters.outbound.validation.pandera_adapter.parsers import parse_config, parse_error_report
 from pypeh.adapters.outbound.persistence.hosts import HostFactory, FileIO
 
@@ -31,11 +31,6 @@ logger = logging.getLogger(__name__)
 
 
 class DataFrameAdapter(ValidationInterface[DataFrame], DataImportInterface[DataFrame]):
-    """
-    DataOpsInterface has process method that can be called like this:
-    `self.process(dto, "validate")`
-    """
-
     data_format = DataFrame
 
     def parse_configuration(self, config: ValidationConfig) -> Mapping:
@@ -47,15 +42,12 @@ class DataFrameAdapter(ValidationInterface[DataFrame], DataImportInterface[DataF
     def cleanup(self):
         self.get_error_collector().clear_errors()
 
-    def validate(self, data: dict[str, list] | DataFrame, config: ValidationConfig) -> ValidationErrorReport:
+    def _validate(self, data: dict[str, list] | DataFrame, config: ValidationConfig) -> ValidationErrorReport:
         config_map = self.parse_configuration(config)
         validator = Validator.config_from_mapping(config=config_map, logger=logger)
         _ = validator.validate(data)
 
         return parse_error_report(self.get_error_collector().get_errors())
-
-    def process(self, dto: ValidationDTO, action: str) -> ValidationErrorReport:
-        return getattr(self, action)(dto.data, dto.config)
 
     def summarize(self, data: Mapping, config: Mapping):
         pass

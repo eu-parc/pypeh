@@ -5,7 +5,7 @@ import logging
 
 from abc import abstractmethod
 from pydantic_settings import BaseSettings, SettingsConfigDict, PydanticBaseSettingsSource
-from pydantic import BaseModel, Field, ValidationError, model_validator
+from pydantic import BaseModel, Field, ValidationError
 from typing import Optional, Type, TypeVar, Generic, cast
 
 from pypeh.core.utils.namespaces import ImportMap

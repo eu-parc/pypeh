@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-import logging
 import os
+import importlib
+import logging
 
-from peh_model.peh import DataLayout
-from typing import TYPE_CHECKING, Sequence
+from peh_model.peh import NamedThing, Observation, DataLayout
+from typing import TYPE_CHECKING, TypeVar, Sequence, cast
 
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
+from pypeh.core.models.proxy import TypedLazyProxy
 from pypeh.core.models.settings import (
     LocalFileConfig,
     ImportConfig,
@@ -15,7 +17,8 @@ from pypeh.core.models.settings import (
     ValidatedImportConfig,
 )
 from pypeh.core.models.typing import T_NamedThingLike
-from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel
+from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel, ValidationErrorReportCollection
+from pypeh.core.interfaces.outbound.dataops import ValidationInterface
 from pypeh.adapters.outbound.persistence.hosts import HostFactory, LocalStorageProvider
 from pypeh.core.cache.utils import load_entities_from_tree
 from pypeh.core.utils.resolve_identifiers import is_url
@@ -23,10 +26,16 @@ from pypeh.core.utils.resolve_identifiers import is_url
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
+    from polars import DataFrame
     from pydantic_settings import BaseSettings
+    from typing import Sequence
+
+T_AdapterType = TypeVar("T_AdapterType")
 
 
 class Session:
+    _adapter_mapping: dict[str, T_AdapterType] = dict()
+
     def __init__(
         self,
         *,
@@ -115,6 +124,39 @@ class Session:
             return default_persisted_cache.make_settings()
         return None
 
+    def register_default_adapter(self, interface_functionality: str):
+        match interface_functionality:
+            case "validation":
+                self._adapter_mapping[interface_functionality] = ValidationInterface.get_default_adapter_class()
+            case _:
+                raise NotImplementedError()
+
+    def register_adapter(self, interface_functionality: str, adapter: T_AdapterType):
+        self._adapter_mapping[interface_functionality] = adapter
+
+    def register_adapter_by_name(
+        self,
+        interface_functionality: str,
+        adapter_module_name: str | None = None,
+        adapter_class_name: str | None = None,
+    ):
+        try:
+            adapter_module = importlib.import_module(adapter_module_name)
+            adapter = getattr(adapter_module, adapter_class_name)
+        except Exception as e:
+            logger.error(
+                f"Exception encountered while attempting to import the requested {interface_functionality} adapter: {adapter_module_name} - {adapter_class_name}"
+            )
+            raise e
+        self.register_adapter(interface_functionality, adapter)
+
+    def get_adapter(self, interface_functionality: str):
+        adapter = self._adapter_mapping.get(interface_functionality)
+        if adapter is None:
+            self.register_default_adapter(interface_functionality)
+            adapter = self._adapter_mapping.get(interface_functionality)
+        return adapter()
+
     def load_persisted_cache(self):
         """Load all resources from the default cache persistence location into cache"""
         host = HostFactory.create(self.default_persisted_cache)
@@ -170,6 +212,9 @@ class Session:
 
         return ret
 
+    def resolve_typed_lazy_proxy(self, proxy: TypedLazyProxy) -> NamedThing:
+        raise NotImplementedError()
+
     def load_resource(self, resource_identifier: str, resource_type: str) -> T_NamedThingLike | None:
         """Load resource into cache. First checks the cache,
         then configured persisted cache, and finally the `ImportConfig`"""
@@ -196,3 +241,38 @@ class Session:
 
     def dump_project(self, project_identifier: str, version: str | None) -> bool:
         return self.dump_resource(project_identifier, resource_type="Project", version=version)
+
+    def validate_tabular_data(
+        self,
+        data: dict[str, Sequence] | DataFrame,
+        observation: Observation | None = None,
+        observation_id: str | None = None,
+    ) -> ValidationErrorReportCollection:
+        # input checks
+        if observation is None and observation_id is None:
+            raise ValueError("Either observation or observation_id should be provided")
+        elif observation is not None and observation_id is not None:
+            raise ValueError("Either observation or observation_id should be provided")
+
+        # make objects
+        if observation_id is not None:
+            resource = self.load_resource(observation_id, "Observation")
+            if not isinstance(resource, Observation):
+                raise TypeError(f"Resource with id {observation_id} did not return an Observation object")
+            observation = cast(Observation, resource)
+        assert observation is not None
+
+        observable_property_ids = set()
+        for oep_set in observation.observation_design.observable_entity_property_sets:
+            observable_property_ids.update(
+                oep_set.identifying_observable_property_id_list,
+                oep_set.optional_observable_property_id_list,
+                oep_set.required_observable_property_id_list,
+            )
+        observable_properties = [
+            op for op in self.cache.get_all("ObservableProperty") if op.id in observable_property_ids
+        ]
+        assert len(observable_properties) > 0
+
+        validation_adapter = self.get_adapter("validation")
+        return validation_adapter.validate(data, observation, observable_properties)

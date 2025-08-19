@@ -4,7 +4,7 @@ import abc
 from typing import Protocol, Any, Generic
 from peh_model.peh import DataLayout
 
-from pypeh.core.interfaces.outbound.dataops import T_DataType
+from pypeh.core.interfaces.outbound.dataops import T_DataType, ValidationInterface
 from pypeh.core.models.validation_errors import ValidationErrorReport
 from pypeh.core.models.constants import ValidationErrorLevel
 from pypeh.core.models.validation_dto import (
@@ -34,6 +34,12 @@ class TestValidation(abc.ABC):
     def get_adapter(self) -> DataOpsProtocol:
         """Return the adapter implementation to test."""
         raise NotImplementedError
+
+    def test_getting_default_adapter_from_interface(self):
+        adapter_class = ValidationInterface.get_default_adapter_class()
+        adapter = adapter_class()
+        assert isinstance(adapter, ValidationInterface)
+        assert isinstance(adapter, type(self.get_adapter()))
 
     def test_validate(self):
         adapter = self.get_adapter()
@@ -77,7 +83,7 @@ class TestValidation(abc.ABC):
             ],
         )
 
-        result = adapter.validate(data, config)
+        result = adapter._validate(data, config)
 
         assert result is not None
         assert result.total_errors == 3
