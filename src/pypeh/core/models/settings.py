@@ -15,6 +15,11 @@ logger = logging.getLogger(__name__)
 T_BaseSettings = TypeVar("T_BaseSettings", bound=BaseSettings)
 
 
+class AdapterSettings(BaseSettings):
+    module_import_name: Optional[str] = None
+    class_import_name: Optional[str] = None
+
+
 class FileSystemSettings(BaseSettings):
     pass
 
@@ -94,6 +99,14 @@ class SettingsConfig(BaseModel, Generic[T_BaseSettings]):
             return settings_cls.model_validate(config_data)
         except ValidationError as e:
             raise ValueError(f"Failed to load config with prefix '{self.env_prefix}': {e}") from e
+
+
+class AdapterConfig(SettingsConfig[AdapterSettings]):
+    env_prefix: str = "ADAPTER_"
+    config_dict: dict[str, str] = Field(default_factory=dict)
+
+    def settings_class(self) -> Type[AdapterSettings]:
+        return AdapterSettings
 
 
 class LocalFileConfig(SettingsConfig[LocalFileSettings]):

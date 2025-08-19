@@ -3,8 +3,8 @@ from __future__ import annotations
 import logging
 import os
 
-from peh_model.peh import DataLayout
-from typing import TYPE_CHECKING, Sequence
+from peh_model.peh import NamedThing, Observation, DataLayout
+from typing import TYPE_CHECKING, Sequence, cast
 
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
 from pypeh.core.models.proxy import TypedLazyProxy
@@ -16,7 +16,8 @@ from pypeh.core.models.settings import (
     ValidatedImportConfig,
 )
 from pypeh.core.models.typing import T_NamedThingLike
-from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel
+from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel, ValidationErrorReportCollection
+from pypeh.core.services.dataops import ValidationService
 from pypeh.adapters.outbound.persistence.hosts import HostFactory, LocalStorageProvider
 from pypeh.core.cache.utils import load_entities_from_tree
 from pypeh.core.utils.resolve_identifiers import is_url
@@ -239,7 +240,9 @@ class Session:
         assert len(observable_properties) > 0
 
         # run validation
-        from pypeh.adapters.outbound.validation.pandera_adapter.dataops import DataFrameAdapter
+        # from pypeh.adapters.outbound.validation.pandera_adapter.dataops import DataFrameAdapter
+        # adapter = DataFrameAdapter()
+        # return adapter.validate(data, observation, observable_properties)
 
-        adapter = DataFrameAdapter()
-        return adapter.validate(data, observation, observable_properties)
+        validation_service = ValidationService()
+        return validation_service.validate(data, observation, observable_properties)
