@@ -1,0 +1,214 @@
+layouts:
+- id: peh:CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA
+  name: CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA
+  label: SAMPLE_METADATA
+  sections:
+  - id: peh:SAMPLE_METADATA_SECTION_STUDYINFO
+    label: STUDYINFO
+    section_type: data_form
+  - id: peh:SAMPLE_METADATA_SECTION_SAMPLE
+    label: SAMPLE
+    section_type: data_table
+    elements:
+    - label: id_sample
+      observable_property: id_sample
+    - label: id_subject
+      observable_property: id_subject
+    - label: matrix
+      observable_property: matrix
+    - label: samplingyear
+      observable_property: samplingyear
+    - label: samplingmonth
+      observable_property: samplingmonth
+    - label: samplingday
+      observable_property: samplingday
+    - label: samplingseason
+      observable_property: samplingseason
+    - label: samplinghour
+      observable_property: samplinghour
+    - label: samplingminutes
+      observable_property: samplingminutes
+    - label: analysisyear
+      observable_property: analysisyear
+    - label: analysismonth
+      observable_property: analysismonth
+    - label: analysisday
+      observable_property: analysisday
+  - id: peh:SAMPLE_METADATA_SECTION_SUBJECTUNIQUE
+    label: SUBJECTUNIQUE
+    section_type: data_table
+    elements:
+    - label: id_subject
+      observable_property: id_subject
+    - label: id_participant
+      observable_property: id_participant
+    - label: relation
+      observable_property: relation
+    - label: sex
+      observable_property: sex
+    - label: age_birth_m
+      observable_property: age_birth_m
+    - label: smoking_m
+      observable_property: smoking_m
+    - label: case_control
+      observable_property: case_control
+  - id: peh:SAMPLE_METADATA_SECTION_SUBJECTTIMEPOINT
+    label: SUBJECTTIMEPOINT
+    section_type: data_table
+    elements:
+    - label: id_subject
+      observable_property: id_subject
+    - label: population
+      observable_property: population
+    - label: subpopulation
+      observable_property: subpopulation
+    - label: subpopulation_other
+      observable_property: subpopulation_other
+    - label: country
+      observable_property: country
+    - label: nuts1
+      observable_property: nuts1
+    - label: nuts2
+      observable_property: nuts2
+    - label: nuts3
+      observable_property: nuts3
+    - label: subdivision
+      observable_property: subdivision
+    - label: degurba
+      observable_property: degurba
+    - label: ageyears
+      observable_property: ageyears
+    - label: agemonths
+      observable_property: agemonths
+    - label: ageweeks
+      observable_property: ageweeks
+    - label: agedays
+      observable_property: agedays
+    - label: isced_raw
+      observable_property: isced_raw
+    - label: isced
+      observable_property: isced
+    - label: isced_m_raw
+      observable_property: isced_m_raw
+    - label: isced_m
+      observable_property: isced_m
+    - label: isced_f_raw
+      observable_property: isced_f_raw
+    - label: isced_f
+      observable_property: isced_f
+    - label: isced_hh_raw
+      observable_property: isced_hh_raw
+    - label: isced_hh
+      observable_property: isced_hh
+    - label: smoking
+      observable_property: smoking
+    - label: height
+      observable_property: height
+    - label: weight
+      observable_property: weight
+    - label: bmi
+      observable_property: bmi
+  - id: peh:SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BWB
+    label: SAMPLETIMEPOINT_BWB
+    section_type: data_table
+    elements:
+    - label: id_sample
+      observable_property: id_sample
+    - label: chol
+      observable_property: chol
+    - label: chol_lod
+      observable_property: chol_lod
+    - label: chol_loq
+      observable_property: chol_loq
+    - label: trigl
+      observable_property: trigl
+    - label: trigl_lod
+      observable_property: trigl_lod
+    - label: trigl_loq
+      observable_property: trigl_loq
+    - label: lipid
+      observable_property: lipid
+    - label: lipid_lod
+      observable_property: lipid_lod
+    - label: lipid_loq
+      observable_property: lipid_loq
+    - label: lipid_enz
+      observable_property: lipid_enz
+    - label: ag
+      observable_property: ag
+    - label: ag_lod
+      observable_property: ag_lod
+    - label: ag_loq
+      observable_property: ag_loq
+    - label: al
+      observable_property: al
+    - label: al_lod
+      observable_property: al_lod
+    - label: al_loq
+      observable_property: al_loq
+    - label: cd
+      observable_property: cd
+    - label: cd_lod
+      observable_property: cd_lod
+    - label: cd_loq
+      observable_property: cd_loq
+    - label: co
+      observable_property: co
+    - label: co_lod
+      observable_property: co_lod
+    - label: co_loq
+      observable_property: co_loq
+    - label: cu
+      observable_property: cu
+    - label: cu_lod
+      observable_property: cu_lod
+    - label: cu_loq
+      observable_property: cu_loq
+    - label: li
+      observable_property: li
+    - label: li_lod
+      observable_property: li_lod
+    - label: li_loq
+      observable_property: li_loq
+    - label: mn
+      observable_property: mn
+    - label: mn_lod
+      observable_property: mn_lod
+    - label: mn_loq
+      observable_property: mn_loq
+    - label: mo
+      observable_property: mo
+    - label: mo_lod
+      observable_property: mo_lod
+    - label: mo_loq
+      observable_property: mo_loq
+    - label: ni
+      observable_property: ni
+    - label: ni_lod
+      observable_property: ni_lod
+    - label: ni_loq
+      observable_property: ni_loq
+    - label: pb
+      observable_property: pb
+    - label: pb_lod
+      observable_property: pb_lod
+    - label: pb_loq
+      observable_property: pb_loq
+    - label: pt
+      observable_property: pt
+    - label: pt_lod
+      observable_property: pt_lod
+    - label: pt_loq
+      observable_property: pt_loq
+    - label: tcr
+      observable_property: tcr
+    - label: tcr_lod
+      observable_property: tcr_lod
+    - label: tcr_loq
+      observable_property: tcr_loq
+    - label: zn
+      observable_property: zn
+    - label: zn_lod
+      observable_property: zn_lod
+    - label: zn_loq
+      observable_property: zn_loq

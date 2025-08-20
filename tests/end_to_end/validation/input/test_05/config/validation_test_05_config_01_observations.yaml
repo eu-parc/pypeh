@@ -1,0 +1,140 @@
+observations:
+- id: peh:VALIDATION_TEST_SAMPLE_STUDYINFO
+  name: peh:VALIDATION_TEST_SAMPLE_STUDYINFO
+  label: STUDYINFO
+  observation_type: metadata
+- id: peh:VALIDATION_TEST_SAMPLE_SAMPLE
+  name: peh:VALIDATION_TEST_SAMPLE_SAMPLE
+  label: SAMPLE
+  observation_type: metadata
+  observation_design:
+    observable_entity_property_sets:
+    - observation_result_type: measurement
+      observable_entity_type: sample
+      identifying_observable_property_id_list:
+      - id_sample
+      optional_observable_property_id_list:
+      - id_subject
+      - matrix
+      - samplingyear
+      - samplingmonth
+      - samplingday
+      - samplingseason
+      - samplinghour
+      - samplingminutes
+      - analysisyear
+      - analysismonth
+      - analysisday
+- id: peh:VALIDATION_TEST_SAMPLE_SUBJECTUNIQUE
+  name: peh:VALIDATION_TEST_SAMPLE_SUBJECTUNIQUE
+  label: SUBJECTUNIQUE
+  observation_type: metadata
+  observation_design:
+    observable_entity_property_sets:
+    - observation_result_type: measurement
+      observable_entity_type: person
+      identifying_observable_property_id_list:
+      - id_subject
+      optional_observable_property_id_list:
+      - id_participant
+      - relation
+      - sex
+      - age_birth_m
+      - smoking_m
+      - case_control
+- id: peh:VALIDATION_TEST_SAMPLE_SUBJECTTIMEPOINT
+  name: peh:VALIDATION_TEST_SAMPLE_SUBJECTTIMEPOINT
+  label: SUBJECTTIMEPOINT
+  observation_type: metadata
+  observation_design:
+    observable_entity_property_sets:
+    - observation_result_type: measurement
+      observable_entity_type: person
+      identifying_observable_property_id_list:
+      - id_subject
+      optional_observable_property_id_list:
+      - population
+      - subpopulation
+      - subpopulation_other
+      - country
+      - nuts1
+      - nuts2
+      - nuts3
+      - subdivision
+      - degurba
+      - ageyears
+      - agemonths
+      - ageweeks
+      - agedays
+      - isced_raw
+      - isced
+      - isced_m_raw
+      - isced_m
+      - isced_f_raw
+      - isced_f
+      - isced_hh_raw
+      - isced_hh
+      - smoking
+      - height
+      - weight
+      - bmi
+- id: peh:VALIDATION_TEST_SAMPLE_SAMPLETIMEPOINT_BWB
+  name: peh:VALIDATION_TEST_SAMPLE_SAMPLETIMEPOINT_BWB
+  label: SAMPLETIMEPOINT_BWB
+  observation_type: sampling
+  observation_design:
+    observable_entity_property_sets:
+    - observation_result_type: measurement
+      observable_entity_type: sample
+      identifying_observable_property_id_list:
+      - id_sample
+      optional_observable_property_id_list:
+      - chol
+      - chol_lod
+      - chol_loq
+      - trigl
+      - trigl_lod
+      - trigl_loq
+      - lipid
+      - lipid_lod
+      - lipid_loq
+      - lipid_enz
+      - ag
+      - ag_lod
+      - ag_loq
+      - al
+      - al_lod
+      - al_loq
+      - cd
+      - cd_lod
+      - cd_loq
+      - co
+      - co_lod
+      - co_loq
+      - cu
+      - cu_lod
+      - cu_loq
+      - li
+      - li_lod
+      - li_loq
+      - mn
+      - mn_lod
+      - mn_loq
+      - mo
+      - mo_lod
+      - mo_loq
+      - ni
+      - ni_lod
+      - ni_loq
+      - pb
+      - pb_lod
+      - pb_loq
+      - pt
+      - pt_lod
+      - pt_loq
+      - tcr
+      - tcr_lod
+      - tcr_loq
+      - zn
+      - zn_lod
+      - zn_loq

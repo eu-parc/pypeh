@@ -1,0 +1,323 @@
+observations:
+- id: peh:VALIDATION_TEST_SAMPLE_METADATA
+  name: VALIDATION_TEST_SAMPLE_METADATA
+  label: SAMPLE_METADATA
+  observation_type: metadata
+  observation_design:
+    observable_entity_property_sets:
+    - observation_result_type: measurement
+      observable_entity_type: sample
+      identifying_observable_property_id_list:
+      - id_sample
+      optional_observable_property_id_list:
+      - samplingyear
+      - samplingmonth
+      - samplingday
+      - samplinghour
+      - samplingminutes
+    - observation_result_type: measurement
+      observable_entity_type: sample
+      identifying_observable_property_id_list:
+      - id_sample
+      optional_observable_property_id_list:
+      - chol
+      - chol_lod
+      - chol_loq
+layouts:
+- id: peh:CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA
+  name: CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA
+  label: SAMPLE_METADATA
+  sections:
+  - id: SAMPLE_METADATA_SECTION_SAMPLE
+    label: SAMPLE
+    section_type: data_table
+    elements:
+    - label: id_sample
+      observable_property: id_sample
+    - label: samplingyear
+      observable_property: samplingyear
+    - label: samplingmonth
+      observable_property: samplingmonth
+    - label: samplingday
+      observable_property: samplingday
+    - label: samplinghour
+      observable_property: samplinghour
+    - label: samplingminutes
+      observable_property: samplingminutes
+  - id: SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BSS
+    label: SAMPLETIMEPOINT_BSS
+    section_type: data_table
+    elements:
+    - label: id_sample
+      observable_property: id_sample
+    - label: chol
+      observable_property: chol
+    - label: chol_lod
+      observable_property: chol_lod
+    - label: chol_loq
+      observable_property: chol_loq
+observable_properties:
+- id: id_sample
+  unique_name: id_sample
+  name: id_sample
+  label: id_sample
+  value_type: decimal
+  categorical: false
+  multivalued: false
+  default_unit: UNITLESS
+  default_required: true
+  default_zeroallowed: true
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+- id: samplingyear
+  unique_name: samplingyear
+  name: samplingyear
+  description: year of sample collection
+  label: samplingyear
+  value_type: decimal
+  categorical: false
+  multivalued: false
+  default_unit: UNITLESS
+  default_required: true
+  default_zeroallowed: true
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+- id: samplingmonth
+  unique_name: samplingmonth
+  name: samplingmonth
+  description: month of sample collection (1 is the first month of the year)
+  label: samplingmonth
+  value_type: string
+  categorical: true
+  multivalued: false
+  value_options:
+  - key: '1'
+    value: January
+  - key: '2'
+    value: February
+  - key: '3'
+    value: March
+  - key: '4'
+    value: April
+  - key: '5'
+    value: May
+  - key: '6'
+    value: June
+  - key: '7'
+    value: July
+  - key: '8'
+    value: August
+  - key: '9'
+    value: September
+  - key: '10'
+    value: October
+  - key: '11'
+    value: November
+  - key: '12'
+    value: December
+  default_unit: UNITLESS
+  default_required: false
+  default_zeroallowed: true
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+- id: samplingday
+  unique_name: samplingday
+  name: samplingday
+  description: day of sample collection (1 is the first day of the month)
+  label: samplingday
+  value_type: decimal
+  categorical: false
+  multivalued: false
+  default_unit: UNITLESS
+  default_required: false
+  default_zeroallowed: true
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+- id: samplinghour
+  unique_name: samplinghour
+  name: samplinghour
+  description: Hour of sampling
+  label: samplinghour
+  value_type: decimal
+  categorical: false
+  multivalued: false
+  default_unit: UNITLESS
+  default_required: false
+  default_zeroallowed: true
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+- id: samplingminutes
+  unique_name: samplingminutes
+  name: samplingminutes
+  description: Minutes of sampling
+  label: samplingminutes
+  value_type: decimal
+  categorical: false
+  multivalued: false
+  default_unit: UNITLESS
+  default_required: false
+  default_zeroallowed: true
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+- id: chol
+  unique_name: chol
+  name: chol
+  description: Cholesterol in sample
+  label: Cholesterol in sample
+  remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
+    \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
+    \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
+    \ \n\n-1 for X < LOD\n\n-2 for LOD <= X < LOQ\n\nif LOQ is known, but LOD is not:\n\
+    \n-3 for X < LOQ\n\nif LOD is known, but LOQ is not:\n\n-1 for X < LOD"
+  value_type: decimal
+  categorical: false
+  multivalued: false
+  value_metadata:
+  - field: id_line
+    value: '6'
+  - field: cb_source
+    value: basic
+  default_unit: MilliGM-PER-DeciL
+  default_unit_label: mg/dL
+  default_required: false
+  default_zeroallowed: true
+  default_significantdecimals: 6
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+  varname: chol
+  validation_designs:
+  - validation_expression:
+      validation_subject_source_paths:
+      - chol
+      validation_condition_expression:
+        validation_subject_source_paths:
+        - matrix
+        validation_command: is_in
+        validation_arg_values:
+        - BWB
+        - BP
+        - BS
+        - CBWB
+        - CBP
+        - CBS
+        - BM
+        - BWBG
+        - BPG
+        - BSG
+        - CBWBG
+        - CBPG
+        - CBSG
+        - BMG
+        - DBS
+        - VAMS
+      validation_command: is_not_null
+    conditional: "IF matrix IS (BWB,BP,BS,CBWB,CBP,CBS,BM,BWBG,BPG,BSG,CBWBG,CBPG,CBSG,BMG,DBS,VAMS)\
+      \  THEN chol IS not empty; \n\nIF matrix IS (BWB,BP,BS,CBWB,CBP,CBS,BWBG,BPG,BSG,CBWBG,CBPG,CBSG,DBS,VAMS)\
+      \  THEN chol [50,250]; \n\nIF matrix IS (BM,BMG)  THEN chol [5,100]"
+  - validation_expression:
+      validation_condition_expression:
+        validation_subject_source_paths:
+        - matrix
+        validation_command: is_in
+        validation_arg_values:
+        - BWB
+        - BP
+        - BS
+        - CBWB
+        - CBP
+        - CBS
+        - BWBG
+        - BPG
+        - BSG
+        - CBWBG
+        - CBPG
+        - CBSG
+        - DBS
+        - VAMS
+      validation_arg_expressions:
+      - validation_subject_source_paths:
+        - chol
+        validation_command: is_greater_than_or_equal_to
+        validation_arg_values:
+        - '50'
+      - validation_subject_source_paths:
+        - chol
+        validation_command: is_less_than_or_equal_to
+        validation_arg_values:
+        - '250'
+    conditional: "IF matrix IS (BWB,BP,BS,CBWB,CBP,CBS,BM,BWBG,BPG,BSG,CBWBG,CBPG,CBSG,BMG,DBS,VAMS)\
+      \  THEN chol IS not empty; \n\nIF matrix IS (BWB,BP,BS,CBWB,CBP,CBS,BWBG,BPG,BSG,CBWBG,CBPG,CBSG,DBS,VAMS)\
+      \  THEN chol [50,250]; \n\nIF matrix IS (BM,BMG)  THEN chol [5,100]"
+  - validation_expression:
+      validation_condition_expression:
+        validation_subject_source_paths:
+        - matrix
+        validation_command: is_in
+        validation_arg_values:
+        - BM
+        - BMG
+      validation_arg_expressions:
+      - validation_subject_source_paths:
+        - chol
+        validation_command: is_greater_than_or_equal_to
+        validation_arg_values:
+        - '5'
+      - validation_subject_source_paths:
+        - chol
+        validation_command: is_less_than_or_equal_to
+        validation_arg_values:
+        - '100'
+    conditional: "IF matrix IS (BWB,BP,BS,CBWB,CBP,CBS,BM,BWBG,BPG,BSG,CBWBG,CBPG,CBSG,BMG,DBS,VAMS)\
+      \  THEN chol IS not empty; \n\nIF matrix IS (BWB,BP,BS,CBWB,CBP,CBS,BWBG,BPG,BSG,CBWBG,CBPG,CBSG,DBS,VAMS)\
+      \  THEN chol [50,250]; \n\nIF matrix IS (BM,BMG)  THEN chol [5,100]"
+- id: chol_lod
+  unique_name: chol_lod
+  name: chol_lod
+  description: lod associated with the cholesterol measurement of the sample
+  label: lod associated with the cholesterol measurement of the sample
+  value_type: decimal
+  categorical: false
+  multivalued: false
+  value_metadata:
+  - field: id_line
+    value: '7'
+  - field: cb_source
+    value: basic
+  default_unit: MilliGM-PER-DeciL
+  default_unit_label: mg/dL
+  default_required: false
+  default_zeroallowed: true
+  default_significantdecimals: 6
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+  varname: chol_lod
+- id: chol_loq
+  unique_name: chol_loq
+  name: chol_loq
+  description: loq associated with the cholesterol measurement of the sample
+  label: loq associated with the cholesterol measurement of the sample
+  value_type: decimal
+  categorical: false
+  multivalued: false
+  value_metadata:
+  - field: id_line
+    value: '8'
+  - field: cb_source
+    value: basic
+  default_unit: MilliGM-PER-DeciL
+  default_unit_label: mg/dL
+  default_required: false
+  default_zeroallowed: true
+  default_significantdecimals: 6
+  default_observation_result_type: measurement
+  relevant_observation_types:
+  - questionnaire
+  varname: chol_loq
