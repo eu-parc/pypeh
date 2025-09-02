@@ -561,7 +561,17 @@ observable_properties:
   - questionnaire
   varname: subpopulation
   validation_designs:
-  - conditional: IF population IS 0 THEN subpopulation IS not empty
+  - validation_expression:
+      validation_subject_source_paths:
+      - subpopulation
+      validation_condition_expression:
+        validation_subject_source_paths:
+        - population
+        validation_command: is_equal_to
+        validation_arg_values:
+        - '0'
+      validation_command: is_not_null
+    conditional: IF population IS 0 THEN subpopulation IS not empty
 - id: subpopulation_other
   unique_name: subpopulation_other
   name: subpopulation_other
@@ -580,7 +590,17 @@ observable_properties:
   - questionnaire
   varname: subpopulation_other
   validation_designs:
-  - conditional: IF subpopulation IS 5 THEN subpopulation_other IS not empty
+  - validation_expression:
+      validation_subject_source_paths:
+      - subpopulation_other
+      validation_condition_expression:
+        validation_subject_source_paths:
+        - subpopulation
+        validation_command: is_equal_to
+        validation_arg_values:
+        - '5'
+      validation_command: is_not_null
+    conditional: IF subpopulation IS 5 THEN subpopulation_other IS not empty
 - id: country
   unique_name: country
   name: country
@@ -826,7 +846,17 @@ observable_properties:
   - questionnaire
   varname: ageweeks
   validation_designs:
-  - conditional: IF ageyears IS >= 1 THEN ageweeks IS empty
+  - validation_expression:
+      validation_subject_source_paths:
+      - ageweeks
+      validation_condition_expression:
+        validation_subject_source_paths:
+        - ageyears
+        validation_command: is_greater_than_or_equal_to
+        validation_arg_values:
+        - '1'
+      validation_command: is_null
+    conditional: IF ageyears IS >= 1 THEN ageweeks IS empty
 - id: agedays
   unique_name: agedays
   name: agedays
@@ -848,7 +878,17 @@ observable_properties:
   - questionnaire
   varname: agedays
   validation_designs:
-  - conditional: IF ageweeks IS > 1 THEN agedays IS empty
+  - validation_expression:
+      validation_subject_source_paths:
+      - agedays
+      validation_condition_expression:
+        validation_subject_source_paths:
+        - ageweeks
+        validation_command: is_greater_than
+        validation_arg_values:
+        - '1'
+      validation_command: is_null
+    conditional: IF ageweeks IS > 1 THEN agedays IS empty
 - id: isced_raw
   unique_name: isced_raw
   name: isced_raw

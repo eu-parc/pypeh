@@ -19,10 +19,11 @@ rocrate-adapter = ["rocrate"]
 dataframe-adapter = [
     "dataguard",
     "polars",
+	"pyarrow",
     "fastexcel",
 ]
 s3-adapter = ["s3fs"]
-polars-adapter=["polars", "fastexcel"]
+polars-adapter=["polars", "pyarrow", "fastexcel"]
 export-adapter=["xlsxwriter"]
 test-core = ["pytest>=8.2.0,<9"]
 
@@ -33,6 +34,7 @@ test-core = [
 test-dataframe = [
     "dataguard",
 	"polars",
+	"pyarrow",
 	"fastexcel",
 ]
 test-export = [
