@@ -5,12 +5,12 @@ import uuid
 
 from decimal import Decimal, getcontext
 from pydantic import BaseModel, field_validator
-from typing import Any, Dict, Generator, Sequence
+from typing import Generic, Any, Dict, Generator, Sequence
 
+from pypeh.core.models.typing import T_DataType
 from pypeh.core.models.constants import ValidationErrorLevel
 from peh_model import pydanticmodel_v2 as pehs
 from peh_model import peh
-
 
 logger = logging.getLogger(__name__)
 
@@ -112,20 +112,20 @@ class ValidationExpression(BaseModel):
     def from_peh(
         cls,
         expression: peh.ValidationExpression | pehs.ValidationExpression,
-        observable_property_varname_dict: dict | None = None,
+        observable_property_short_name_dict: dict | None = None,
     ) -> "ValidationExpression":
         conditional_expression = getattr(expression, "validation_condition_expression")
         conditional_expression_instance = None
         if conditional_expression is not None:
             conditional_expression_instance = ValidationExpression.from_peh(
-                conditional_expression, observable_property_varname_dict=observable_property_varname_dict
+                conditional_expression, observable_property_short_name_dict=observable_property_short_name_dict
             )
         arg_expressions = getattr(expression, "validation_arg_expressions")
         arg_expression_instances = None
         if arg_expressions is not None:
             arg_expression_instances = [
                 ValidationExpression.from_peh(
-                    nested_expr, observable_property_varname_dict=observable_property_varname_dict
+                    nested_expr, observable_property_short_name_dict=observable_property_short_name_dict
                 )
                 for nested_expr in arg_expressions
             ]
@@ -135,18 +135,20 @@ class ValidationExpression(BaseModel):
         arg_type = None
         if source_paths:
             arg_types = set()
-            if observable_property_varname_dict is not None:
+            if observable_property_short_name_dict is not None:
                 for source_path in source_paths:
-                    obs_prop = observable_property_varname_dict.get(source_path, None)
+                    obs_prop = observable_property_short_name_dict.get(source_path, None)
                     if source_path is None:
-                        me = f"Could not find validation_subject_source_path with varname {source_path}"
+                        me = f"Could not find validation_subject_source_path with short_name {source_path}"
                         logger.error(me)
                         raise ValueError(me)
                     new_arg_type = getattr(obs_prop, "value_type", str)
                     assert new_arg_type is not None
                     arg_types.add(new_arg_type)
             if len(arg_types) != 1:
-                logger.error("More than one type corresponds to the ObservableProperties in validation_source_paths.")
+                logger.error(
+                    f"More than one type corresponds to the ObservableProperties in validation_source_paths: {arg_types}"
+                )
                 raise ValueError
             arg_type = arg_types.pop()
         if arg_values is not None:
@@ -175,7 +177,8 @@ class ValidationDesign(BaseModel):
     def from_peh(
         cls,
         validation_design: peh.ValidationDesign | pehs.ValidationDesign,
-        observable_property_varname_dict: dict | None = None,
+        observable_property_short_name_dict: dict | None = None,
+        layout_section: peh.DataLayoutSection | None = None,
     ) -> "ValidationDesign":
         error_level = getattr(validation_design, "error_level", None)
         error_level = convert_peh_validation_error_level_to_validation_dto_error_level(error_level)
@@ -183,7 +186,7 @@ class ValidationDesign(BaseModel):
         if expression is None:
             raise AttributeError
         expression = ValidationExpression.from_peh(
-            expression, observable_property_varname_dict=observable_property_varname_dict
+            expression, observable_property_short_name_dict=observable_property_short_name_dict
         )
         name = getattr(validation_design, "validation_name", None)
         if name is None:
@@ -285,7 +288,10 @@ class ColumnValidation(BaseModel):
 
     @classmethod
     def from_peh(
-        cls, column_name: str, observable_property: peh.ObservableProperty | pehs.ObservableProperty, varname_dict: dict
+        cls,
+        column_name: str,
+        observable_property: peh.ObservableProperty | pehs.ObservableProperty,
+        short_name_dict: dict,
     ) -> "ColumnValidation":
         required = observable_property.default_required
         nullable = not required
@@ -295,7 +301,7 @@ class ColumnValidation(BaseModel):
         if validation_designs := getattr(observable_property, "validation_designs", None):
             validations.extend(
                 [
-                    ValidationDesign.from_peh(vd, observable_property_varname_dict=varname_dict)
+                    ValidationDesign.from_peh(vd, observable_property_short_name_dict=short_name_dict)
                     for vd in validation_designs
                 ]
             )
@@ -314,7 +320,7 @@ class ColumnValidation(BaseModel):
                         ),
                         validation_error_level=peh.ValidationErrorLevel.error,
                     ),
-                    observable_property_varname_dict=varname_dict,
+                    observable_property_short_name_dict=short_name_dict,
                 )
             )
 
@@ -328,7 +334,7 @@ class ColumnValidation(BaseModel):
         )
 
 
-class ValidationConfig(BaseModel):
+class ValidationConfig(BaseModel, Generic[T_DataType]):
     name: str
     columns: list[ColumnValidation]
     identifying_column_names: list[str] | None = None
@@ -337,61 +343,183 @@ class ValidationConfig(BaseModel):
     @classmethod
     def from_peh(
         cls,
-        oep_set: peh.ObservableEntityPropertySet | pehs.ObservableEntityPropertySet,
-        oep_set_name: str,
+        observation_id: str,
+        observation_design: peh.ObservationDesign | pehs.ObservationDesign,
         observable_property_dict: Dict[str, peh.ObservableProperty | pehs.ObservableProperty],
+        dataset_validations: Sequence[peh.ValidationDesign] | None = None,
     ) -> "ValidationConfig":
-        if isinstance(oep_set.required_observable_property_id_list, list) and isinstance(
-            oep_set.optional_observable_property_id_list, list
+        if isinstance(observation_design.required_observable_property_id_list, list) and isinstance(
+            observation_design.optional_observable_property_id_list, list
         ):
             all_op_ids = (
-                oep_set.identifying_observable_property_id_list
-                + oep_set.required_observable_property_id_list
-                + oep_set.optional_observable_property_id_list
+                observation_design.identifying_observable_property_id_list
+                + observation_design.required_observable_property_id_list
+                + observation_design.optional_observable_property_id_list
             )
         else:
             raise TypeError
-        observable_property_varname_dict = {op.varname: op for op in observable_property_dict.values()}
+        observable_property_short_name_dict = {op.short_name: op for op in observable_property_dict.values()}
         columns = [
-            ColumnValidation.from_peh(op_id, observable_property_dict[op_id], observable_property_varname_dict)
+            ColumnValidation.from_peh(op_id, observable_property_dict[op_id], observable_property_short_name_dict)
             for op_id in all_op_ids
             if op_id in observable_property_dict
         ]
+
+        validations = (
+            None
+            if dataset_validations is None
+            else [ValidationDesign.from_peh(v, observable_property_short_name_dict) for v in dataset_validations]
+        )
 
         # Optional: log or raise error if some op_ids are missing
         missing = set(all_op_ids) - observable_property_dict.keys()
         if missing:
             raise ValueError(f"Missing observable properties for IDs: {missing}")
 
-        assert isinstance(oep_set.identifying_observable_property_id_list, list)
+        assert isinstance(observation_design.identifying_observable_property_id_list, list)
         return cls(
-            name=oep_set_name,
+            name=observation_id,
             columns=columns,
-            identifying_column_names=oep_set.identifying_observable_property_id_list,
-            validations=[],  # TODO: handle dataset-level validations if any
+            identifying_column_names=observation_design.identifying_observable_property_id_list,
+            validations=validations,
         )
 
     @classmethod
-    def from_observation(
+    def get_dataset_validations(
         cls,
-        observation: peh.Observation | pehs.Observation,
+        observation_list: Sequence[peh.Observation],
+        layout: peh.DataLayout,
+        set_mapping: Dict[str, Dict[str, str | int]],
+    ) -> Sequence[ValidationDesign] | None:
+        return None
+
+    @classmethod
+    def get_dataset_validations_dict(
+        cls,
+        observation_list: Sequence[peh.Observation],
+        layout: peh.DataLayout,
+        set_mapping: Dict[str, Dict[str, str | int | Dict[str, Sequence[str]]]],
+        data_dict: Dict[str, Dict[str, Sequence] | T_DataType],
+    ) -> Dict[str, Sequence[ValidationDesign]] | None:
+        observation_design_dict = {
+            set_key: [o for o in observation_list if o.id == mapping["observation_id"]][0].observation_design
+            for set_key, mapping in set_mapping.items()
+        }
+        layout_section_dict = {
+            set_key: [ls for ls in layout.sections if ls.id == mapping["layout_section_id"]][0]
+            for set_key, mapping in set_mapping.items()
+        }
+
+        # Add Sheet labels into the mapping
+        # Add Record Identifiers into the mapping
+        for set_key, mapping in set_mapping.items():
+            mapping["sheet_label"] = layout_section_dict[set_key].ui_label
+            mapping["identifier_dict"] = {
+                iop_id: list(data_dict[mapping["sheet_label"]][iop_id])
+                for iop_id in observation_design_dict[set_key].identifying_observable_property_id_list
+            }
+
+        sheet_label_mapping = {m["sheet_label"]: m for m in set_mapping.values()}
+        valid_subject_id_list = sheet_label_mapping["SUBJECTUNIQUE"]["identifier_dict"]["id_subject"]
+        valid_sample_id_list = sheet_label_mapping["SAMPLE"]["identifier_dict"]["id_sample"]
+        valid_matrix_list = [
+            sl.split("_")[-1] for sl in sheet_label_mapping.keys() if sl.startswith("SAMPLETIMEPOINT_")
+        ]
+        data_sample_id_list = []
+        for matrix in valid_matrix_list:
+            data_sample_id_list.extend(sheet_label_mapping[f"SAMPLETIMEPOINT_{matrix}"]["identifier_dict"]["id_sample"])
+
+        # Setup dataset-level validations
+        dataset_validations_dict = {}
+        for set_key, mapping in set_mapping.items():
+            dataset_validations = []
+            layout_section = layout_section_dict[set_key]
+            if layout_section.ui_label == "SUBJECTTIMEPOINT":
+                # SUBJECTTIMEPOINT > id_subject is_in list of id_subject from SUBJECTUNIQUE
+                dataset_validations.append(
+                    peh.ValidationDesign(
+                        validation_name="check_subjecttimepoint_idsubject",
+                        validation_expression=peh.ValidationExpression(
+                            validation_subject_source_paths=["id_subject"],
+                            validation_command=peh.ValidationCommand.is_in,
+                            validation_arg_values=valid_subject_id_list,
+                        ),
+                        validation_error_level=peh.ValidationErrorLevel.error,
+                    ),
+                )
+            elif layout_section.ui_label == "SAMPLE":
+                # SAMPLE > id_subject is_in list of id_subject from SUBJECTUNIQUE
+                dataset_validations.append(
+                    peh.ValidationDesign(
+                        validation_name="check_sample_idsubject",
+                        validation_expression=peh.ValidationExpression(
+                            validation_subject_source_paths=["id_subject"],
+                            validation_command=peh.ValidationCommand.is_in,
+                            validation_arg_values=valid_subject_id_list,
+                        ),
+                        validation_error_level=peh.ValidationErrorLevel.error,
+                    ),
+                )
+                # SAMPLE > matrix is_in list of SAMPLETIMEPOINT_ suffixes
+                dataset_validations.append(
+                    peh.ValidationDesign(
+                        validation_name="check_sample_matrix",
+                        validation_expression=peh.ValidationExpression(
+                            validation_subject_source_paths=["matrix"],
+                            validation_command=peh.ValidationCommand.is_in,
+                            validation_arg_values=valid_matrix_list,
+                        ),
+                        validation_error_level=peh.ValidationErrorLevel.error,
+                    ),
+                )
+                # SAMPLE > id_sample matrix in SAMPLETIMEPOINT_ matches sheet name suffix
+                dataset_validations.append(
+                    peh.ValidationDesign(
+                        validation_name="check_sample_idsample_from_data",
+                        validation_expression=peh.ValidationExpression(
+                            validation_subject_source_paths=["id_sample"],
+                            validation_command=peh.ValidationCommand.is_in,
+                            validation_arg_values=data_sample_id_list,
+                        ),
+                        validation_error_level=peh.ValidationErrorLevel.error,
+                    ),
+                )
+            elif layout_section.ui_label.startswith("SAMPLETIMEPOINT_"):
+                # SAMPLETIMEPOINT_ > id_sample is_in list of id_sample from SAMPLE
+                dataset_validations.append(
+                    peh.ValidationDesign(
+                        validation_name="check_sampletimepoint_idsample",
+                        validation_expression=peh.ValidationExpression(
+                            validation_subject_source_paths=["id_sample"],
+                            validation_command=peh.ValidationCommand.is_in,
+                            validation_arg_values=valid_sample_id_list,
+                        ),
+                        validation_error_level=peh.ValidationErrorLevel.error,
+                    ),
+                )
+            dataset_validations_dict[set_key] = dataset_validations
+        return dataset_validations_dict
+
+    @classmethod
+    def from_observation_list(
+        cls,
+        observation_list: Sequence[peh.Observation] | Sequence[pehs.Observation],
         observable_property_dict: dict[str, peh.ObservableProperty | peh.ObservableProperty],
+        dataset_validations: Sequence[peh.ValidationDesign] | None = None,
     ) -> Generator[tuple[str, ValidationConfig], None, None]:
-        observation_design = observation.observation_design
-        observable_entity_property_sets = getattr(observation_design, "observable_entity_property_sets", None)
-        if observable_entity_property_sets is None:
-            logger.error(
-                "Cannot generate a ValidationConfig from an ObservationDesign that does not contain observable_entity_property_sets"
-            )
-            raise AttributeError
-        for cnt, oep_set in enumerate(observable_entity_property_sets):
-            oep_set_name = f"{oep_set}_{cnt:0>2}"
+        for observation in observation_list:
+            if getattr(observation, "observation_design", None) is None:
+                logger.error(
+                    "Cannot generate a ValidationConfig from an Observation that does not contain an ObservationDesign"
+                )
+                raise AttributeError
             yield (
-                oep_set_name,
+                observation.id,
                 ValidationConfig.from_peh(
-                    oep_set,
-                    oep_set_name,
+                    observation.id,
+                    observation.observation_design,
                     observable_property_dict,
+                    dataset_validations,
                 ),
             )
 

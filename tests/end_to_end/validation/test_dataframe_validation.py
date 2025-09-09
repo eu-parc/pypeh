@@ -2,13 +2,12 @@ import pytest
 import peh_model.peh as peh
 import logging
 
-from pypeh.adapters.outbound.persistence.dataframe import ExcelIOImpl
 from pypeh.core.models.constants import ValidationErrorLevel
 from tests.test_utils.dirutils import get_absolute_path
 from typing import cast
 
 from pypeh import Session
-from pypeh.core.models.validation_errors import ValidationError, ValidationErrorReport, ValidationErrorReportCollection
+from pypeh.core.models.validation_errors import ValidationError, ValidationErrorReport
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,7 @@ class TestSessionDefaultLocalFile:
         observation_id = "peh:VALIDATION_TEST_SAMPLE_METADATA"
         observation = session.get_resource(resource_identifier=observation_id, resource_type="Observation")
         observation = cast(peh.Observation, observation)
-        validation_result = session.validate_tabular_data(data_df, observation)
+        validation_result = session.validate_tabular_data(data_df, [observation])
 
         report_to_check = list(validation_result.values())[0]
 
@@ -93,7 +92,7 @@ class TestRoundTrip:
         observation_id = "peh:VALIDATION_TEST_SAMPLE_METADATA"
         observation = session.get_resource(resource_identifier=observation_id, resource_type="Observation")
         observation = cast(peh.Observation, observation)
-        validation_result = session.validate_tabular_data(data_df, observation=observation)
+        validation_result = session.validate_tabular_data(data_df, observation_list=[observation])
         assert validation_result is not None
         assert isinstance(validation_result, dict)
         for validation_report in validation_result.values():
@@ -157,7 +156,7 @@ class TestRoundTrip:
             observation_id = sheet_label_to_observation_id[sheet_label]
             observation = session.get_resource(resource_identifier=observation_id, resource_type="Observation")
             observation = cast(peh.Observation, observation)
-            validation_result = session.validate_tabular_data(data_df, observation=observation)
+            validation_result = session.validate_tabular_data(data_df, observation_list=[observation])
             assert isinstance(validation_result, dict)
             for validation_report in validation_result.values():
                 assert isinstance(validation_report, ValidationErrorReport)
@@ -201,7 +200,7 @@ class TestRoundTrip:
                 observation_id = sheet_label_to_observation_id[sheet_label]
                 observation = session.get_resource(observation_id, "Observation")
                 assert isinstance(observation, peh.Observation)
-                validation_result = session.validate_tabular_data(data_df, observation=observation)
+                validation_result = session.validate_tabular_data(data_df, observation_list=[observation])
                 assert validation_result is not None
                 assert isinstance(validation_result, dict)
                 for report in validation_result.values():
@@ -249,7 +248,7 @@ class TestRoundTrip:
                 observation_id = sheet_label_to_observation_id[sheet_label]
                 observation = session.get_resource(observation_id, "Observation")
                 assert isinstance(observation, peh.Observation)
-                validation_result = session.validate_tabular_data(data_df, observation=observation)
+                validation_result = session.validate_tabular_data(data_df, observation_list=[observation])
                 assert validation_result is not None
                 assert isinstance(validation_result, dict)
                 for report in validation_result.values():

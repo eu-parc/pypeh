@@ -55,6 +55,6 @@ class TestValidationService:
             "adults_con_parc_300",
         ]
         result_dict = service.validate_data(
-            mockdata, observation_id=observation_id, observable_property_id_list=observable_property_id_list
+            mockdata, observation_id_list=[observation_id], observable_property_id_list=observable_property_id_list
         )
         assert result_dict is not None

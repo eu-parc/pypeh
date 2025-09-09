@@ -283,13 +283,11 @@ class TestPehToDto:
             peh.ObservableProperty(**obs_prop) for obs_prop in check_command_yaml["observable_properties"]
         ]
         obs_prop_dict_check = {obs_prop.id: obs_prop for obs_prop in check_command_obs_props}
-        observable_entity_prop_set_check = peh.ObservableEntityPropertySet(
-            **check_command_yaml["observations"][0]["observation_design"]["observable_entity_property_sets"][0]
-        )
+        observation_design_check = peh.ObservationDesign(**check_command_yaml["observations"][0]["observation_design"])
 
         vc_check = ValidationConfig.from_peh(
-            observable_entity_prop_set_check,
             "check",
+            observation_design_check,
             obs_prop_dict_check,
         )
 
@@ -301,13 +299,11 @@ class TestPehToDto:
         ]
 
         obs_prop_dict_arg = {obs_prop.id: obs_prop for obs_prop in arg_expression_obs_props}
-        observable_entity_prop_set_arg = peh.ObservableEntityPropertySet(
-            **arg_expression_yaml["observations"][0]["observation_design"]["observable_entity_property_sets"][0]
-        )
+        observation_design_arg = peh.ObservationDesign(**arg_expression_yaml["observations"][0]["observation_design"])
 
         vc_arg = ValidationConfig.from_peh(
-            observable_entity_prop_set_arg,
             "arg",
+            observation_design_arg,
             obs_prop_dict_arg,
         )
 

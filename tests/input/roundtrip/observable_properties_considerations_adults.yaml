@@ -3,7 +3,7 @@ observable_properties:
   unique_name: None_id_subject
   name: id_subject
   description: UID of the subject
-  label: UID of the subject
+  ui_label: UID of the subject
   value_type: string
   categorical: false
   multivalued: false
@@ -19,12 +19,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_subject
+  short_name: id_subject
 - id: adults_id_household
   unique_name: None_id_household
   name: id_household
   description: UID of the household of the subject
-  label: UID of the household of the subject
+  ui_label: UID of the household of the subject
   remark: To be used as id for environmental samples and to link data subjects from
     different age groups that belong to same household. If different data subjects
     from the same household participate in different age groups of the aligned studies,
@@ -43,12 +43,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_household
+  short_name: id_household
 - id: adults_con_cst_ipchem
   unique_name: con_cst_ipchem
   name: cst_ipchem
   description: data subject consents to share individual level data with IPCHEM
-  label: data subject consents to share individual level data with IPCHEM
+  ui_label: data subject consents to share individual level data with IPCHEM
   value_type: string
   categorical: true
   multivalued: false
@@ -68,13 +68,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: cst_ipchem
+  short_name: cst_ipchem
 - id: adults_con_parc_300
   unique_name: con_parc_300
   name: parc_300
   description: indicates whether subject is part of reference set of 300 subjects
     selected as representative sample for PARC or not
-  label: indicates whether subject is part of reference set of 300 subjects selected
+  ui_label: indicates whether subject is part of reference set of 300 subjects selected
     as representative sample for PARC or not
   value_type: string
   categorical: true
@@ -95,4 +95,4 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: parc_300
+  short_name: parc_300

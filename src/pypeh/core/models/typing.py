@@ -10,6 +10,7 @@ import io
 # IO Types
 
 T_Dataclass = TypeVar("T_Dataclass", bound=Union[EntityList, BaseModel])
+T_DataType = TypeVar("T_DataType")
 T_Root = Union[YAMLRoot, NamedThingId]
 T_RootStream = Union[T_Root, Mapping[Any, T_Root], Sequence[T_Root]]
 JSONLike = Union[str, List, List[Dict], TextIO]

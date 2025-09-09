@@ -3,7 +3,7 @@ layouts:
   name: TEST_DATA_LAYOUT
   sections:
   - id: TEST_DATA_LAYOUT_SECTION_SUBJECTTIMEPOINT
-    label: SUBJECTTIMEPOINT
+    ui_label: SUBJECTTIMEPOINT
     section_type: data_table
     elements:
     - varname: CountryCode
@@ -173,7 +173,7 @@ layouts:
     - varname: Useproducts_Ecolabel
     - varname: use_natural_products
   - id: TEST_DATA_LAYOUT_SECTION_SAMPLETIMEPOINT_UM
-    label: SAMPLETIMEPOINT_UM
+    ui_label: SAMPLETIMEPOINT_UM
     section_type: data_table
     elements:
     - varname: CountryCode

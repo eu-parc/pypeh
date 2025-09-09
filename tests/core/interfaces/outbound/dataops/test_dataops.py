@@ -3,7 +3,6 @@ import abc
 
 from typing import Protocol, Any, Generic
 from peh_model.peh import DataLayout
-from pydantic import ValidationError as PydanticValidationError
 
 from pypeh.core.interfaces.outbound.dataops import T_DataType, ValidationInterface
 from pypeh.core.models.validation_errors import ValidationErrorReport

@@ -1,10 +1,10 @@
 layouts:
   id: peh:PARC_ALIGNED_STUDIES_LAYOUT_ADULTS
   name: PARC_ALIGNED_STUDIES_LAYOUT_ADULTS
-  label: ADULTS
+  ui_label: ADULTS
   sections:
   - id: peh:PARC_ALIGNED_STUDIES_LAYOUT_ADULTS_SECTION_urine_lab
-    label: urine_lab
+    ui_label: urine_lab
     section_type: data_table
     observable_entity_types:
     - sample
@@ -28,7 +28,7 @@ layouts:
       label: sg
       observable_property: adults_u_sg
   - id: peh:PARC_ALIGNED_STUDIES_LAYOUT_ADULTS_SECTION_analyticalinfo
-    label: analyticalinfo
+    ui_label: analyticalinfo
     section_type: data_table
     observable_entity_types:
     - samplegroup

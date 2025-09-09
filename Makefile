@@ -1,4 +1,4 @@
-.PHONY: test-core test-dataframe test-end_to_end test-export test-rocrate test-s3 test-all format format-diff
+.PHONY: test-core test-dataframe test-end_to_end test-end_to_end_consistency test-export test-rocrate test-s3 test-all format format-diff
 
 test-core:
 	uv pip install -e ".[core, test-core]"
@@ -14,6 +14,10 @@ test-end_to_end:
 	uv pip install -e ".[dataframe-adapter, export-adapter, test-core]"
 	uv run pytest tests/end_to_end -m end_to_end --disable-warnings
 
+test-end_to_end_consistency:
+	uv pip install -e ".[dataframe-adapter, export-adapter, test-core]"
+	uv run pytest tests/end_to_end -m end_to_end_consistency --disable-warnings
+
 test-export:
 	uv pip install -e ".[export-adapter, test-core]"
 	uv run pytest tests/adapters tests/core -m export --disable-warnings
@@ -26,7 +30,7 @@ test-s3:
 	uv pip install -e ".[s3-adapter, test-core]"
 	uv run pytest tests/adapters tests/core -m s3 -W ignore
 
-test-all: test-core test-dataframe test-end_to_end test-export test-s3
+test-all: test-core test-dataframe test-end_to_end test-end_to_end_consistency test-export test-s3
 
 format:
 	uv pip install ruff

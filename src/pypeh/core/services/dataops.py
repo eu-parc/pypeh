@@ -44,31 +44,35 @@ class ValidationService(DataOpsService):
     def _validate_data(
         self,
         data: dict[str, Sequence] | DataFrame,
-        observation: peh.Observation,
+        observation_list: Sequence[peh.Observation],
         observable_property_dict: dict[str, peh.ObservableProperty],
     ) -> dict:
         result_dict = {}
-        for oep_set_name, validation_config in ValidationConfig.from_observation(
-            observation,
+        for observation_id, validation_config in ValidationConfig.from_observation_list(
+            observation_list,
             observable_property_dict,
         ):
-            result_dict[oep_set_name] = self.outbound_adapter.validate(data, validation_config)
+            result_dict[observation_id] = self.outbound_adapter.validate(data, validation_config)
 
         return result_dict
 
     def validate_data(
         self,
         data: dict[str, Sequence] | DataFrame,
-        observation_id: str,
+        observation_id_list: Sequence[str],
         observable_property_id_list: list[str],
     ) -> dict:
-        observation_entity = self.cache.get(observation_id, "Observation")
-        if not isinstance(observation_entity, peh.Observation):
-            me = f"Provided observation_id {observation_id} does not point to an Observation"
-            logger.error(me)
-            raise TypeError(me)
-        observable_property_dict = {}
+        observation_list = []
+        for observation_id in observation_id_list:
+            observation = self.cache.get(observation_id, "Observation")
+            if not isinstance(observation, peh.Observation):
+                me = f"Provided observation_id {observation_id} does not point to an Observation"
+                logger.error(me)
+                raise TypeError(me)
+            else:
+                observation_list.append(observation)
 
+        observable_property_dict = {}
         for _id in observable_property_id_list:
             entity = self.cache.get(_id, "ObservableProperty")
             if not isinstance(entity, peh.ObservableProperty):
@@ -79,7 +83,7 @@ class ValidationService(DataOpsService):
 
         return self._validate_data(
             data,
-            observation_entity,
+            observation_list,
             observable_property_dict,
         )
 

@@ -2,7 +2,7 @@ observable_properties:
 - id: id_sample
   unique_name: id_sample
   name: id_sample
-  label: id_sample
+  ui_label: id_sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -17,12 +17,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_sample
+  short_name: id_sample
 - id: id_subject
   unique_name: id_subject
   name: id_subject
   description: UID of the subject
-  label: UID of the subject
+  ui_label: UID of the subject
   value_type: string
   categorical: false
   multivalued: false
@@ -39,12 +39,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_subject
+  short_name: id_subject
 - id: matrix
   unique_name: matrix
   name: matrix
   description: matrix abbreviation
-  label: matrix abbreviation
+  ui_label: matrix abbreviation
   value_type: string
   categorical: true
   multivalued: false
@@ -96,12 +96,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: matrix
+  short_name: matrix
 - id: samplingyear
   unique_name: samplingyear
   name: samplingyear
   description: year of sample collection
-  label: year of sample collection
+  ui_label: year of sample collection
   value_type: integer
   categorical: false
   multivalued: false
@@ -120,12 +120,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingyear
+  short_name: samplingyear
 - id: samplingmonth
   unique_name: samplingmonth
   name: samplingmonth
   description: month of sample collection (1 is the first month of the year)
-  label: month of sample collection (1 is the first month of the year)
+  ui_label: month of sample collection (1 is the first month of the year)
   value_type: string
   categorical: true
   multivalued: false
@@ -165,12 +165,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingmonth
+  short_name: samplingmonth
 - id: samplingday
   unique_name: samplingday
   name: samplingday
   description: day of sample collection (1 is the first day of the month)
-  label: day of sample collection (1 is the first day of the month)
+  ui_label: day of sample collection (1 is the first day of the month)
   remark: Note that this may reveal birth date for newborns sampled at birth. Balance
     risk of re-identification with necessity to answer research question on case by
     case basis.
@@ -192,12 +192,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingday
+  short_name: samplingday
 - id: samplingseason
   unique_name: samplingseason
   name: samplingseason
   description: Season of sampling
-  label: Season of sampling
+  ui_label: Season of sampling
   remark: 'Spring: From March 21st to June 20th
 
 
@@ -231,12 +231,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingseason
+  short_name: samplingseason
 - id: samplinghour
   unique_name: samplinghour
   name: samplinghour
   description: Hour of sampling
-  label: Hour of sampling
+  ui_label: Hour of sampling
   value_type: integer
   categorical: false
   multivalued: false
@@ -253,12 +253,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplinghour
+  short_name: samplinghour
 - id: samplingminutes
   unique_name: samplingminutes
   name: samplingminutes
   description: Minutes of sampling
-  label: Minutes of sampling
+  ui_label: Minutes of sampling
   value_type: integer
   categorical: false
   multivalued: false
@@ -275,12 +275,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingminutes
+  short_name: samplingminutes
 - id: analysisyear
   unique_name: analysisyear
   name: analysisyear
   description: Year in which the sample was analyzed in the lab
-  label: Year in which the sample was analyzed in the lab
+  ui_label: Year in which the sample was analyzed in the lab
   value_type: integer
   categorical: false
   multivalued: false
@@ -299,12 +299,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: analysisyear
+  short_name: analysisyear
 - id: analysismonth
   unique_name: analysismonth
   name: analysismonth
   description: Month in which the sample was analyzed in the lab
-  label: Month in which the sample was analyzed in the lab
+  ui_label: Month in which the sample was analyzed in the lab
   value_type: string
   categorical: true
   multivalued: false
@@ -344,12 +344,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: analysismonth
+  short_name: analysismonth
 - id: analysisday
   unique_name: analysisday
   name: analysisday
   description: Day in which the sample was analyzed in the lab
-  label: Day in which the sample was analyzed in the lab
+  ui_label: Day in which the sample was analyzed in the lab
   value_type: integer
   categorical: false
   multivalued: false
@@ -368,13 +368,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: analysisday
+  short_name: analysisday
 - id: id_participant
   unique_name: id_participant
   name: id_participant
   description: id_subject of participant (main study subject) to which this subject
     is linked
-  label: id_participant
+  ui_label: id_participant
   value_type: decimal
   categorical: false
   multivalued: false
@@ -384,12 +384,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_participant
+  short_name: id_participant
 - id: relation
   unique_name: relation
   name: relation
   description: relation id_subject vs id_participant (main subject of the study)
-  label: relation
+  ui_label: relation
   value_type: string
   categorical: true
   multivalued: false
@@ -408,12 +408,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: relation
+  short_name: relation
 - id: sex
   unique_name: sex
   name: sex
   description: sex of the subject
-  label: sex of the subject
+  ui_label: sex of the subject
   value_type: string
   categorical: true
   multivalued: false
@@ -433,12 +433,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: sex
+  short_name: sex
 - id: age_birth_m
   unique_name: age_birth_m
   name: age_birth_m
   description: age of mother at birth of subject
-  label: What was the child’s mother’s age at his/her birth?
+  ui_label: What was the child’s mother’s age at his/her birth?
   value_type: integer
   categorical: false
   multivalued: false
@@ -466,12 +466,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: age_birth_m
+  short_name: age_birth_m
 - id: smoking_m
   unique_name: smoking_m
   name: smoking_m
   description: Smoking status of the mother of the subject during pregnancy
-  label: Smoking status of the mother of the subject during pregnancy
+  ui_label: Smoking status of the mother of the subject during pregnancy
   value_type: string
   categorical: true
   multivalued: false
@@ -491,13 +491,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: smoking_m
+  short_name: smoking_m
 - id: case_control
   unique_name: case_control
   name: case_control
   description: If this is a case-control study, indicate whether the subject belongs
     to the control or the case group
-  label: case_control
+  ui_label: case_control
   value_type: string
   categorical: true
   multivalued: false
@@ -512,12 +512,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: case_control
+  short_name: case_control
 - id: population
   unique_name: population
   name: population
   description: Does the participant belong to the general population?
-  label: population
+  ui_label: population
   value_type: string
   categorical: true
   multivalued: false
@@ -532,13 +532,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: population
+  short_name: population
 - id: subpopulation
   unique_name: subpopulation
   name: subpopulation
   description: If participant does not belong to the general population, please fill
     in the appropiate population group to which he/she belongs
-  label: subpopulation
+  ui_label: subpopulation
   value_type: string
   categorical: true
   multivalued: false
@@ -559,7 +559,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: subpopulation
+  short_name: subpopulation
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -578,7 +578,7 @@ observable_properties:
   description: If participant does not belong to the general population, please fill
     in the appropiate population group to which he/she belongs - other subpopulation
     group
-  label: subpopulation_other
+  ui_label: subpopulation_other
   value_type: string
   categorical: false
   multivalued: false
@@ -588,7 +588,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: subpopulation_other
+  short_name: subpopulation_other
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -606,7 +606,7 @@ observable_properties:
   name: country
   description: country of residence of the subject according to ISO 3166-1 alpha-2
     at sampling
-  label: country of residence of the subject according to ISO 3166-1 alpha-2 at sampling
+  ui_label: country of residence of the subject according to ISO 3166-1 alpha-2 at sampling
   remark: 'Source: https://op.europa.eu/en/web/eu-vocabularies/samples: Use the 2-letter
     code (ISO 3166-1 alpha-2 in column interinstitutional_style_guide_code), e.g.
     ''BE'' = Belgium'
@@ -624,13 +624,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: country
+  short_name: country
 - id: nuts1
   unique_name: nuts1
   name: nuts1
   description: 'NUTS Level 1 of residence of the subject: (Nomenclature of Territorial
     Units for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
-  label: 'NUTS Level 1 of residence of the subject: (Nomenclature of Territorial Units
+  ui_label: 'NUTS Level 1 of residence of the subject: (Nomenclature of Territorial Units
     for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
   remark: 'Source: https://ec.europa.eu/eurostat/web/nuts/overview
 
@@ -650,13 +650,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: nuts1
+  short_name: nuts1
 - id: nuts2
   unique_name: nuts2
   name: nuts2
   description: 'NUTS Level 2 of residence of the subject: (Nomenclature of Territorial
     Units for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
-  label: 'NUTS Level 2 of residence of the subject: (Nomenclature of Territorial Units
+  ui_label: 'NUTS Level 2 of residence of the subject: (Nomenclature of Territorial Units
     for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
   remark: 'Source: https://ec.europa.eu/eurostat/web/nuts/overview
 
@@ -676,13 +676,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: nuts2
+  short_name: nuts2
 - id: nuts3
   unique_name: nuts3
   name: nuts3
   description: 'NUTS Level 3 of residence of the subject: (Nomenclature of Territorial
     Units for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
-  label: 'NUTS Level 3 of residence of the subject: (Nomenclature of Territorial Units
+  ui_label: 'NUTS Level 3 of residence of the subject: (Nomenclature of Territorial Units
     for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
   remark: 'Source: https://ec.europa.eu/eurostat/web/nuts/overview
 
@@ -702,13 +702,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: nuts3
+  short_name: nuts3
 - id: subdivision
   unique_name: subdivision
   name: subdivision
   description: subdivision of country of residence of the subject according to ISO
     3166-2 at sampling
-  label: subdivision of country of residence of the subject according to ISO 3166-2
+  ui_label: subdivision of country of residence of the subject according to ISO 3166-2
     at sampling
   remark: 'Provide only when NUTS classification is not available for the country;
     click on English short name of the country, to gather the ISO 3166-2 code (e.g.
@@ -731,12 +731,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: subdivision
+  short_name: subdivision
 - id: degurba
   unique_name: degurba
   name: degurba
   description: Degree of urbanization of residence at sampling of the subject.
-  label: Degree of urbanization of residence at sampling of the subject.
+  ui_label: Degree of urbanization of residence at sampling of the subject.
   remark: 'In the files present in the following webpage (https://ec.europa.eu/eurostat/web/nuts/local-administrative-units),
     you will find a series of sheets with the country codes. After selecting your
     country, you will find a column which provides the names of the cities, towns
@@ -770,12 +770,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: degurba
+  short_name: degurba
 - id: ageyears
   unique_name: ageyears
   name: ageyears
   description: age in years of the subject at sampling
-  label: age in years of the subject at sampling
+  ui_label: age in years of the subject at sampling
   remark: 'birth date is not used to reduce risk of re-identification
 
 
@@ -798,12 +798,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ageyears
+  short_name: ageyears
 - id: agemonths
   unique_name: agemonths
   name: agemonths
   description: age in months of the subject at sampling
-  label: age in months of the subject at sampling
+  ui_label: age in months of the subject at sampling
   remark: 'birth date is not used to reduce risk of re-identification
 
 
@@ -826,12 +826,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: agemonths
+  short_name: agemonths
 - id: ageweeks
   unique_name: ageweeks
   name: ageweeks
   description: age in weeks of the subject at sampling
-  label: ageweeks
+  ui_label: ageweeks
   value_type: decimal
   categorical: false
   multivalued: false
@@ -844,7 +844,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ageweeks
+  short_name: ageweeks
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -861,7 +861,7 @@ observable_properties:
   unique_name: agedays
   name: agedays
   description: age in days of the subject at sampling
-  label: agedays
+  ui_label: agedays
   value_type: decimal
   categorical: false
   multivalued: false
@@ -876,7 +876,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: agedays
+  short_name: agedays
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -893,7 +893,7 @@ observable_properties:
   unique_name: isced_raw
   name: isced_raw
   description: education level of the subject  (ISCED scale) at sampling
-  label: education level of the subject  (ISCED scale) at sampling
+  ui_label: education level of the subject  (ISCED scale) at sampling
   remark: 'According to ISCED 2011 with 9 levels of education: ISCED level 0 - Early
     childhood education; ISCED level 1 - Primary education; ISCED level 2 - Lower
     secondary education; ISCED level 3 - Upper secondary education; ; ISCED level
@@ -936,12 +936,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_raw
+  short_name: isced_raw
 - id: isced
   unique_name: isced
   name: isced
   description: education level of the subject  (ISCED scale) at sampling
-  label: education level of the subject  (ISCED scale) at sampling
+  ui_label: education level of the subject  (ISCED scale) at sampling
   remark: 'According to ISCED 2011 with 9 levels of education: ISCED level 0 - Early
     childhood education; ISCED level 1 - Primary education; ISCED level 2 - Lower
     secondary education; ISCED level 3 - Upper secondary education; ; ISCED level
@@ -972,12 +972,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced
+  short_name: isced
 - id: isced_m_raw
   unique_name: isced_m_raw
   name: isced_m_raw
   description: education level of mother of the subject (ISCED scale) at sampling
-  label: education level of mother of the subject (ISCED scale) at sampling
+  ui_label: education level of mother of the subject (ISCED scale) at sampling
   value_type: string
   categorical: true
   multivalued: false
@@ -1011,12 +1011,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_m_raw
+  short_name: isced_m_raw
 - id: isced_m
   unique_name: isced_m
   name: isced_m
   description: education level of mother of the subject (ISCED scale) at sampling
-  label: education level of mother of the subject (ISCED scale) at sampling
+  ui_label: education level of mother of the subject (ISCED scale) at sampling
   remark: see remark isced
   value_type: string
   categorical: true
@@ -1039,12 +1039,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_m
+  short_name: isced_m
 - id: isced_f_raw
   unique_name: isced_f_raw
   name: isced_f_raw
   description: education level of father of the subject (ISCED scale) at sampling
-  label: education level of father of the subject (ISCED scale) at sampling
+  ui_label: education level of father of the subject (ISCED scale) at sampling
   value_type: string
   categorical: true
   multivalued: false
@@ -1078,12 +1078,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_f_raw
+  short_name: isced_f_raw
 - id: isced_f
   unique_name: isced_f
   name: isced_f
   description: education level of father of the subject (ISCED scale) at sampling
-  label: education level of father of the subject (ISCED scale) at sampling
+  ui_label: education level of father of the subject (ISCED scale) at sampling
   remark: see remark isced
   value_type: string
   categorical: true
@@ -1106,13 +1106,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_f
+  short_name: isced_f
 - id: isced_hh_raw
   unique_name: isced_hh_raw
   name: isced_hh_raw
   description: Highest education level of the household of the  subject (ISCED scale)
     at sampling
-  label: Highest education level of the household of the  subject (ISCED scale) at
+  ui_label: Highest education level of the household of the  subject (ISCED scale) at
     sampling
   value_type: string
   categorical: true
@@ -1147,13 +1147,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_hh_raw
+  short_name: isced_hh_raw
 - id: isced_hh
   unique_name: isced_hh
   name: isced_hh
   description: Highest education level of the household of the  subject (ISCED scale)
     at sampling
-  label: Highest education level of the household of the  subject (ISCED scale) at
+  ui_label: Highest education level of the household of the  subject (ISCED scale) at
     sampling
   remark: see remark isced
   value_type: string
@@ -1177,12 +1177,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_hh
+  short_name: isced_hh
 - id: smoking
   unique_name: smoking
   name: smoking
   description: Smoking status of the subject at sampling
-  label: Smoking status of the subject at sampling
+  ui_label: Smoking status of the subject at sampling
   value_type: string
   categorical: true
   multivalued: false
@@ -1202,12 +1202,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: smoking
+  short_name: smoking
 - id: height
   unique_name: height
   name: height
   description: height of the subject at sampling
-  label: height of the subject at sampling
+  ui_label: height of the subject at sampling
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1228,12 +1228,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: height
+  short_name: height
 - id: weight
   unique_name: weight
   name: weight
   description: weight of the subject at sampling
-  label: weight of the subject at sampling
+  ui_label: weight of the subject at sampling
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1254,12 +1254,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: weight
+  short_name: weight
 - id: bmi
   unique_name: bmi
   name: bmi
   description: body mass index of the subject at sampling
-  label: body mass index of the subject at sampling
+  ui_label: body mass index of the subject at sampling
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1280,12 +1280,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bmi
+  short_name: bmi
 - id: chol
   unique_name: chol
   name: chol
   description: Cholesterol in sample
-  label: Cholesterol in sample
+  ui_label: Cholesterol in sample
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -1307,7 +1307,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol
+  short_name: chol
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -1387,7 +1387,7 @@ observable_properties:
   unique_name: chol_lod
   name: chol_lod
   description: lod associated with the cholesterol measurement of the sample
-  label: lod associated with the cholesterol measurement of the sample
+  ui_label: lod associated with the cholesterol measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1404,12 +1404,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol_lod
+  short_name: chol_lod
 - id: chol_loq
   unique_name: chol_loq
   name: chol_loq
   description: loq associated with the cholesterol measurement of the sample
-  label: loq associated with the cholesterol measurement of the sample
+  ui_label: loq associated with the cholesterol measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1426,12 +1426,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol_loq
+  short_name: chol_loq
 - id: trigl
   unique_name: trigl
   name: trigl
   description: Triglycerides in sample
-  label: Triglycerides in sample
+  ui_label: Triglycerides in sample
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -1453,7 +1453,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: trigl
+  short_name: trigl
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -1533,7 +1533,7 @@ observable_properties:
   unique_name: trigl_lod
   name: trigl_lod
   description: lod associated with the triglyceride measurement of the sample
-  label: lod associated with the triglyceride measurement of the sample
+  ui_label: lod associated with the triglyceride measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1550,12 +1550,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: trigl_lod
+  short_name: trigl_lod
 - id: trigl_loq
   unique_name: trigl_loq
   name: trigl_loq
   description: loq associated with the triglyceride measurement of the sample
-  label: loq associated with the triglyceride measurement of the sample
+  ui_label: loq associated with the triglyceride measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1572,12 +1572,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: trigl_loq
+  short_name: trigl_loq
 - id: lipid
   unique_name: lipid
   name: lipid
   description: Lipids in sample measured by gravimetric analysis
-  label: Lipids in sample measured by gravimetric analysis
+  ui_label: Lipids in sample measured by gravimetric analysis
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -1599,7 +1599,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: lipid
+  short_name: lipid
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -1697,7 +1697,7 @@ observable_properties:
   unique_name: lipid_lod
   name: lipid_lod
   description: lod associated with the lipid measurement of the sample
-  label: lod associated with the lipid measurement of the sample
+  ui_label: lod associated with the lipid measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1714,12 +1714,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: lipid_lod
+  short_name: lipid_lod
 - id: lipid_loq
   unique_name: lipid_loq
   name: lipid_loq
   description: loq associated with the lipid measurement of the sample
-  label: loq associated with the lipid measurement of the sample
+  ui_label: loq associated with the lipid measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1736,12 +1736,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: lipid_loq
+  short_name: lipid_loq
 - id: lipid_enz
   unique_name: lipid_enz
   name: lipid_enz
   description: Lipids in sample measured by enzymatic summation
-  label: Lipids in sample measured by enzymatic summation
+  ui_label: Lipids in sample measured by enzymatic summation
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1762,7 +1762,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: lipid_enz
+  short_name: lipid_enz
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -1810,7 +1810,7 @@ observable_properties:
   unique_name: ag
   name: ag
   description: Argentum
-  label: Argentum
+  ui_label: Argentum
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -1832,12 +1832,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ag
+  short_name: ag
 - id: ag_lod
   unique_name: ag_lod
   name: ag_lod
   description: LOD from Argentum
-  label: LOD from Argentum
+  ui_label: LOD from Argentum
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1854,12 +1854,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ag_lod
+  short_name: ag_lod
 - id: ag_loq
   unique_name: ag_loq
   name: ag_loq
   description: LOQ from Argentum
-  label: LOQ from Argentum
+  ui_label: LOQ from Argentum
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1876,12 +1876,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ag_loq
+  short_name: ag_loq
 - id: al
   unique_name: al
   name: al
   description: Aluminium
-  label: Aluminium
+  ui_label: Aluminium
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -1903,12 +1903,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: al
+  short_name: al
 - id: al_lod
   unique_name: al_lod
   name: al_lod
   description: LOD from Aluminium
-  label: LOD from Aluminium
+  ui_label: LOD from Aluminium
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1925,12 +1925,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: al_lod
+  short_name: al_lod
 - id: al_loq
   unique_name: al_loq
   name: al_loq
   description: LOQ from Aluminium
-  label: LOQ from Aluminium
+  ui_label: LOQ from Aluminium
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1947,12 +1947,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: al_loq
+  short_name: al_loq
 - id: cd
   unique_name: cd
   name: cd
   description: Cadmium
-  label: Cadmium
+  ui_label: Cadmium
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -1974,12 +1974,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: cd
+  short_name: cd
 - id: cd_lod
   unique_name: cd_lod
   name: cd_lod
   description: LOD from Cadmium
-  label: LOD from Cadmium
+  ui_label: LOD from Cadmium
   value_type: decimal
   categorical: false
   multivalued: false
@@ -1996,12 +1996,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: cd_lod
+  short_name: cd_lod
 - id: cd_loq
   unique_name: cd_loq
   name: cd_loq
   description: LOQ from Cadmium
-  label: LOQ from Cadmium
+  ui_label: LOQ from Cadmium
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2018,12 +2018,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: cd_loq
+  short_name: cd_loq
 - id: co
   unique_name: co
   name: co
   description: Cobalt
-  label: Cobalt
+  ui_label: Cobalt
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2045,12 +2045,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: co
+  short_name: co
 - id: co_lod
   unique_name: co_lod
   name: co_lod
   description: LOD from Cobalt
-  label: LOD from Cobalt
+  ui_label: LOD from Cobalt
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2067,12 +2067,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: co_lod
+  short_name: co_lod
 - id: co_loq
   unique_name: co_loq
   name: co_loq
   description: LOQ from Cobalt
-  label: LOQ from Cobalt
+  ui_label: LOQ from Cobalt
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2089,12 +2089,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: co_loq
+  short_name: co_loq
 - id: cu
   unique_name: cu
   name: cu
   description: Copper
-  label: Copper
+  ui_label: Copper
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2116,12 +2116,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: cu
+  short_name: cu
 - id: cu_lod
   unique_name: cu_lod
   name: cu_lod
   description: LOD from Copper
-  label: LOD from Copper
+  ui_label: LOD from Copper
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2138,12 +2138,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: cu_lod
+  short_name: cu_lod
 - id: cu_loq
   unique_name: cu_loq
   name: cu_loq
   description: LOQ from Copper
-  label: LOQ from Copper
+  ui_label: LOQ from Copper
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2160,12 +2160,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: cu_loq
+  short_name: cu_loq
 - id: li
   unique_name: li
   name: li
   description: Lithium
-  label: Lithium
+  ui_label: Lithium
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2187,12 +2187,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: li
+  short_name: li
 - id: li_lod
   unique_name: li_lod
   name: li_lod
   description: LOD from Lithium
-  label: LOD from Lithium
+  ui_label: LOD from Lithium
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2209,12 +2209,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: li_lod
+  short_name: li_lod
 - id: li_loq
   unique_name: li_loq
   name: li_loq
   description: LOQ from Lithium
-  label: LOQ from Lithium
+  ui_label: LOQ from Lithium
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2231,12 +2231,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: li_loq
+  short_name: li_loq
 - id: mn
   unique_name: mn
   name: mn
   description: Manganese
-  label: Manganese
+  ui_label: Manganese
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2258,12 +2258,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mn
+  short_name: mn
 - id: mn_lod
   unique_name: mn_lod
   name: mn_lod
   description: LOD from Manganese
-  label: LOD from Manganese
+  ui_label: LOD from Manganese
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2280,12 +2280,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mn_lod
+  short_name: mn_lod
 - id: mn_loq
   unique_name: mn_loq
   name: mn_loq
   description: LOQ from Manganese
-  label: LOQ from Manganese
+  ui_label: LOQ from Manganese
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2302,12 +2302,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mn_loq
+  short_name: mn_loq
 - id: mo
   unique_name: mo
   name: mo
   description: Molybdenum
-  label: Molybdenum
+  ui_label: Molybdenum
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2329,12 +2329,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mo
+  short_name: mo
 - id: mo_lod
   unique_name: mo_lod
   name: mo_lod
   description: LOD from Molybdenum
-  label: LOD from Molybdenum
+  ui_label: LOD from Molybdenum
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2351,12 +2351,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mo_lod
+  short_name: mo_lod
 - id: mo_loq
   unique_name: mo_loq
   name: mo_loq
   description: LOQ from Molybdenum
-  label: LOQ from Molybdenum
+  ui_label: LOQ from Molybdenum
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2373,12 +2373,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mo_loq
+  short_name: mo_loq
 - id: ni
   unique_name: ni
   name: ni
   description: Nickel
-  label: Nickel
+  ui_label: Nickel
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2400,12 +2400,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ni
+  short_name: ni
 - id: ni_lod
   unique_name: ni_lod
   name: ni_lod
   description: LOD from Nickel
-  label: LOD from Nickel
+  ui_label: LOD from Nickel
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2422,12 +2422,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ni_lod
+  short_name: ni_lod
 - id: ni_loq
   unique_name: ni_loq
   name: ni_loq
   description: LOQ from Nickel
-  label: LOQ from Nickel
+  ui_label: LOQ from Nickel
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2444,12 +2444,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ni_loq
+  short_name: ni_loq
 - id: pb
   unique_name: pb
   name: pb
   description: Lead
-  label: Lead
+  ui_label: Lead
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2471,12 +2471,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: pb
+  short_name: pb
 - id: pb_lod
   unique_name: pb_lod
   name: pb_lod
   description: LOD from Lead
-  label: LOD from Lead
+  ui_label: LOD from Lead
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2493,12 +2493,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: pb_lod
+  short_name: pb_lod
 - id: pb_loq
   unique_name: pb_loq
   name: pb_loq
   description: LOQ from Lead
-  label: LOQ from Lead
+  ui_label: LOQ from Lead
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2515,12 +2515,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: pb_loq
+  short_name: pb_loq
 - id: pt
   unique_name: pt
   name: pt
   description: Platinum
-  label: Platinum
+  ui_label: Platinum
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2542,12 +2542,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: pt
+  short_name: pt
 - id: pt_lod
   unique_name: pt_lod
   name: pt_lod
   description: LOD from Platinum
-  label: LOD from Platinum
+  ui_label: LOD from Platinum
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2564,12 +2564,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: pt_lod
+  short_name: pt_lod
 - id: pt_loq
   unique_name: pt_loq
   name: pt_loq
   description: LOQ from Platinum
-  label: LOQ from Platinum
+  ui_label: LOQ from Platinum
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2586,12 +2586,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: pt_loq
+  short_name: pt_loq
 - id: tcr
   unique_name: tcr
   name: tcr
   description: Chromium (total)
-  label: Chromium (total)
+  ui_label: Chromium (total)
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2613,12 +2613,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: tcr
+  short_name: tcr
 - id: tcr_lod
   unique_name: tcr_lod
   name: tcr_lod
   description: LOD from Chromium (total)
-  label: LOD from Chromium (total)
+  ui_label: LOD from Chromium (total)
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2635,12 +2635,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: tcr_lod
+  short_name: tcr_lod
 - id: tcr_loq
   unique_name: tcr_loq
   name: tcr_loq
   description: LOQ from Chromium (total)
-  label: LOQ from Chromium (total)
+  ui_label: LOQ from Chromium (total)
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2657,12 +2657,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: tcr_loq
+  short_name: tcr_loq
 - id: zn
   unique_name: zn
   name: zn
   description: Zinc
-  label: Zinc
+  ui_label: Zinc
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -2684,12 +2684,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: zn
+  short_name: zn
 - id: zn_lod
   unique_name: zn_lod
   name: zn_lod
   description: LOD from Zinc
-  label: LOD from Zinc
+  ui_label: LOD from Zinc
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2706,12 +2706,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: zn_lod
+  short_name: zn_lod
 - id: zn_loq
   unique_name: zn_loq
   name: zn_loq
   description: LOQ from Zinc
-  label: LOQ from Zinc
+  ui_label: LOQ from Zinc
   value_type: decimal
   categorical: false
   multivalued: false
@@ -2728,4 +2728,4 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: zn_loq
+  short_name: zn_loq

@@ -3,7 +3,7 @@ observable_properties:
   unique_name: None_id_subject
   name: id_subject
   description: UID of the subject
-  label: UID of the subject
+  ui_label: UID of the subject
   value_type: string
   categorical: false
   multivalued: false
@@ -20,12 +20,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_subject
+  short_name: id_subject
 - id: adults_gq_sex
   unique_name: gq_sex
   name: sex
   description: sex of the subject
-  label: sex of the subject
+  ui_label: sex of the subject
   value_type: string
   categorical: true
   multivalued: false
@@ -45,13 +45,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: sex
+  short_name: sex
 - id: adults_gq_country
   unique_name: gq_country
   name: country
   description: country of residence of the subject according to ISO 3166-1 alpha-2
     at sampling
-  label: country of residence of the subject according to ISO 3166-1 alpha-2 at sampling
+  ui_label: country of residence of the subject according to ISO 3166-1 alpha-2 at sampling
   remark: 'Source: https://op.europa.eu/en/web/eu-vocabularies/samples: Use the 2-letter
     code (ISO 3166-1 alpha-2 in column interinstitutional_style_guide_code), e.g.
     ''BE'' = Belgium'
@@ -69,13 +69,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: country
+  short_name: country
 - id: adults_gq_nuts1
   unique_name: gq_nuts1
   name: nuts1
   description: 'NUTS Level 1 of residence of the subject: (Nomenclature of Territorial
     Units for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
-  label: 'NUTS Level 1 of residence of the subject: (Nomenclature of Territorial Units
+  ui_label: 'NUTS Level 1 of residence of the subject: (Nomenclature of Territorial Units
     for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
   remark: 'Source: https://ec.europa.eu/eurostat/web/nuts/overview
 
@@ -95,13 +95,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: nuts1
+  short_name: nuts1
 - id: adults_gq_nuts2
   unique_name: gq_nuts2
   name: nuts2
   description: 'NUTS Level 2 of residence of the subject: (Nomenclature of Territorial
     Units for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
-  label: 'NUTS Level 2 of residence of the subject: (Nomenclature of Territorial Units
+  ui_label: 'NUTS Level 2 of residence of the subject: (Nomenclature of Territorial Units
     for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
   remark: 'Source: https://ec.europa.eu/eurostat/web/nuts/overview
 
@@ -121,13 +121,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: nuts2
+  short_name: nuts2
 - id: adults_gq_nuts3
   unique_name: gq_nuts3
   name: nuts3
   description: 'NUTS Level 3 of residence of the subject: (Nomenclature of Territorial
     Units for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
-  label: 'NUTS Level 3 of residence of the subject: (Nomenclature of Territorial Units
+  ui_label: 'NUTS Level 3 of residence of the subject: (Nomenclature of Territorial Units
     for Statistics), by regional level, version 2021 (NUTS 2021) at sampling'
   remark: 'Source: https://ec.europa.eu/eurostat/web/nuts/overview
 
@@ -147,13 +147,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: nuts3
+  short_name: nuts3
 - id: adults_gq_subdivision
   unique_name: gq_subdivision
   name: subdivision
   description: subdivision of country of residence of the subject according to ISO
     3166-2 at sampling
-  label: subdivision of country of residence of the subject according to ISO 3166-2
+  ui_label: subdivision of country of residence of the subject according to ISO 3166-2
     at sampling
   remark: 'Provide only when NUTS classification is not available for the country;
     click on English short name of the country, to gather the ISO 3166-2 code (e.g.
@@ -176,12 +176,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: subdivision
+  short_name: subdivision
 - id: adults_gq_degurba
   unique_name: gq_degurba
   name: degurba
   description: Degree of urbanization of residence at sampling of the subject.
-  label: Degree of urbanization of residence at sampling of the subject.
+  ui_label: Degree of urbanization of residence at sampling of the subject.
   remark: 'In the files present in the following webpage (https://ec.europa.eu/eurostat/web/nuts/local-administrative-units),
     you will find a series of sheets with the country codes. After selecting your
     country, you will find a column which provides the names of the cities, towns
@@ -215,12 +215,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: degurba
+  short_name: degurba
 - id: adults_gq_ageyears
   unique_name: gq_ageyears
   name: ageyears
   description: age in years of the subject at sampling
-  label: age in years of the subject at sampling
+  ui_label: age in years of the subject at sampling
   remark: 'birth date is not used to reduce risk of re-identification
 
 
@@ -243,12 +243,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: ageyears
+  short_name: ageyears
 - id: adults_gq_isced_raw
   unique_name: gq_isced_raw
   name: isced_raw
   description: education level of the subject  (ISCED scale) at sampling
-  label: education level of the subject  (ISCED scale) at sampling
+  ui_label: education level of the subject  (ISCED scale) at sampling
   remark: 'According to ISCED 2011 with 9 levels of education: ISCED level 0 - Early
     childhood education; ISCED level 1 - Primary education; ISCED level 2 - Lower
     secondary education; ISCED level 3 - Upper secondary education; ; ISCED level
@@ -291,12 +291,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_raw
+  short_name: isced_raw
 - id: adults_gq_isced
   unique_name: gq_isced
   name: isced
   description: education level of the subject  (ISCED scale) at sampling
-  label: education level of the subject  (ISCED scale) at sampling
+  ui_label: education level of the subject  (ISCED scale) at sampling
   remark: 'According to ISCED 2011 with 9 levels of education: ISCED level 0 - Early
     childhood education; ISCED level 1 - Primary education; ISCED level 2 - Lower
     secondary education; ISCED level 3 - Upper secondary education; ; ISCED level
@@ -327,13 +327,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced
+  short_name: isced
 - id: adults_gq_isced_hh_raw
   unique_name: gq_isced_hh_raw
   name: isced_hh_raw
   description: Highest education level of the household of the  subject (ISCED scale)
     at sampling
-  label: Highest education level of the household of the  subject (ISCED scale) at
+  ui_label: Highest education level of the household of the  subject (ISCED scale) at
     sampling
   value_type: string
   categorical: true
@@ -368,13 +368,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_hh_raw
+  short_name: isced_hh_raw
 - id: adults_gq_isced_hh
   unique_name: gq_isced_hh
   name: isced_hh
   description: Highest education level of the household of the  subject (ISCED scale)
     at sampling
-  label: Highest education level of the household of the  subject (ISCED scale) at
+  ui_label: Highest education level of the household of the  subject (ISCED scale) at
     sampling
   remark: see remark isced
   value_type: string
@@ -398,4 +398,4 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: isced_hh
+  short_name: isced_hh

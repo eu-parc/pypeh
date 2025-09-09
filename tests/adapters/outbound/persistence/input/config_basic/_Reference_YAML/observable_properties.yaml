@@ -2,7 +2,7 @@ observable_properties:
 - id: peh:ParticipantID
   unique_name: ParticipantID
   name: ParticipantID
-  label: Participant ID (e.g., CZ_PS_JF)
+  ui_label: Participant ID (e.g., CZ_PS_JF)
   value_type: string
   categorical: false
   multivalued: false
@@ -22,7 +22,7 @@ observable_properties:
 - id: peh:adjusttheventilation
   unique_name: adjusttheventilation
   name: adjusttheventilation
-  label: It is easy for me to adjust the ventilation at home.
+  ui_label: It is easy for me to adjust the ventilation at home.
   value_type: string
   categorical: true
   multivalued: false
@@ -54,7 +54,7 @@ observable_properties:
 - id: peh:Allergies_child_dd
   unique_name: Allergies_child_dd
   name: Allergies_child_dd
-  label: Allergies (diagnosed by a doctor)
+  ui_label: Allergies (diagnosed by a doctor)
   value_type: string
   categorical: true
   multivalued: false
@@ -76,7 +76,7 @@ observable_properties:
 - id: peh:allergy_source
   unique_name: allergy_source
   name: allergy_source
-  label: If answered ‘Yes', please specify the source of the allergy
+  ui_label: If answered ‘Yes', please specify the source of the allergy
   value_type: string
   categorical: false
   multivalued: false

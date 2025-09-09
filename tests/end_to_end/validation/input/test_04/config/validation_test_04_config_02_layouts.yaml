@@ -1,13 +1,13 @@
 layouts:
 - id: peh:CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA
   name: CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA
-  label: SAMPLE_METADATA
+  ui_label: SAMPLE_METADATA
   sections:
   - id: peh:SAMPLE_METADATA_SECTION_STUDYINFO
-    label: STUDYINFO
+    ui_label: STUDYINFO
     section_type: data_form
   - id: peh:SAMPLE_METADATA_SECTION_SAMPLE
-    label: SAMPLE
+    ui_label: SAMPLE
     section_type: data_table
     elements:
     - label: id_sample
@@ -35,7 +35,7 @@ layouts:
     - label: analysisday
       observable_property: analysisday
   - id: peh:SAMPLE_METADATA_SECTION_SUBJECTUNIQUE
-    label: SUBJECTUNIQUE
+    ui_label: SUBJECTUNIQUE
     section_type: data_table
     elements:
     - label: id_subject
@@ -53,7 +53,7 @@ layouts:
     - label: case_control
       observable_property: case_control
   - id: peh:SAMPLE_METADATA_SECTION_SUBJECTTIMEPOINT
-    label: SUBJECTTIMEPOINT
+    ui_label: SUBJECTTIMEPOINT
     section_type: data_table
     elements:
     - label: id_subject
@@ -109,7 +109,7 @@ layouts:
     - label: bmi
       observable_property: bmi
   - id: peh:SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BWB
-    label: SAMPLETIMEPOINT_BWB
+    ui_label: SAMPLETIMEPOINT_BWB
     section_type: data_table
     elements:
     - label: id_sample

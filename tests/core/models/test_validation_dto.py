@@ -13,8 +13,7 @@ class TestBasicValidationConfig:
         source = get_absolute_path("./input/observations.yaml")
         with open(source, "r") as f:
             obs = yaml.safe_load(f)
-        observations = [peh.Observation(**observation) for observation in obs["observations"]]
-        observation = observations[0]
+        observation_list = [peh.Observation(**observation) for observation in obs["observations"]]
 
         source = get_absolute_path("./input/observable_properties.yaml")
         with open(source, "r") as f:
@@ -25,15 +24,14 @@ class TestBasicValidationConfig:
         ]
 
         observable_property_dict = {op["id"]: op for op in observable_properties}
-        observation_design = observation.observation_design
-        observable_entity_property_sets = getattr(observation_design, "observable_entity_property_sets", None)
-        if observable_entity_property_sets is None:
+        observation_design_list = [getattr(observation, "observation_design", None) for observation in observation_list]
+        if len([od for od in observation_design_list if od is not None]) == 0:
             raise AttributeError
 
         # code below is copied from validationservice: IMPROVE
         found = False
-        for oep_set_name, validation_config in ValidationConfig.from_observation(
-            observation,
+        for oep_set_name, validation_config in ValidationConfig.from_observation_list(
+            observation_list,
             observable_property_dict,
         ):
             assert isinstance(oep_set_name, str)

@@ -44,7 +44,7 @@ def get_observable_property_property(varname, observable_property, codebook_prop
         case "Varname":
             return varname
         case "Description":
-            return observable_property.description if observable_property.description else observable_property.label
+            return observable_property.description if observable_property.description else observable_property.ui_label
         case "Type":
             if observable_property.categorical:
                 return "categorical"
@@ -176,7 +176,7 @@ def write_excel_datatemplate(
     def create_analyticalinfo_dataset(layout):
         dataset = []
         for section in layout.sections:
-            matrix = ANALYTICALINFO_MATRIX_TRANSLATION.get(section.label)
+            matrix = ANALYTICALINFO_MATRIX_TRANSLATION.get(section.ui_label)
             if matrix:
                 dataset.extend(
                     [
@@ -201,8 +201,8 @@ def write_excel_datatemplate(
         worksheet, style_dict, header_list=studyinfo_header_list, metadata_record_dict=codebook_metadata_dict
     )
     for section in layout.sections:
-        worksheet = workbook.add_worksheet(section.label)
-        data_list = create_analyticalinfo_dataset(layout) if section.label == "analyticalinfo" else None
+        worksheet = workbook.add_worksheet(section.ui_label)
+        data_list = create_analyticalinfo_dataset(layout) if section.ui_label == "analyticalinfo" else None
         fill_excel_worksheet_from_section(worksheet, section, observable_property_dict, style_dict, data_list=data_list)
     workbook.close()
 

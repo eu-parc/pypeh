@@ -1,20 +1,19 @@
 observations:
 - id: peh:VALIDATION_TEST_SAMPLE_METADATA
   name: VALIDATION_TEST_SAMPLE_METADATA
-  label: SAMPLE_METADATA
+  ui_label: SAMPLE_METADATA
   observation_type: metadata
   observation_design:
-    observable_entity_property_sets:
-    - observation_result_type: measurement
-      observable_entity_type: sample
-      optional_observable_property_id_list:
-      - chol
+    observation_result_type: measurement
+    observable_entity_type: sample
+    optional_observable_property_id_list:
+    - chol
 observable_properties:
 - id: chol
   unique_name: chol
   name: chol
   description: Cholesterol in sample
-  label: Cholesterol in sample
+  ui_label: Cholesterol in sample
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -36,7 +35,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol
+  short_name: chol
   validation_designs:
   - validation_expression:
       validation_condition_expression:

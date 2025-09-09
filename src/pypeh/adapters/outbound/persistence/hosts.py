@@ -30,7 +30,6 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from typing import Optional, Any, Dict, List, Generator, Type, Union
     from pydantic import BaseModel
-    from pydantic_settings import BaseSettings
     from pypeh.core.models.transform import FieldMapping
 
 

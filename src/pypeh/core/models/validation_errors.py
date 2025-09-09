@@ -1,6 +1,6 @@
 import json
 
-from typing import Any, Dict, List, Literal, Optional, TypedDict
+from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field, field_serializer
 
 from pypeh.core.models.constants import ValidationErrorLevel

@@ -12,9 +12,10 @@ import importlib
 import logging
 
 from abc import abstractmethod
-from peh_model.peh import DataLayout, EntityList, Observation, ObservableProperty
-from typing import TYPE_CHECKING, TypeVar, Generic, cast, List
+from peh_model.peh import DataLayout, ValidationDesign, EntityList, Observation, ObservableProperty
+from typing import TYPE_CHECKING, Generic, cast, List
 
+from pypeh.core.models.typing import T_DataType
 from pypeh.core.models.settings import FileSystemSettings
 from pypeh.core.models.validation_dto import ValidationConfig
 from pypeh.core.session.connections import ConnectionManager
@@ -25,8 +26,6 @@ if TYPE_CHECKING:
     from pypeh.core.models.validation_errors import ValidationErrorReport
 
 logger = logging.getLogger(__name__)
-
-T_DataType = TypeVar("T_DataType")
 
 
 class OutDataOpsInterface:
@@ -60,14 +59,16 @@ class ValidationInterface(OutDataOpsInterface, Generic[T_DataType]):
     def validate(
         self,
         data: dict[str, Sequence] | T_DataType,
-        observation: Observation,
+        observation_list: Sequence[Observation],
         observable_properties: List[ObservableProperty],
+        dataset_validations: Sequence[ValidationDesign] | None = None,
     ) -> ValidationErrorReportCollection:
         observable_property_dict = {op.id: op for op in observable_properties}
         result_dict = ValidationErrorReportCollection()
-        for oep_set_name, validation_config in ValidationConfig.from_observation(
-            observation,
+        for oep_set_name, validation_config in ValidationConfig.from_observation_list(
+            observation_list,
             observable_property_dict,
+            dataset_validations,
         ):
             result_dict[oep_set_name] = self._validate(data, validation_config)
 

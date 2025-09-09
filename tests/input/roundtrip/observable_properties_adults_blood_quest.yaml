@@ -3,7 +3,7 @@ observable_properties:
   unique_name: None_id_subject
   name: id_subject
   description: UID of the subject
-  label: UID of the subject
+  ui_label: UID of the subject
   value_type: string
   categorical: false
   multivalued: false
@@ -20,12 +20,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_subject
+  short_name: id_subject
 - id: adults_bq_samplingyear
   unique_name: bq_samplingyear
   name: samplingyear
   description: year of sample collection
-  label: year of sample collection
+  ui_label: year of sample collection
   value_type: integer
   categorical: false
   multivalued: false
@@ -44,12 +44,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingyear
+  short_name: samplingyear
 - id: adults_bq_samplingmonth
   unique_name: bq_samplingmonth
   name: samplingmonth
   description: month of sample collection (1 is the first month of the year)
-  label: month of sample collection (1 is the first month of the year)
+  ui_label: month of sample collection (1 is the first month of the year)
   value_type: string
   categorical: true
   multivalued: false
@@ -89,12 +89,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingmonth
+  short_name: samplingmonth
 - id: adults_bq_samplingday
   unique_name: bq_samplingday
   name: samplingday
   description: day of sample collection (1 is the first day of the month)
-  label: day of sample collection (1 is the first day of the month)
+  ui_label: day of sample collection (1 is the first day of the month)
   remark: Note that this may reveal birth date for newborns sampled at birth. Balance
     risk of re-identification with necessity to answer research question on case by
     case basis.
@@ -116,12 +116,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingday
+  short_name: samplingday
 - id: adults_bq_samplingseason
   unique_name: bq_samplingseason
   name: samplingseason
   description: Season of sampling
-  label: Season of sampling
+  ui_label: Season of sampling
   remark: 'Spring: From March 21st to June 20th
 
 
@@ -155,12 +155,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingseason
+  short_name: samplingseason
 - id: adults_bq_samplinghour
   unique_name: bq_samplinghour
   name: samplinghour
   description: Hour of sampling
-  label: Hour of sampling
+  ui_label: Hour of sampling
   value_type: integer
   categorical: false
   multivalued: false
@@ -177,12 +177,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplinghour
+  short_name: samplinghour
 - id: adults_bq_samplingminutes
   unique_name: bq_samplingminutes
   name: samplingminutes
   description: Minutes of sampling
-  label: Minutes of sampling
+  ui_label: Minutes of sampling
   value_type: integer
   categorical: false
   multivalued: false
@@ -199,12 +199,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: samplingminutes
+  short_name: samplingminutes
 - id: adults_bq_id_subject_original
   unique_name: bq_id_subject_original
   name: id_subject_original
   description: unique ID number of the subject
-  label: ID (PARTICIPANT)
+  ui_label: ID (PARTICIPANT)
   value_type: string
   categorical: false
   multivalued: false
@@ -227,12 +227,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_subject_original
+  short_name: id_subject_original
 - id: adults_bq_id_interviewer
   unique_name: bq_id_interviewer
   name: id_interviewer
   description: unique ID number of the interviewer
-  label: ID (INTERVIEWER)
+  ui_label: ID (INTERVIEWER)
   value_type: string
   categorical: false
   multivalued: false
@@ -255,12 +255,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_interviewer
+  short_name: id_interviewer
 - id: adults_bq_interviewday
   unique_name: bq_interviewday
   name: interviewday
   description: date of the interview/filling in the questionnaire - day
-  label: DATE OF THE INTERVIEW ||| day
+  ui_label: DATE OF THE INTERVIEW ||| day
   value_type: integer
   categorical: false
   multivalued: false
@@ -288,12 +288,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: interviewday
+  short_name: interviewday
 - id: adults_bq_interviewmonth
   unique_name: bq_interviewmonth
   name: interviewmonth
   description: date of the interview/filling in the questionnaire - month
-  label: DATE OF THE INTERVIEW ||| month
+  ui_label: DATE OF THE INTERVIEW ||| month
   value_type: integer
   categorical: false
   multivalued: false
@@ -321,12 +321,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: interviewmonth
+  short_name: interviewmonth
 - id: adults_bq_interviewyear
   unique_name: bq_interviewyear
   name: interviewyear
   description: date of the interview/filling in the questionnaire - year
-  label: DATE OF THE INTERVIEW ||| year
+  ui_label: DATE OF THE INTERVIEW ||| year
   value_type: integer
   categorical: false
   multivalued: false
@@ -354,12 +354,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: interviewyear
+  short_name: interviewyear
 - id: adults_bq_interviewstarthour
   unique_name: bq_interviewstarthour
   name: interviewstarthour
   description: start time of the interview/filling in the questionnaire - hour
-  label: START TIME ||| hours
+  ui_label: START TIME ||| hours
   value_type: integer
   categorical: false
   multivalued: false
@@ -385,12 +385,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: interviewstarthour
+  short_name: interviewstarthour
 - id: adults_bq_interviewstartminutes
   unique_name: bq_interviewstartminutes
   name: interviewstartminutes
   description: start time of the interview/filling in the questionnaire - minutes
-  label: START TIME ||| minutes
+  ui_label: START TIME ||| minutes
   value_type: integer
   categorical: false
   multivalued: false
@@ -416,12 +416,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: interviewstartminutes
+  short_name: interviewstartminutes
 - id: adults_bq_interviewendhour
   unique_name: bq_interviewendhour
   name: interviewendhour
   description: end time of the interview/filling in the questionnaire - hour
-  label: END TIME ||| hours
+  ui_label: END TIME ||| hours
   value_type: integer
   categorical: false
   multivalued: false
@@ -447,12 +447,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: interviewendhour
+  short_name: interviewendhour
 - id: adults_bq_interviewendminutes
   unique_name: bq_interviewendminutes
   name: interviewendminutes
   description: end time of the interview/filling in the questionnaire - minutes
-  label: END TIME ||| minutes
+  ui_label: END TIME ||| minutes
   value_type: integer
   categorical: false
   multivalued: false
@@ -478,13 +478,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: interviewendminutes
+  short_name: interviewendminutes
 - id: adults_bq_interviewplace
   unique_name: bq_interviewplace
   name: interviewplace
   description: place/platform were the interview/filling in the questionnaire took
     place
-  label: INTERVIEW PLACE / INTERVIEW PLATFORM
+  ui_label: INTERVIEW PLACE / INTERVIEW PLATFORM
   value_type: string
   categorical: false
   multivalued: false
@@ -507,12 +507,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: interviewplace
+  short_name: interviewplace
 - id: adults_bq_bloodtaken
   unique_name: bq_bloodtaken
   name: bloodtaken
   description: blood sample taken
-  label: Has the blood sample been taken?
+  ui_label: Has the blood sample been taken?
   value_type: string
   categorical: true
   multivalued: false
@@ -540,12 +540,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bloodtaken
+  short_name: bloodtaken
 - id: adults_bq_bloodnottaken
   unique_name: bq_bloodnottaken
   name: bloodnottaken
   description: reason for missing blood sample
-  label: Has the blood sample been taken? ||| Please indicate the reason for missing
+  ui_label: Has the blood sample been taken? ||| Please indicate the reason for missing
     submission of the blood sample
   value_type: string
   categorical: true
@@ -578,7 +578,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bloodnottaken
+  short_name: bloodnottaken
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -595,7 +595,7 @@ observable_properties:
   unique_name: bq_bloodnottakenother
   name: bloodnottakenother
   description: other reason for missing blood sample
-  label: Has the blood sample been taken? ||| Please indicate the reason for missing
+  ui_label: Has the blood sample been taken? ||| Please indicate the reason for missing
     submission of the blood sample ||| Other reason, that being
   value_type: string
   categorical: false
@@ -619,7 +619,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bloodnottakenother
+  short_name: bloodnottakenother
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -636,7 +636,7 @@ observable_properties:
   unique_name: bq_bloodsampleday
   name: bloodsampleday
   description: date of blood sample collection - day
-  label: When was the blood sample obtained? ||| on ||| Day
+  ui_label: When was the blood sample obtained? ||| on ||| Day
   value_type: integer
   categorical: false
   multivalued: false
@@ -664,7 +664,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bloodsampleday
+  short_name: bloodsampleday
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -681,7 +681,7 @@ observable_properties:
   unique_name: bq_bloodsamplemonth
   name: bloodsamplemonth
   description: date of blood sample collection - month
-  label: When was the blood sample obtained? ||| on ||| Month
+  ui_label: When was the blood sample obtained? ||| on ||| Month
   value_type: integer
   categorical: false
   multivalued: false
@@ -709,7 +709,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bloodsamplemonth
+  short_name: bloodsamplemonth
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -726,7 +726,7 @@ observable_properties:
   unique_name: bq_bloodsampleyear
   name: bloodsampleyear
   description: date of blood sample collection - year
-  label: When was the blood sample obtained? ||| on ||| Year
+  ui_label: When was the blood sample obtained? ||| on ||| Year
   value_type: integer
   categorical: false
   multivalued: false
@@ -754,7 +754,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bloodsampleyear
+  short_name: bloodsampleyear
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -771,7 +771,7 @@ observable_properties:
   unique_name: bq_bloodsamplehour
   name: bloodsamplehour
   description: time of blood sample collection - hour
-  label: When was the blood sample obtained? ||| at ||| Hour
+  ui_label: When was the blood sample obtained? ||| at ||| Hour
   value_type: integer
   categorical: false
   multivalued: false
@@ -797,7 +797,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bloodsamplehour
+  short_name: bloodsamplehour
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -814,7 +814,7 @@ observable_properties:
   unique_name: bq_bloodsampleminute
   name: bloodsampleminute
   description: time of blood sample collection - minute
-  label: When was the blood sample obtained? ||| at ||| Minute
+  ui_label: When was the blood sample obtained? ||| at ||| Minute
   value_type: integer
   categorical: false
   multivalued: false
@@ -840,7 +840,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: bloodsampleminute
+  short_name: bloodsampleminute
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -857,7 +857,7 @@ observable_properties:
   unique_name: bq_mealbeforebloodday
   name: mealbeforebloodday
   description: date of last meal before blood sample collection - day
-  label: When was your last meal before blood sample collection? ||| on ||| Day
+  ui_label: When was your last meal before blood sample collection? ||| on ||| Day
   value_type: integer
   categorical: false
   multivalued: false
@@ -885,7 +885,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mealbeforebloodday
+  short_name: mealbeforebloodday
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -902,7 +902,7 @@ observable_properties:
   unique_name: bq_mealbeforebloodmonth
   name: mealbeforebloodmonth
   description: date of last meal before blood sample collection - month
-  label: When was your last meal before blood sample collection? ||| on ||| Month
+  ui_label: When was your last meal before blood sample collection? ||| on ||| Month
   value_type: integer
   categorical: false
   multivalued: false
@@ -930,7 +930,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mealbeforebloodmonth
+  short_name: mealbeforebloodmonth
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -947,7 +947,7 @@ observable_properties:
   unique_name: bq_mealbeforebloodyear
   name: mealbeforebloodyear
   description: date of last meal before blood sample collection - year
-  label: When was your last meal before blood sample collection? ||| on ||| Year
+  ui_label: When was your last meal before blood sample collection? ||| on ||| Year
   value_type: integer
   categorical: false
   multivalued: false
@@ -975,7 +975,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: mealbeforebloodyear
+  short_name: mealbeforebloodyear
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:

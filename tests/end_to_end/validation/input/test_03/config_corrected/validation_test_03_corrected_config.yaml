@@ -1,25 +1,24 @@
 observations:
 - id: peh:VALIDATION_TEST_SAMPLE_METADATA
   name: VALIDATION_TEST_SAMPLE_METADATA
-  label: SAMPLE_METADATA
+  ui_label: SAMPLE_METADATA
   observation_type: metadata
   observation_design:
-    observable_entity_property_sets:
-    - observation_result_type: measurement
-      observable_entity_type: sample
-      identifying_observable_property_id_list:
-      - id_sample
-      optional_observable_property_id_list:
-      - chol
-      - chol_lod
-      - chol_loq
+    observation_result_type: measurement
+    observable_entity_type: sample
+    identifying_observable_property_id_list:
+    - id_sample
+    optional_observable_property_id_list:
+    - chol
+    - chol_lod
+    - chol_loq
 layouts:
 - id: peh:CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA
   name: CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA
-  label: SAMPLE_METADATA
+  ui_label: SAMPLE_METADATA
   sections:
   - id: SAMPLE_METADATA_SECTION_SAMPLE
-    label: SAMPLE
+    ui_label: SAMPLE
     section_type: data_table
     elements:
     - label: id_sample
@@ -35,7 +34,7 @@ layouts:
     - label: samplingminutes
       observable_property: samplingminutes
   - id: SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BSS
-    label: SAMPLETIMEPOINT_BSS
+    ui_label: SAMPLETIMEPOINT_BSS
     section_type: data_table
     elements:
     - label: id_sample
@@ -50,7 +49,7 @@ observable_properties:
 - id: id_sample
   unique_name: id_sample
   name: id_sample
-  label: id_sample
+  ui_label: id_sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -64,7 +63,7 @@ observable_properties:
   unique_name: samplingyear
   name: samplingyear
   description: year of sample collection
-  label: samplingyear
+  ui_label: samplingyear
   value_type: decimal
   categorical: false
   multivalued: false
@@ -78,7 +77,7 @@ observable_properties:
   unique_name: samplingmonth
   name: samplingmonth
   description: month of sample collection (1 is the first month of the year)
-  label: samplingmonth
+  ui_label: samplingmonth
   value_type: string
   categorical: true
   multivalued: false
@@ -117,7 +116,7 @@ observable_properties:
   unique_name: samplingday
   name: samplingday
   description: day of sample collection (1 is the first day of the month)
-  label: samplingday
+  ui_label: samplingday
   value_type: decimal
   categorical: false
   multivalued: false
@@ -131,7 +130,7 @@ observable_properties:
   unique_name: samplinghour
   name: samplinghour
   description: Hour of sampling
-  label: samplinghour
+  ui_label: samplinghour
   value_type: decimal
   categorical: false
   multivalued: false
@@ -145,7 +144,7 @@ observable_properties:
   unique_name: samplingminutes
   name: samplingminutes
   description: Minutes of sampling
-  label: samplingminutes
+  ui_label: samplingminutes
   value_type: decimal
   categorical: false
   multivalued: false
@@ -159,7 +158,7 @@ observable_properties:
   unique_name: chol
   name: chol
   description: Cholesterol in sample
-  label: Cholesterol in sample
+  ui_label: Cholesterol in sample
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -181,7 +180,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol
+  short_name: chol
   validation_designs:
   - validation_expression:
       validation_condition_expression:
@@ -233,7 +232,7 @@ observable_properties:
   unique_name: chol_lod
   name: chol_lod
   description: lod associated with the cholesterol measurement of the sample
-  label: lod associated with the cholesterol measurement of the sample
+  ui_label: lod associated with the cholesterol measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -250,12 +249,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol_lod
+  short_name: chol_lod
 - id: chol_loq
   unique_name: chol_loq
   name: chol_loq
   description: loq associated with the cholesterol measurement of the sample
-  label: loq associated with the cholesterol measurement of the sample
+  ui_label: loq associated with the cholesterol measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -272,4 +271,4 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol_loq
+  short_name: chol_loq

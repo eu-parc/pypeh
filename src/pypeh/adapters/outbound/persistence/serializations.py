@@ -85,7 +85,7 @@ def is_consistent_with_layout(data: dict, layout: DataLayout) -> bool:
     Validate newly loaded data against a PEH DataLayout.
     """
     if layout.sections is not None:
-        layout_section_names = {section.label for section in layout.sections}  # type: ignore
+        layout_section_names = {section.ui_label for section in layout.sections}  # type: ignore
     ## FIXME: linkml dataclasses are making the typer behave weirdly
     return layout_section_names.issuperset(set(data.keys()))
 
@@ -93,7 +93,7 @@ def is_consistent_with_layout(data: dict, layout: DataLayout) -> bool:
 def get_layout_inconsistencies(sheet_labels: Sequence[str], layout: DataLayout) -> list[str]:
     inconsistencies = []
     if layout.sections is not None:
-        layout_section_names = {section.label for section in layout.sections}  # type: ignore
+        layout_section_names = {section.ui_label for section in layout.sections}  # type: ignore
         for sheet_label in sheet_labels:
             if sheet_label not in layout_section_names:
                 inconsistencies.append(sheet_label)

@@ -3,7 +3,7 @@ observable_properties:
   unique_name: None_id_subject
   name: id_subject
   description: UID of the subject
-  label: UID of the subject
+  ui_label: UID of the subject
   value_type: string
   categorical: false
   multivalued: false
@@ -20,12 +20,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_subject
+  short_name: id_subject
 - id: peh:adults_u_matrix
   unique_name: u_matrix
   name: matrix
   description: matrix of the sample
-  label: matrix of the sample
+  ui_label: matrix of the sample
   remark: 'Required unit:  µg/L if matrix =  ''BWB'' OR matrix = ''BP'' OR matrix
     = ''BS'' OR matrix = ''CBWB'' OR matrix = ''CBP'' OR matrix =''CBS'' OR matrix
     = ''US'' OR matrix = ''UD'' OR matrix = ''UM'' OR matrix = ''SA'' OR matrix =
@@ -85,12 +85,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: matrix
+  short_name: matrix
 - id: peh:adults_u_sg
   unique_name: u_sg
   name: sg
   description: Specific gravity of urine of the sample
-  label: Specific gravity of urine of the sample
+  ui_label: Specific gravity of urine of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -110,7 +110,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: sg
+  short_name: sg
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -151,7 +151,7 @@ observable_properties:
   unique_name: u_crt
   name: crt
   description: Concentration of creatinine in urine of the sample
-  label: Concentration of creatinine in urine of the sample
+  ui_label: Concentration of creatinine in urine of the sample
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -177,7 +177,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: crt
+  short_name: crt
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -196,7 +196,7 @@ observable_properties:
   unique_name: anl_biomarkercode
   name: biomarkercode
   description: Biomarker abbreviation as used in the SAMPLETIMEPOINT tabs
-  label: Biomarker abbreviation as used in the SAMPLETIMEPOINT tabs
+  ui_label: Biomarker abbreviation as used in the SAMPLETIMEPOINT tabs
   value_type: string
   categorical: false
   multivalued: false
@@ -209,12 +209,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: biomarkercode
+  short_name: biomarkercode
 - id: peh:adults_anl_matrix
   unique_name: anl_matrix
   name: matrix
   description: matrix abbreviation
-  label: matrix abbreviation
+  ui_label: matrix abbreviation
   value_type: string
   categorical: true
   multivalued: false
@@ -266,13 +266,13 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: matrix
+  short_name: matrix
 - id: peh:adults_anl_labinstitution
   unique_name: anl_labinstitution
   name: labinstitution
   description: institution name acronym of the laboratory performing the chemical
     analysis
-  label: institution name acronym of the laboratory performing the chemical analysis
+  ui_label: institution name acronym of the laboratory performing the chemical analysis
   value_type: string
   categorical: false
   multivalued: false
@@ -285,4 +285,4 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: labinstitution
+  short_name: labinstitution

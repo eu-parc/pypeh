@@ -3,7 +3,7 @@ observable_properties:
   unique_name: None_id_subject
   name: id_subject
   description: UID of the subject
-  label: UID of the subject
+  ui_label: UID of the subject
   value_type: string
   categorical: false
   multivalued: false
@@ -20,12 +20,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: id_subject
+  short_name: id_subject
 - id: adults_bs_matrix
   unique_name: bs_matrix
   name: matrix
   description: matrix of the sample
-  label: matrix of the sample
+  ui_label: matrix of the sample
   remark: 'Required unit:  µg/L if matrix =  ''BWB'' OR matrix = ''BP'' OR matrix
     = ''BS'' OR matrix = ''CBWB'' OR matrix = ''CBP'' OR matrix =''CBS'' OR matrix
     = ''US'' OR matrix = ''UD'' OR matrix = ''UM'' OR matrix = ''SA'' OR matrix =
@@ -85,12 +85,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: matrix
+  short_name: matrix
 - id: adults_bs_analysisyear
   unique_name: bs_analysisyear
   name: analysisyear
   description: Year in which the sample was analyzed in the lab
-  label: Year in which the sample was analyzed in the lab
+  ui_label: Year in which the sample was analyzed in the lab
   value_type: integer
   categorical: false
   multivalued: false
@@ -109,12 +109,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: analysisyear
+  short_name: analysisyear
 - id: adults_bs_analysismonth
   unique_name: bs_analysismonth
   name: analysismonth
   description: Month in which the sample was analyzed in the lab
-  label: Month in which the sample was analyzed in the lab
+  ui_label: Month in which the sample was analyzed in the lab
   value_type: string
   categorical: true
   multivalued: false
@@ -154,12 +154,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: analysismonth
+  short_name: analysismonth
 - id: adults_bs_analysisday
   unique_name: bs_analysisday
   name: analysisday
   description: Day in which the sample was analyzed in the lab
-  label: Day in which the sample was analyzed in the lab
+  ui_label: Day in which the sample was analyzed in the lab
   value_type: integer
   categorical: false
   multivalued: false
@@ -178,12 +178,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: analysisday
+  short_name: analysisday
 - id: adults_bs_chol
   unique_name: bs_chol
   name: chol
   description: Cholesterol in sample
-  label: Cholesterol in sample
+  ui_label: Cholesterol in sample
   remark: "measured values (X) are given;\n\n-10 = measurement was planned for a participant,\
     \ but unexpected reasons prevented the sample to be measured (eg. not enough sample,\
     \ broken tube, analytical issue, etc.)\n\n\n\nif LOD as well as LOQ is known:\
@@ -205,7 +205,7 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol
+  short_name: chol
   validation_designs:
   - validation_expression:
       validation_subject_source_paths:
@@ -295,7 +295,7 @@ observable_properties:
   unique_name: bs_chol_lod
   name: chol_lod
   description: lod associated with the cholesterol measurement of the sample
-  label: lod associated with the cholesterol measurement of the sample
+  ui_label: lod associated with the cholesterol measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -312,12 +312,12 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol_lod
+  short_name: chol_lod
 - id: adults_bs_chol_loq
   unique_name: bs_chol_loq
   name: chol_loq
   description: loq associated with the cholesterol measurement of the sample
-  label: loq associated with the cholesterol measurement of the sample
+  ui_label: loq associated with the cholesterol measurement of the sample
   value_type: decimal
   categorical: false
   multivalued: false
@@ -334,4 +334,4 @@ observable_properties:
   default_observation_result_type: measurement
   relevant_observation_types:
   - questionnaire
-  varname: chol_loq
+  short_name: chol_loq

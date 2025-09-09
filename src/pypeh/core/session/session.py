@@ -5,8 +5,7 @@ import importlib
 import logging
 import peh_model.peh as peh
 
-from typing import TYPE_CHECKING, TypeVar, Sequence, Generic
-from collections import defaultdict
+from typing import TYPE_CHECKING, TypeVar, Sequence, Dict, Generic
 
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
 from pypeh.core.models.constants import ObservablePropertyValueType
@@ -18,7 +17,8 @@ from pypeh.core.models.settings import (
     ValidatedImportConfig,
     DEFAULT_CONNECTION_LABEL,
 )
-from pypeh.core.models.typing import T_NamedThingLike
+from pypeh.core.models.typing import T_NamedThingLike, T_DataType
+from pypeh.core.models.validation_dto import ValidationConfig
 from pypeh.core.models.validation_errors import ValidationError, ValidationErrorLevel, ValidationErrorReportCollection
 from pypeh.core.interfaces.outbound.dataops import ValidationInterface
 from pypeh.core.cache.utils import load_entities_from_tree
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
 T_AdapterType = TypeVar("T_AdapterType")
 
 
-class Session(Generic[T_AdapterType]):
+class Session(Generic[T_AdapterType, T_DataType]):
     _adapter_mapping: dict[str, T_AdapterType] = dict()
 
     def __init__(
@@ -298,19 +298,29 @@ class Session(Generic[T_AdapterType]):
     def dump_project(self, project_identifier: str, version: str | None) -> bool:
         return self.dump_resource(project_identifier, resource_type="Project", version=version)
 
+    def get_dataset_validations_dict(
+        self,
+        observation_list: Sequence[peh.Observation],
+        layout: peh.DataLayout,
+        set_mapping: Dict[str, Dict[str, str | int | Dict[str, Sequence[str]]]],
+        data_dict: Dict[str, Dict[str, Sequence] | T_DataType],
+    ) -> Dict[str, Sequence[peh.ValidationDesign]] | None:
+        return ValidationConfig.get_dataset_validations_dict(observation_list, layout, set_mapping, data_dict)
+
     def validate_tabular_data(
         self,
         data: dict[str, Sequence] | DataFrame,
-        observation: peh.Observation,
+        observation_list: Sequence[peh.Observation],
+        dataset_validations: Sequence[peh.ValidationDesign] | None = None,
     ) -> ValidationErrorReportCollection:
         observable_property_ids = set()
-        if observation.observation_design is None:
-            raise ValueError(f"Specfied observation {observation.id} has no ObservationDesign")
-        for oep_set in observation.observation_design.observable_entity_property_sets:
+        for observation in observation_list:
+            if observation.observation_design is None:
+                raise ValueError(f"Specified observation {observation.id} has no ObservationDesign")
             observable_property_ids.update(
-                oep_set.identifying_observable_property_id_list,
-                oep_set.optional_observable_property_id_list,
-                oep_set.required_observable_property_id_list,
+                observation.observation_design.identifying_observable_property_id_list,
+                observation.observation_design.optional_observable_property_id_list,
+                observation.observation_design.required_observable_property_id_list,
             )
         observable_properties = [
             op for op in self.cache.get_all("ObservableProperty") if op.id in observable_property_ids
@@ -318,7 +328,7 @@ class Session(Generic[T_AdapterType]):
         assert len(observable_properties) > 0
 
         validation_adapter = self.get_adapter("validation")
-        return validation_adapter.validate(data, observation, observable_properties)
+        return validation_adapter.validate(data, observation_list, observable_properties, dataset_validations)
 
     def layout_section_elements_to_observable_property_value_types(
         self, layout: peh.DataLayout, flatten=False
@@ -329,7 +339,7 @@ class Session(Generic[T_AdapterType]):
         if sections is None:
             raise ValueError("No sections found in DataLayout")
         for section in sections:
-            label = getattr(section, "label")
+            label = getattr(section, "ui_label")
             elements = getattr(section, "elements")
             if elements is None:
                 logger.info("DataLayout does not contain elements. Cannot determine observable_entity_value_types.")
