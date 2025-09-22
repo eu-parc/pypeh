@@ -1,3 +1,5 @@
+import os
+import tempfile
 import pytest
 
 from pypeh import Session
@@ -22,10 +24,15 @@ class TestExportXlsx:
         session.load_persisted_cache()
         data_layout = session.cache.get("TEST_DATA_LAYOUT", "DataLayout")
 
-        output_path = get_absolute_path("./output/data_template/test.xlsx")
-        adapter = ExportXlsxAdapter()
-        result = adapter.export_data_template(
-            data_layout, output_path, studyinfo_header_list=STUDYINFO_HEADERS, codebook_metadata_dict=CODEBOOK_METADATA
-        )
+        with tempfile.TemporaryDirectory() as tmp:
+            output_path = os.path.join(tmp, "test_export_data_template_result.xlsx")
+            adapter = ExportXlsxAdapter()
+            result = adapter.export_data_template(
+                data_layout,
+                output_path,
+                studyinfo_header_list=STUDYINFO_HEADERS,
+                codebook_metadata_dict=CODEBOOK_METADATA,
+            )
+
         assert isinstance(result, bool)
         assert result
