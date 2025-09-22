@@ -65,12 +65,12 @@ class ValidationInterface(OutDataOpsInterface, Generic[T_DataType]):
     ) -> ValidationErrorReportCollection:
         observable_property_dict = {op.id: op for op in observable_properties}
         result_dict = ValidationErrorReportCollection()
-        for oep_set_name, validation_config in ValidationConfig.from_observation_list(
+        for observation_id, validation_config in ValidationConfig.from_observation_list(
             observation_list,
             observable_property_dict,
             dataset_validations,
         ):
-            result_dict[oep_set_name] = self._validate(data, validation_config)
+            result_dict[observation_id] = self._validate(data, validation_config)
 
         return result_dict
 

@@ -44,33 +44,40 @@ class TestConsistency:
         assert len(data_dict) > 0
 
         # Configure the combination of data content and layout, specific to the observation dataset
-        set_mapping = {
+        dataset_mapping = {
             "SAMPLE": {
                 "layout_section_id": "peh:SAMPLE_METADATA_SECTION_SAMPLE",
                 "observation_id": "peh:VALIDATION_TEST_SAMPLE_SAMPLE",
-                "oep_set_index": 0,
+                "foreign_keys": {"id_subject": ["peh:VALIDATION_TEST_SAMPLE_SUBJECTUNIQUE", "id_subject"]},
             },
             "SUBJECTUNIQUE": {
                 "layout_section_id": "peh:SAMPLE_METADATA_SECTION_SUBJECTUNIQUE",
                 "observation_id": "peh:VALIDATION_TEST_SAMPLE_SUBJECTUNIQUE",
-                "oep_set_index": 0,
+                "foreign_keys": {"id_participant": ["peh:VALIDATION_TEST_SAMPLE_SUBJECTUNIQUE", "id_subject"]},
             },
             "SAMPLETIMEPOINT_BWB": {
                 "layout_section_id": "peh:SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BWB",
                 "observation_id": "peh:VALIDATION_TEST_SAMPLE_SAMPLETIMEPOINT_BWB",
-                "oep_set_index": 0,
             },
         }
 
-        observation_list = [session.cache.get(m["observation_id"], "Observation") for m in set_mapping.values()]
-        dataset_validations_dict = session.get_dataset_validations_dict(
-            observation_list=observation_list, layout=layout, set_mapping=set_mapping, data_dict=data_dict
+        observation_list = [session.cache.get(m["observation_id"], "Observation") for m in dataset_mapping.values()]
+        consistency_validations_dict = session.get_dataset_validations_dict(
+            observation_list=observation_list, layout=layout, dataset_mapping=dataset_mapping, data_dict=data_dict
+        )
+        id_validations_dict = session.get_dataset_identifier_consistency_validations_dict(
+            observation_list=observation_list, layout=layout, dataset_mapping=dataset_mapping, data_dict=data_dict
         )
 
         def validate_set(set_key):
-            sheet_label = set_mapping[set_key].get("sheet_label", None)
-            observation_id = set_mapping[set_key].get("observation_id", None)
-            dataset_validations = dataset_validations_dict.get(set_key, None)
+            sheet_label = dataset_mapping[set_key].get("sheet_label", None)
+            observation_id = dataset_mapping[set_key].get("observation_id", None)
+
+            dataset_validations = []
+            if consistency_validations := consistency_validations_dict.get(set_key, None):
+                dataset_validations.extend(consistency_validations)
+            if id_validations := id_validations_dict.get(set_key, None):
+                dataset_validations.extend(id_validations)
 
             data_df = data_dict.get(sheet_label, None)
             observation = session.get_resource(observation_id, "Observation")

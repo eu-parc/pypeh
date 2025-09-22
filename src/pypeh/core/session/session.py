@@ -302,10 +302,21 @@ class Session(Generic[T_AdapterType, T_DataType]):
         self,
         observation_list: Sequence[peh.Observation],
         layout: peh.DataLayout,
-        set_mapping: Dict[str, Dict[str, str | int | Dict[str, Sequence[str]]]],
+        dataset_mapping: Dict[str, Dict[str, str | int | Dict[str, Sequence[str]]]],
         data_dict: Dict[str, Dict[str, Sequence] | T_DataType],
     ) -> Dict[str, Sequence[peh.ValidationDesign]] | None:
-        return ValidationConfig.get_dataset_validations_dict(observation_list, layout, set_mapping, data_dict)
+        return ValidationConfig.get_dataset_validations_dict(observation_list, layout, dataset_mapping, data_dict)
+
+    def get_dataset_identifier_consistency_validations_dict(
+        self,
+        observation_list: Sequence[peh.Observation],
+        layout: peh.DataLayout,
+        dataset_mapping: Dict[str, Dict[str, str | int | Dict[str, Sequence[str]]]],
+        data_dict: Dict[str, Dict[str, Sequence] | T_DataType],
+    ) -> Dict[str, Sequence[peh.ValidationDesign]] | None:
+        return ValidationConfig.get_dataset_identifier_consistency_validations_dict(
+            observation_list, layout, dataset_mapping, data_dict
+        )
 
     def validate_tabular_data(
         self,
