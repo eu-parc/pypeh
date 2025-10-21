@@ -1,7 +1,7 @@
 import json
 
 from datetime import datetime
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Tuple, Literal, Optional, Union
 from pydantic import BaseModel, Field, field_serializer
 from typing_extensions import Annotated
 
@@ -23,6 +23,14 @@ class DataFrameLocation(ValidationErrorLocation):
     row_ids: List[int] = []
 
 
+class EntityLocation(ValidationErrorLocation):
+    """Location information for Entity-based validation errors"""
+
+    location_type: Literal["entity"] = "entity"
+    identifying_property_list: List[str]
+    identifying_property_values: List[Tuple[Union[int, float, str, None], ...]]
+
+
 # Example of another ValidationErrorLocation subclass
 class FileLocation(ValidationErrorLocation):
     location_type: Literal["file"] = "file"
@@ -31,7 +39,7 @@ class FileLocation(ValidationErrorLocation):
 
 # The discriminated union definition
 LocationUnion = Annotated[
-    Union[DataFrameLocation, FileLocation],
+    Union[DataFrameLocation, FileLocation, EntityLocation],
     Field(discriminator="location_type"),
 ]
 

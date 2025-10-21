@@ -41,7 +41,7 @@ observable_properties:
   unique_name: id_sample
   name: id_sample
   ui_label: id_sample
-  value_type: decimal
+  value_type: integer
   categorical: false
   multivalued: false
   default_unit: UNITLESS
@@ -55,7 +55,7 @@ observable_properties:
   name: samplingyear
   description: year of sample collection
   ui_label: samplingyear
-  value_type: decimal
+  value_type: integer
   categorical: false
   multivalued: false
   default_unit: UNITLESS
@@ -108,7 +108,7 @@ observable_properties:
   name: samplingday
   description: day of sample collection (1 is the first day of the month)
   ui_label: samplingday
-  value_type: decimal
+  value_type: integer
   categorical: false
   multivalued: false
   default_unit: UNITLESS
@@ -122,7 +122,7 @@ observable_properties:
   name: samplinghour
   description: Hour of sampling
   ui_label: samplinghour
-  value_type: decimal
+  value_type: integer
   categorical: false
   multivalued: false
   default_unit: UNITLESS
@@ -136,7 +136,7 @@ observable_properties:
   name: samplingminutes
   description: Minutes of sampling
   ui_label: samplingminutes
-  value_type: decimal
+  value_type: integer
   categorical: false
   multivalued: false
   default_unit: UNITLESS

@@ -7,7 +7,7 @@ from tests.test_utils.dirutils import get_absolute_path
 from typing import cast
 
 from pypeh import Session
-from pypeh.core.models.validation_errors import ValidationError, ValidationErrorReport
+from pypeh.core.models.validation_errors import ValidationError, ValidationErrorReport, EntityLocation
 from pypeh.core.models.settings import LocalFileConfig
 
 logger = logging.getLogger(__name__)
@@ -41,6 +41,13 @@ class TestSessionDefaultLocalFile:
         assert isinstance(report_to_check, ValidationErrorReport)
         assert report_to_check.total_errors == 1
         assert report_to_check.groups[-1].errors[-1].type == "check_categorical"
+        assert len(report_to_check.groups[-1].errors[-1].locations) == 1
+        assert isinstance(report_to_check.groups[-1].errors[-1].locations[-1], EntityLocation)
+        assert len(report_to_check.groups[-1].errors[-1].locations[-1].identifying_property_values) == 1
+        assert isinstance(report_to_check.groups[-1].errors[-1].locations[-1].identifying_property_values[0], tuple)
+        assert len(report_to_check.groups[-1].errors[-1].locations[-1].identifying_property_values[0]) == 1
+        assert isinstance(report_to_check.groups[-1].errors[-1].locations[-1].identifying_property_values[0][0], int)
+        assert report_to_check.groups[-1].errors[-1].locations[-1].identifying_property_values[0][0] == 31
 
 
 @pytest.mark.end_to_end

@@ -19,7 +19,7 @@ from pypeh.core.interfaces.outbound.dataops import (
     ValidationInterface,
     DataImportInterface,
 )
-from pypeh.core.models.validation_errors import ValidationErrorReport
+from pypeh.core.models.validation_errors import ValidationErrorReport, EntityLocation
 from pypeh.core.models.validation_dto import ValidationConfig
 from pypeh.core.session.connections import ConnectionManager
 from pypeh.adapters.outbound.validation.pandera_adapter.parsers import parse_config, parse_error_report
@@ -49,12 +49,42 @@ class DataFrameAdapter(ValidationInterface[DataFrame], DataImportInterface[DataF
     def _validate(self, data: dict[str, list] | DataFrame, config: ValidationConfig) -> ValidationErrorReport:
         config_map = self.parse_configuration(config)
         validator = Validator.config_from_mapping(config=config_map, logger=logger)
+
         _ = validator.validate(data)
 
         with self.get_error_collector() as error_collector:
-            parsed_errors = parse_error_report(error_collector.get_errors())
+            report = parse_error_report(error_collector.get_errors())
 
-        return parsed_errors
+        # Replace DataframeLocations with corresponding EntityLocation entries
+        def get_data_item(data, row_index, column_name):
+            if isinstance(data, dict):
+                return data[column_name][row_index]
+            if isinstance(data, DataFrame):
+                return data.item(row_index, column_name)
+
+        for group in report.groups:
+            for error in group.errors:
+                new_location_list = []
+                for location in error.locations:
+                    row_ids = getattr(location, "row_ids", None)
+                    key_columns = getattr(location, "key_columns", None)
+                    if row_ids and key_columns:
+                        entity_ids = [
+                            (get_data_item(data, row_id, id_obs_prop) for id_obs_prop in key_columns)
+                            for row_id in row_ids
+                        ]
+                        new_location_list.append(
+                            EntityLocation(
+                                location_type="entity",
+                                identifying_property_list=key_columns,
+                                identifying_property_values=entity_ids,
+                            )
+                        )
+                    else:
+                        new_location_list.append(location)
+                error.locations = new_location_list
+
+        return report
 
     def _join_data(
         self,
