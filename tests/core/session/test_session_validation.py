@@ -1,7 +1,7 @@
 import pytest
 import pathlib
 
-from peh_model.peh import DataImportConfig, DataImportSectionMapping, DataImportSectionMappingLink, DataLayout
+from peh_model.peh import DataImportConfig, DataImportSectionMapping, DataImportSectionMappingLink
 
 from pypeh import Session
 from pypeh.core.models.internal_data_layout import Dataset, DatasetSeries, ObservationResultProxy

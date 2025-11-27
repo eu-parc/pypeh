@@ -581,11 +581,11 @@ observable_properties:
   short_name: bloodnottaken
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - bloodnottaken
+      validation_subject_contextual_field_references:
+      - field_label: bloodnottaken
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '0.0'
@@ -622,11 +622,11 @@ observable_properties:
   short_name: bloodnottakenother
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - bloodnottakenother
+      validation_subject_contextual_field_references:
+      - field_label: bloodnottakenother
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodnottaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodnottaken
         validation_command: is_equal_to
         validation_arg_values:
         - '4.0'
@@ -667,11 +667,11 @@ observable_properties:
   short_name: bloodsampleday
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - bloodsampleday
+      validation_subject_contextual_field_references:
+      - field_label: bloodsampleday
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '1.0'
@@ -712,11 +712,11 @@ observable_properties:
   short_name: bloodsamplemonth
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - bloodsamplemonth
+      validation_subject_contextual_field_references:
+      - field_label: bloodsamplemonth
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '1.0'
@@ -757,11 +757,11 @@ observable_properties:
   short_name: bloodsampleyear
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - bloodsampleyear
+      validation_subject_contextual_field_references:
+      - field_label: bloodsampleyear
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '1.0'
@@ -800,11 +800,11 @@ observable_properties:
   short_name: bloodsamplehour
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - bloodsamplehour
+      validation_subject_contextual_field_references:
+      - field_label: bloodsamplehour
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '1.0'
@@ -843,11 +843,11 @@ observable_properties:
   short_name: bloodsampleminute
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - bloodsampleminute
+      validation_subject_contextual_field_references:
+      - field_label: bloodsampleminute
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '1.0'
@@ -888,11 +888,11 @@ observable_properties:
   short_name: mealbeforebloodday
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - mealbeforebloodday
+      validation_subject_contextual_field_references:
+      - field_label: mealbeforebloodday
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '1.0'
@@ -933,11 +933,11 @@ observable_properties:
   short_name: mealbeforebloodmonth
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - mealbeforebloodmonth
+      validation_subject_contextual_field_references:
+      - field_label: mealbeforebloodmonth
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '1.0'
@@ -978,11 +978,11 @@ observable_properties:
   short_name: mealbeforebloodyear
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - mealbeforebloodyear
+      validation_subject_contextual_field_references:
+      - field_label: mealbeforebloodyear
       validation_condition_expression:
-        validation_subject_source_paths:
-        - bloodtaken
+        validation_subject_contextual_field_references:
+        - field_label: bloodtaken
         validation_command: is_equal_to
         validation_arg_values:
         - '1.0'

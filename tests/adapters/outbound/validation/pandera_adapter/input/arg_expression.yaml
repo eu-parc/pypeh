@@ -94,8 +94,8 @@ observable_properties:
   validation_designs:
   - validation_expression:
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BWB
@@ -113,8 +113,8 @@ observable_properties:
         - DBS
         - VAMS
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - chol
+      - validation_subject_contextual_field_references:
+        - field_label: chol
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '50'
@@ -123,15 +123,15 @@ observable_properties:
       \  THEN chol [50,inf]; \n\nIF matrix IS (BM,BMG)  THEN chol [5,inf]"
   - validation_expression:
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BM
         - BMG
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - chol
+      - validation_subject_contextual_field_references:
+        - field_label: chol
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '5'

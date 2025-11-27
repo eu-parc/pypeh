@@ -334,8 +334,8 @@ class TestValidation(abc.ABC):
                     "errors_counts": {
                         ValidationErrorLevel.INFO: 0,
                         ValidationErrorLevel.WARNING: 0,
-                        ValidationErrorLevel.ERROR: 0,
-                        ValidationErrorLevel.FATAL: 1,
+                        ValidationErrorLevel.ERROR: 1,
+                        ValidationErrorLevel.FATAL: 0,
                     },
                 },
             ),

@@ -113,11 +113,11 @@ observable_properties:
   short_name: sg
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - sg
+      validation_subject_contextual_field_references:
+      - field_label: sg
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - US
@@ -129,19 +129,19 @@ observable_properties:
   - validation_expression:
       validation_command: conjunction
       validation_condition_expression:
-        validation_subject_source_paths:
-        - crt
+        validation_subject_contextual_field_references:
+        - field_label: crt
         validation_command: is_less_than
         validation_arg_values:
         - '2.0'
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - sg
+      - validation_subject_contextual_field_references:
+        - field_label: sg
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '1.001'
-      - validation_subject_source_paths:
-        - sg
+      - validation_subject_contextual_field_references:
+        - field_label: sg
         validation_command: is_less_than_or_equal_to
         validation_arg_values:
         - '1.02'
@@ -180,11 +180,11 @@ observable_properties:
   short_name: crt
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - crt
+      validation_subject_contextual_field_references:
+      - field_label: crt
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - US

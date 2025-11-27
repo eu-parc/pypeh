@@ -134,6 +134,7 @@ class ValidationExpression(BaseModel):
     arg_expressions: list[ValidationExpression] | None = None
     command: str
     arg_values: list[Any] | None = None
+    # TODO: Evaluate the need for a two-level field_reference implementation in ValidationExpression.arg_columns
     arg_columns: list[str] | None = None
     subject: list[str] | None = None
 
@@ -175,25 +176,29 @@ class ValidationExpression(BaseModel):
             ]
         validation_command = getattr(expression, "validation_command", "conjunction")
 
-        subject_source_paths = getattr(expression, "validation_subject_source_paths", None)
+        subject_contextual_field_references = getattr(
+            expression, "validation_subject_contextual_field_references", None
+        )
         # TODO: extract type from dataset schema
         arg_type = None
-        observable_property_id_based_subject_source_paths = []
-        if subject_source_paths:
+        observable_property_id_based_subject_contextual_field_references = []
+        if subject_contextual_field_references:
             arg_types = set()
             if observable_property_short_name_dict is not None:
-                for source_path in [ssp for ssp in subject_source_paths if ssp is not None]:
-                    obs_prop = observable_property_short_name_dict.get(source_path, None)
+                for contextual_field_reference in [
+                    ssp for ssp in subject_contextual_field_references if ssp is not None
+                ]:
+                    obs_prop = observable_property_short_name_dict.get(contextual_field_reference.field_label, None)
                     if obs_prop is None:
-                        me = f"Could not find source_path {source_path} in observable_property_short_name_dict"
+                        me = f"Could not find contextual_field_reference.field_label {contextual_field_reference.field_label} in observable_property_short_name_dict"
                         logger.error(me)
                         raise ValueError(me)
-                    observable_property_id_based_subject_source_paths.append(obs_prop.id)
+                    observable_property_id_based_subject_contextual_field_references.append(obs_prop.id)
                     new_arg_type = getattr(obs_prop, "value_type", None)
                     arg_types.add(new_arg_type)
             if len(arg_types) != 1:
                 logger.error(
-                    f"More than one type corresponds to the ObservableProperties in validation_subject_source_paths: {arg_types}"
+                    f"More than one type corresponds to the ObservableProperties in validation_subject_contextual_field_references: {arg_types}"
                 )
                 raise ValueError
             arg_type = arg_types.pop()
@@ -207,19 +212,22 @@ class ValidationExpression(BaseModel):
                 logger.error(f"Could not cast values in {arg_values} to {arg_type}: {e}")
                 raise
 
-        arg_columns = getattr(expression, "validation_arg_source_paths", None)
-        validation_arg_source_paths = []
+        # TODO: add support for cross-dataset column references
+        arg_columns = [fr.field_label for fr in getattr(expression, "validation_arg_contextual_field_references", None)]
+        validation_arg_contextual_field_references = []
         if arg_columns is not None:
             assert isinstance(arg_values, Sequence)
-            validation_arg_source_paths = [observable_property_short_name_dict(c).id for c in arg_columns]
+            validation_arg_contextual_field_references = [
+                observable_property_short_name_dict(c).id for c in arg_columns
+            ]
 
         return cls(
             conditional_expression=conditional_expression_instance,
             arg_expressions=arg_expression_instances,
             command=validation_command,
             arg_values=arg_values,
-            arg_columns=validation_arg_source_paths,
-            subject=observable_property_id_based_subject_source_paths,
+            arg_columns=validation_arg_contextual_field_references,
+            subject=observable_property_id_based_subject_contextual_field_references,
         )
 
 
@@ -436,7 +444,7 @@ class ValidationConfig(BaseModel, Generic[T_DataType]):
                     peh.ValidationDesign(
                         validation_name="check_sample_matrix",
                         validation_expression=peh.ValidationExpression(
-                            validation_subject_source_paths=[MATRIX_SHORT_NAME],
+                            validation_subject_contextual_field_references=[MATRIX_SHORT_NAME],
                             validation_command=peh.ValidationCommand.is_in,
                             validation_arg_values=matrix_values,
                         ),
@@ -555,8 +563,8 @@ class ValidationConfig(BaseModel, Generic[T_DataType]):
         return validation_config
 
     @classmethod
-    def extract_source_paths(cls, column_validations: list[ColumnValidation]) -> set:
-        # source path should become frozen dataclass
+    def extract_dependent_columns(cls, column_validations: list[ColumnValidation]) -> set:
+        # TODO: Evaluate the need for a two-level field_reference implementation in ValidationExpression.arg_columns
         ret = set()
         expression_stack = []
 
@@ -597,13 +605,13 @@ class ValidationConfig(BaseModel, Generic[T_DataType]):
         cache_view: CacheContainerView,
         dataset_validations: Sequence[ValidationDesign] | None = None,
     ) -> ValidationConfig:
-        # TODO: remove observable_property_short_name_dict: replace with proper source_paths
+        # TODO: remove observable_property_short_name_dict: replace with proper contextual_field_references
         # source path is dataset depedent
         observable_property_short_name_dict = {op.short_name: op for op in cache_view.get_all("ObservableProperty")}
         dataset_series = getattr(dataset, "part_of")
         assert dataset_series is not None
         # use typing information: dict uses {dataset_series_label: {dataset_label: type}}
-        # can then be accessed with source_paths
+        # can then be accessed with contextual_field_references
         # TODO: dataset_series_type_info = dataset_series.get_type_annotations()
 
         column_validations = []
@@ -623,7 +631,7 @@ class ValidationConfig(BaseModel, Generic[T_DataType]):
             )
             column_validations.append(column_validation)
 
-        dependent_observable_property_ids = cls.extract_source_paths(column_validations)
+        dependent_observable_property_ids = cls.extract_dependent_columns(column_validations)
         obs_prop_in_dataset = set(dataset.get_observable_property_ids())
         cross_dataset_dependent_observable_property_ids = dependent_observable_property_ids - obs_prop_in_dataset
 

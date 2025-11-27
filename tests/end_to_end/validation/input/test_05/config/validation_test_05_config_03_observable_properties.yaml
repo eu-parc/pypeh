@@ -1262,11 +1262,11 @@ observable_properties:
   short_name: chol
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - chol
+      validation_subject_contextual_field_references:
+      - field_label: chol
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BWB
@@ -1291,8 +1291,8 @@ observable_properties:
       \  THEN chol [50,250]; \n\nIF matrix IS (BM,BMG)  THEN chol [5,100]"
   - validation_expression:
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BWB
@@ -1310,8 +1310,8 @@ observable_properties:
         - DBS
         - VAMS
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - chol
+      - validation_subject_contextual_field_references:
+        - field_label: chol
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '50'
@@ -1320,15 +1320,15 @@ observable_properties:
       \  THEN chol [50,250]; \n\nIF matrix IS (BM,BMG)  THEN chol [5,100]"
   - validation_expression:
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BM
         - BMG
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - chol
+      - validation_subject_contextual_field_references:
+        - field_label: chol
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '5'
@@ -1408,11 +1408,11 @@ observable_properties:
   short_name: trigl
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - trigl
+      validation_subject_contextual_field_references:
+      - field_label: trigl
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BWB
@@ -1437,8 +1437,8 @@ observable_properties:
       \  THEN trigl [10,450]; \n\nIF matrix IS (BM,BMG)  THEN trigl [500,50000]"
   - validation_expression:
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BWB
@@ -1456,8 +1456,8 @@ observable_properties:
         - DBS
         - VAMS
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - trigl
+      - validation_subject_contextual_field_references:
+        - field_label: trigl
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '10'
@@ -1466,15 +1466,15 @@ observable_properties:
       \  THEN trigl [10,450]; \n\nIF matrix IS (BM,BMG)  THEN trigl [500,50000]"
   - validation_expression:
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BM
         - BMG
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - trigl
+      - validation_subject_contextual_field_references:
+        - field_label: trigl
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '500'
@@ -1554,11 +1554,11 @@ observable_properties:
   short_name: lipid
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - lipid
+      validation_subject_contextual_field_references:
+      - field_label: lipid
       validation_condition_expression:
-        validation_subject_source_paths:
-        - lipidassessment
+        validation_subject_contextual_field_references:
+        - field_label: lipidassessment
         validation_command: is_in
         validation_arg_values:
         - '1'
@@ -1569,11 +1569,11 @@ observable_properties:
       \ lipid IS not empty;\n\nIF matrix IS (BWB,BP,BS,CBWB,CBP,CBS,BWBG,BPG,BSG,CBWBG,CBPG,CBSG,DBS,VAMS)\
       \  THEN lipid [150,900]; \n\nIF matrix IS (BM,BMG)  THEN lipid [500,50000]"
   - validation_expression:
-      validation_subject_source_paths:
-      - lipid
+      validation_subject_contextual_field_references:
+      - field_label: lipid
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BWB
@@ -1599,8 +1599,8 @@ observable_properties:
       \  THEN lipid [150,900]; \n\nIF matrix IS (BM,BMG)  THEN lipid [500,50000]"
   - validation_expression:
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BWB
@@ -1618,8 +1618,8 @@ observable_properties:
         - DBS
         - VAMS
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - lipid
+      - validation_subject_contextual_field_references:
+        - field_label: lipid
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '150'
@@ -1629,15 +1629,15 @@ observable_properties:
       \  THEN lipid [150,900]; \n\nIF matrix IS (BM,BMG)  THEN lipid [500,50000]"
   - validation_expression:
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BM
         - BMG
       validation_arg_expressions:
-      - validation_subject_source_paths:
-        - lipid
+      - validation_subject_contextual_field_references:
+        - field_label: lipid
         validation_command: is_greater_than_or_equal_to
         validation_arg_values:
         - '500'
@@ -1717,11 +1717,11 @@ observable_properties:
   short_name: lipid_enz
   validation_designs:
   - validation_expression:
-      validation_subject_source_paths:
-      - lipid_enz
+      validation_subject_contextual_field_references:
+      - field_label: lipid_enz
       validation_condition_expression:
-        validation_subject_source_paths:
-        - lipidassessment
+        validation_subject_contextual_field_references:
+        - field_label: lipidassessment
         validation_command: is_in
         validation_arg_values:
         - '2'
@@ -1731,11 +1731,11 @@ observable_properties:
       IS (BWB,BP,BS,CBWB,CBP,CBS,BM,BWBG,BPG,BSG,CBWBG,CBPG,CBSG,BMG,DBS,VAMS) THEN
       lipid_enz IS not empty
   - validation_expression:
-      validation_subject_source_paths:
-      - lipid_enz
+      validation_subject_contextual_field_references:
+      - field_label: lipid_enz
       validation_condition_expression:
-        validation_subject_source_paths:
-        - matrix
+        validation_subject_contextual_field_references:
+        - field_label: matrix
         validation_command: is_in
         validation_arg_values:
         - BWB

@@ -17,6 +17,7 @@ from peh_model.peh import (
     DataImportConfig,
     DataLayout,
     ValidationDesign,
+    ContextualFieldReference,
     EntityList,
     Observation,
     ObservableProperty,
@@ -122,7 +123,7 @@ class ValidationInterface(OutDataOpsInterface, Generic[T_DataType]):
                     dependent_observable_property_ids is not None
                 ), "dependent_observable_property_ids in `ValidationInterface.validate` should not be None"
                 assert dependent_dataset_series is not None
-                # TEMP: looping over datasets should not be necessary when source_paths are implemented
+                # TEMP: looping over datasets should not be necessary when contextual_field_references are implemented
                 observable_property_id_to_dataset_label_dict = dict()
                 for observable_property_id in dependent_observable_property_ids:
                     for dataset_label in dependent_dataset_series:
@@ -238,17 +239,24 @@ class DataEnrichmentInterface(OutDataOpsInterface, Generic[T_DataType]):
         return adapter_class
 
     @staticmethod
-    def _normalize_source_path(observation_id: str, source_path: str) -> str:
-        if "\\" in source_path:
-            return source_path
+    def _normalize_contextual_field_reference(
+        observation_id: str, contextual_field_reference: ContextualFieldReference
+    ) -> str:
+        if contextual_field_reference.dataset_label is not None:
+            return f"{contextual_field_reference.dataset_label}\\{contextual_field_reference.field_label}"
+        elif "\\" in contextual_field_reference.field_label:
+            return contextual_field_reference.field_label
         else:
-            return f"{observation_id}\\{source_path}"
+            return f"{observation_id}\\{contextual_field_reference.field_label}"
 
     @staticmethod
-    def _extract_calculation_kwargs(calculation_designs: list[CalculationDesign | None]) -> list[str]:
+    def _extract_calculation_kwarg_field_references(calculation_designs: list[CalculationDesign | None]) -> list[str]:
         try:
             (calculation_design,) = calculation_designs
-            return [kwargs.source_path for kwargs in calculation_design.calculation_implementation.function_kwargs]
+            return [
+                kwargs.contextual_field_reference
+                for kwargs in calculation_design.calculation_implementation.function_kwargs
+            ]
 
         except ValueError:
             raise NotImplementedError("Multiple calculation designs not supported yet")
@@ -279,8 +287,8 @@ class DataEnrichmentInterface(OutDataOpsInterface, Generic[T_DataType]):
                         child = f"{observation_id}\\{observable_property.id}"
 
                         parents = [
-                            self._normalize_source_path(observation_id, dep)
-                            for dep in self._extract_calculation_kwargs(calculation_designs)
+                            self._normalize_contextual_field_reference(observation_id, field_ref)
+                            for field_ref in self._extract_calculation_kwarg_field_references(calculation_designs)
                         ]
 
                         for parent in parents:

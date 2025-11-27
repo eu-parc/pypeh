@@ -8,7 +8,7 @@ readme = "README.md"
 license = "MIT"
 dependencies = [
     "linkml>=1.9.1",
-    "peh-model==0.3",
+    "peh-model==0.3.2",
     "pydantic-settings",
     "fsspec",
 ]

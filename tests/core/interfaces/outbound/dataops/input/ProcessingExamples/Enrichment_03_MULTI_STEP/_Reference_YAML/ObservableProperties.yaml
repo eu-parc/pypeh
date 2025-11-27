@@ -138,15 +138,18 @@ observable_properties:
       function_name: datetime_from_year_month_day
       function_kwargs:
       - mapping_name: year
-        source_path: peh:current_year
+        contextual_field_reference:
+          field_label: peh:current_year
         process_state: clean
         unit: UNITLESS
       - mapping_name: month
-        source_path: peh:current_month
+        contextual_field_reference:
+          field_label: peh:current_month
         process_state: clean
         unit: UNITLESS
       - mapping_name: day
-        source_path: peh:current_day
+        contextual_field_reference:
+          field_label: peh:current_day
         process_state: clean
         unit: UNITLESS
       function_results:
@@ -175,11 +178,13 @@ observable_properties:
       function_name: age_in_months_from_birth_and_interview_dates
       function_kwargs:
       - mapping_name: birth_date
-        source_path: peh:ENRICHMENT_TEST_OBSERVATION_SUBJECTUNIQUE_INGESTED\N1Birthdate
+        contextual_field_reference:
+          field_label: peh:ENRICHMENT_TEST_OBSERVATION_SUBJECTUNIQUE_INGESTED\N1Birthdate
         process_state: clean
         unit: UNITLESS
       - mapping_name: interview_date
-        source_path: peh:Todaysdate
+        contextual_field_reference:
+          field_label: peh:Todaysdate
         process_state: clean
         unit: UNITLESS
       function_results:

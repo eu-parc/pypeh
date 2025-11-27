@@ -506,7 +506,6 @@ class TestRoundTripDataset:
                 dependent_data=dataset_series,
             )
             assert isinstance(validation_report, ValidationErrorReport)
-            print(validation_report)
             assert validation_report.error_counts[ValidationErrorLevel.FATAL] == 0
             assert validation_report.total_errors == 0
 
@@ -535,7 +534,6 @@ class TestRoundTripDataset:
 
         unexpected_errors = 0
         for dataset_label in dataset_series:
-            print(f"Validating: {dataset_label} ...")
             dataset = dataset_series[dataset_label]
             assert isinstance(dataset, Dataset)
             if dataset.data is None:

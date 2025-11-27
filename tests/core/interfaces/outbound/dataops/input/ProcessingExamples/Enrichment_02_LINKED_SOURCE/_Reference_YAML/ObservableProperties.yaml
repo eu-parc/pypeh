@@ -92,11 +92,13 @@ observable_properties:
       function_name: age_in_months_from_birth_and_interview_dates
       function_kwargs:
       - mapping_name: birth_date
-        source_path: N1Birthdate
+        contextual_field_reference:
+          field_label: N1Birthdate
         process_state: clean
         unit: UNITLESS
       - mapping_name: interview_date
-        source_path: peh:ENRICHMENT_TEST_OBSERVATION_HOUSEHOLD_INGESTED\Todaysdate
+        contextual_field_reference:
+          field_label: peh:ENRICHMENT_TEST_OBSERVATION_HOUSEHOLD_INGESTED\Todaysdate
         process_state: clean
         unit: UNITLESS
       function_results:
