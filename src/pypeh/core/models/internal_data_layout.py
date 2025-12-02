@@ -12,8 +12,7 @@ from typing import TYPE_CHECKING, Generic, Sequence
 from pypeh.core.cache.containers import CacheContainerView
 from pypeh.core.models.proxy import TypedLazyProxy
 from pypeh.core.models.typing import T_DataType
-from pypeh.core.models.constants import ObservablePropertyValueType, ValidationErrorLevel
-from pypeh.core.models.validation_dto import ValidationDesign, ValidationExpression
+from pypeh.core.models.constants import ObservablePropertyValueType
 
 if TYPE_CHECKING:
     from typing import Any
@@ -636,62 +635,6 @@ class DatasetSeries(Resource, Generic[T_DataType]):
         dataset = self.get(dataset_label)
         assert dataset is not None
         return dataset.relabel(element_mapping, dataops_adapter=dataops_adapter)
-
-    def get_identifier_validation_config_dict(
-        self,
-        data_import_adapter: OutDataOpsInterface,
-        cache_view: CacheContainerView,
-    ) -> dict[str, list[ValidationDesign]]:
-        ret: dict[str, list[ValidationDesign]] = dict()
-
-        for dataset_label in self.parts:
-            validation_designs = []
-            dataset = self[dataset_label]
-            assert dataset is not None
-            schema = dataset.schema
-            foreign_keys = schema.foreign_keys
-            if foreign_keys is not None:
-                for foreign_key in foreign_keys.values():
-                    element_label = foreign_key.element_label
-                    reference = foreign_key.reference
-                    referenced_dataset = self[reference.dataset_label]
-                    assert referenced_dataset is not None
-                    referenced_data = referenced_dataset.data
-                    assert referenced_data is not None
-                    validation_arg_values = list(
-                        data_import_adapter.get_element_values(
-                            data=referenced_data, element_label=reference.element_label
-                        )
-                    )
-                    assert (
-                        len(validation_arg_values) > 0
-                    ), f"No identifiers to validate against found in {reference.element_label}"
-                    validation_name = validation_name = (
-                        f"check_foreignkey_{dataset_label.replace(':', '_')}_{element_label}"
-                    )
-                    element = schema.get_element_by_label(element_label)
-                    assert element is not None
-                    element_observable_property = cache_view.get(element.observable_property_id, "ObservableProperty")
-                    assert isinstance(element_observable_property, peh.ObservableProperty)
-                    element_observable_property_short_name = element_observable_property.short_name
-                    assert element_observable_property_short_name is not None
-                    validation_design = ValidationDesign(
-                        name=validation_name,
-                        error_level=ValidationErrorLevel.ERROR,
-                        expression=ValidationExpression(
-                            command="is_in",
-                            subject=[
-                                element_label,
-                            ],
-                            arg_values=validation_arg_values,
-                        ),
-                    )
-
-                    validation_designs.append(validation_design)
-
-                ret[dataset_label] = validation_designs
-
-        return ret
 
     # TEMP: a better API to tackle casting the schema from one underlying object to
     # another will crystallize when other use cases pop up.

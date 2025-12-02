@@ -1,9 +1,8 @@
-import peh_model.peh as peh
 import pytest
-import yaml
 
 from copy import deepcopy
 
+from pypeh.adapters.outbound.persistence.hosts import DirectoryIO
 from pypeh.adapters.outbound.validation.pandera_adapter.parsers import (
     parse_validation_expression,
     parse_columns,
@@ -18,6 +17,8 @@ from pypeh.core.models.validation_dto import (
 )
 from pypeh.core.interfaces.outbound.dataops import ValidationInterface
 from pypeh.core.models.constants import ValidationErrorLevel
+from pypeh.core.cache.containers import CacheContainerFactory, CacheContainerView
+from pypeh.core.cache.utils import load_entities_from_tree
 from tests.test_utils.dirutils import get_absolute_path
 
 
@@ -291,44 +292,55 @@ class TestPydanticToDto:
 
 @pytest.mark.dataframe
 class TestPehToDto:
-    def test_condition(self):
+    @pytest.fixture(scope="function")
+    def get_check_command_cache(self):
+        source = get_absolute_path("input_check_command")
+        container = CacheContainerFactory.new()
+        host = DirectoryIO()
+        roots = host.load(source, format="yaml")
+        for root in roots:
+            for entity in load_entities_from_tree(root):
+                container.add(entity)
+        return CacheContainerView(container)
+
+    @pytest.fixture(scope="function")
+    def get_arg_expression_cache(self):
+        source = get_absolute_path("input_arg_expression")
+        container = CacheContainerFactory.new()
+        host = DirectoryIO()
+        roots = host.load(source, format="yaml")
+        for root in roots:
+            for entity in load_entities_from_tree(root):
+                container.add(entity)
+        return CacheContainerView(container)
+
+    def test_condition(self, get_check_command_cache, get_arg_expression_cache):
         """
         Checks whether using a single validation_command leads to the same
         validation configuration as using one validation_arg_expression.
         """
-        check_command_path = get_absolute_path("./input/check_command.yaml")
-        with open(check_command_path) as f:
-            check_command_yaml = yaml.safe_load(f)
-        check_command_obs_props = [
-            peh.ObservableProperty(**obs_prop) for obs_prop in check_command_yaml["observable_properties"]
-        ]
-        obs_prop_id_sel_check = [obs_prop.id for obs_prop in check_command_obs_props]
-        obs_prop_dict_check = {obs_prop.id: obs_prop for obs_prop in check_command_obs_props}
-        observation_design_check = peh.ObservationDesign(**check_command_yaml["observations"][0]["observation_design"])
+        check_command_cache_view = get_check_command_cache
+        check_command_obs_props = list(check_command_cache_view.get_all("ObservableProperty"))
+        check_command_observations = list(check_command_cache_view.get_all("Observation"))
+        observation_design_check = check_command_observations[0].observation_design
 
         vc_check = ValidationConfig.from_peh(
             "check",
-            obs_prop_id_sel_check,
+            check_command_obs_props,
             observation_design_check,
-            obs_prop_dict_check,
+            cache_view=check_command_cache_view,
         )
 
-        arg_expression_path = get_absolute_path("./input/arg_expression.yaml")
-        with open(arg_expression_path) as f:
-            arg_expression_yaml = yaml.safe_load(f)
-        arg_expression_obs_props = [
-            peh.ObservableProperty(**obs_prop) for obs_prop in arg_expression_yaml["observable_properties"]
-        ]
-
-        obs_prop_id_sel_arg = [obs_prop.id for obs_prop in arg_expression_obs_props]
-        obs_prop_dict_arg = {obs_prop.id: obs_prop for obs_prop in arg_expression_obs_props}
-        observation_design_arg = peh.ObservationDesign(**arg_expression_yaml["observations"][0]["observation_design"])
+        arg_expression_cache_view = get_arg_expression_cache
+        arg_expression_obs_props = list(arg_expression_cache_view.get_all("ObservableProperty"))
+        arg_expression_observations = list(arg_expression_cache_view.get_all("Observation"))
+        observation_design_arg = arg_expression_observations[0].observation_design
 
         vc_arg = ValidationConfig.from_peh(
             "arg",
-            obs_prop_id_sel_arg,
+            arg_expression_obs_props,
             observation_design_arg,
-            obs_prop_dict_arg,
+            cache_view=arg_expression_cache_view,
         )
 
         assert len(vc_check.columns) == len(vc_arg.columns)

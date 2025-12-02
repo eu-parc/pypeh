@@ -2,8 +2,6 @@ import pytest
 import peh_model.peh as peh
 import logging
 
-from pypeh.core.cache.containers import CacheContainerView
-from pypeh.core.interfaces.outbound.dataops import DataImportInterface
 from tests.test_utils.dirutils import get_absolute_path
 
 from pypeh import Session
@@ -40,6 +38,9 @@ class TestDatasetConsistency:
         )
         assert data_import_config.id == "peh:IMPORT_CONFIG_CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA"
         assert isinstance(data_import_config, peh.DataImportConfig)
+        data_layout = session.cache.get(data_import_config.layout, "DataLayout")
+        assert data_layout.id == data_import_config.layout
+        assert isinstance(data_layout, peh.DataLayout)
         dataset_series = session._load_tabular_dataset_series(
             source="validation_test_06_data.xlsx",
             connection_label="local_file_validation_files",
@@ -48,17 +49,8 @@ class TestDatasetConsistency:
         assert isinstance(dataset_series, DatasetSeries)
         assert len(dataset_series) > 0
 
-        cache_view = CacheContainerView(session.cache)
-        data_import_adapter = session.get_adapter("data_import")
-        assert isinstance(data_import_adapter, DataImportInterface)
-        id_validations_dict = dataset_series.get_identifier_validation_config_dict(
-            data_import_adapter=data_import_adapter,
-            cache_view=cache_view,
-        )
-
         validation_report_collection = session.validate_tabular_dataset_series(
             dataset_series=dataset_series,
-            dataset_series_validations=id_validations_dict,
         )
 
         assert isinstance(validation_report_collection, dict)

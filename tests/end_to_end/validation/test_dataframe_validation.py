@@ -42,6 +42,7 @@ class TestSessionDefaultLocalFile:
         assert isinstance(data_dict, dict)
         data_df = data_dict[observation_id].observed_data
         assert data_df is not None
+
         report_to_check = session.validate_tabular_data(data_df, observation=observation)
 
         assert isinstance(report_to_check, ValidationErrorReport)

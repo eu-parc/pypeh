@@ -1,4 +1,3 @@
-from typing import Sequence
 import pytest
 
 from pypeh.core.cache.containers import CacheContainerFactory, CacheContainerView

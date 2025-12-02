@@ -31,6 +31,25 @@ layouts:
       observable_property: peh:OBSPROP_ID_samplinghour
     - label: samplingminutes
       observable_property: peh:OBSPROP_ID_samplingminutes
+    validation_designs:
+    - validation_name: check_foreignkey_peh_SAMPLE_METADATA_SECTION_SAMPLE_id_subject
+      validation_error_level: error
+      validation_expression:
+        validation_subject_contextual_field_references:
+        - field_label: id_subject
+        validation_command: is_in
+        validation_arg_contextual_field_references:
+        - dataset_label: SUBJECTUNIQUE
+          field_label: id_subject
+    - validation_name: check_foreignkey_peh_SAMPLE_METADATA_SECTION_SAMPLE_id_sample
+      validation_error_level: error
+      validation_expression:
+        validation_subject_contextual_field_references:
+        - field_label: id_sample
+        validation_command: is_in
+        validation_arg_contextual_field_references:
+        - dataset_label: SAMPLETIMEPOINT_BWB
+          field_label: id_sample
   - id: peh:SAMPLE_METADATA_SECTION_SUBJECTUNIQUE
     ui_label: SUBJECTUNIQUE
     observable_entity_type: person
@@ -55,6 +74,16 @@ layouts:
       observable_property: peh:OBSPROP_ID_age_birth_m
     - label: smoking_m
       observable_property: peh:OBSPROP_ID_smoking_m
+    validation_designs:
+    - validation_name: check_foreignkey_peh_SAMPLE_METADATA_SECTION_SUBJECTUNIQUE_id_participant
+      validation_error_level: error
+      validation_expression:
+        validation_subject_contextual_field_references:
+        - field_label: id_participant
+        validation_command: is_in
+        validation_arg_contextual_field_references:
+        - dataset_label: SUBJECTUNIQUE
+          field_label: id_subject
   - id: peh:SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BWB
     ui_label: SAMPLETIMEPOINT_BWB
     observable_entity_type: sample
@@ -72,3 +101,13 @@ layouts:
       observable_property: peh:OBSPROP_ID_chol_lod
     - label: chol_loq
       observable_property: peh:OBSPROP_ID_chol_loq
+    validation_designs:
+    - validation_name: check_foreignkey_peh_SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BWB_id_sample
+      validation_error_level: error
+      validation_expression:
+        validation_subject_contextual_field_references:
+        - field_label: id_sample
+        validation_command: is_in
+        validation_arg_contextual_field_references:
+        - dataset_label: SAMPLE
+          field_label: id_sample

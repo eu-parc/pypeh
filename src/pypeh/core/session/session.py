@@ -18,7 +18,6 @@ from pypeh.core.models.settings import (
     DEFAULT_CONNECTION_LABEL,
 )
 from pypeh.core.models.typing import T_NamedThingLike, T_DataType
-from pypeh.core.models.validation_dto import ValidationDesign
 from pypeh.core.models.validation_errors import (
     ValidationErrorReport,
     ValidationErrorReportCollection,
@@ -364,7 +363,6 @@ class Session(Generic[T_AdapterType, T_DataType]):
     def validate_tabular_dataset(
         self,
         data: Dataset[DataFrame],
-        dataset_validations: Sequence[ValidationDesign] | None = None,
         dependent_data: DatasetSeries[DataFrame] | None = None,
     ) -> ValidationErrorReport:
         # try:
@@ -374,9 +372,8 @@ class Session(Generic[T_AdapterType, T_DataType]):
         assert isinstance(validation_adapter, ValidationInterface)
         return validation_adapter._validate_dataset(
             dataset=data,
-            cache_view=cache_view,
-            dataset_validations=dataset_validations,
             dependent_dataset_series=dependent_data,
+            cache_view=cache_view,
         )
 
         # except Exception as e:
@@ -398,12 +395,15 @@ class Session(Generic[T_AdapterType, T_DataType]):
 
             validation_adapter = self.get_adapter("validation")
             assert isinstance(validation_adapter, ValidationInterface)
+
+            cache_view = CacheContainerView(self.cache)
             return validation_adapter.validate(
                 data=data,
                 observation=observation,
                 observable_properties=observable_properties,
                 dataset_validations=dataset_validations,
                 dependent_data=dependent_data,
+                cache_view=cache_view,
             )
 
         except Exception as e:
@@ -412,31 +412,17 @@ class Session(Generic[T_AdapterType, T_DataType]):
     def validate_tabular_dataset_series(
         self,
         dataset_series: DatasetSeries[DataFrame],
-        dataset_series_validations: dict[str, list[ValidationDesign]] | None = None,
     ) -> ValidationErrorReportCollection:
-        """
-        dataset_series_validations: keys are `Dataset` labels
-        """
-
-        result_dict = ValidationErrorReportCollection()
+        validation_result_dict = ValidationErrorReportCollection()
         for dataset_label in dataset_series:
             dataset = dataset_series[dataset_label]
             assert dataset is not None
-            dataset_validations = (
-                dataset_series_validations.get(dataset_label, None) if dataset_series_validations else None
-            )
-
-            ret = self.validate_tabular_dataset(
-                data=dataset,
-                dataset_validations=dataset_validations,
-                dependent_data=dataset_series,
-            )
+            validation_result = self.validate_tabular_dataset(data=dataset, dependent_data=dataset_series)
             assert isinstance(
-                ret, ValidationErrorReport
-            ), "ret in `Session.validate_tabular_dataset_series` should be a`ValidationErrorReport`"
-            result_dict[dataset_label] = ret
-
-        return result_dict
+                validation_result, ValidationErrorReport
+            ), "validation_result in `Session.validate_tabular_dataset_series` should be a`ValidationErrorReport`"
+            validation_result_dict[dataset_label] = validation_result
+        return validation_result_dict
 
     def validate_tabular_data_collection(
         self,

@@ -16,6 +16,7 @@ from abc import abstractmethod
 from peh_model.peh import (
     DataImportConfig,
     DataLayout,
+    DataLayoutSection,
     ValidationDesign,
     EntityList,
     Observation,
@@ -29,7 +30,7 @@ from pypeh.core.models.internal_data_layout import Dataset, DatasetSeries, Inter
 from pypeh.core.models.internal_data_layout import get_observable_property_id_to_dataset_label_dict
 from pypeh.core.models.typing import T_DataType
 from pypeh.core.models.settings import FileSystemSettings
-from pypeh.core.models.validation_dto import ValidationConfig
+from pypeh.core.models import validation_dto
 from pypeh.core.models.proxy import TypedLazyProxy
 from pypeh.core.session.connections import ConnectionManager
 
@@ -103,7 +104,9 @@ class OutDataOpsInterface(Generic[T_DataType]):
 
 class ValidationInterface(OutDataOpsInterface, Generic[T_DataType]):
     @abstractmethod
-    def _validate(self, data: dict[str, Sequence] | T_DataType, config: ValidationConfig) -> ValidationErrorReport:
+    def _validate(
+        self, data: dict[str, Sequence] | T_DataType, config: validation_dto.ValidationConfig
+    ) -> ValidationErrorReport:
         raise NotImplementedError
 
     @classmethod
@@ -122,17 +125,39 @@ class ValidationInterface(OutDataOpsInterface, Generic[T_DataType]):
     def _validate_dataset(
         self,
         dataset: Dataset[T_DataType],
-        cache_view: CacheContainerView,
-        dataset_validations=None,
         dependent_dataset_series: DatasetSeries[T_DataType] | None = None,
+        cache_view: CacheContainerView | None = None,
     ) -> ValidationErrorReport:
-        validation_config = ValidationConfig.from_dataset(
-            dataset,
-            cache_view,
-            dataset_validations,
-        )
         assert dataset.data is not None
         to_validate: T_DataType = dataset.data
+
+        # Get Dataset level validations if they exist for the describing DataLayoutSection
+        dataset_validations = []
+        layout_section_id = dataset.described_by
+        if layout_section_id:
+            layout_section = cache_view.get(layout_section_id, "DataLayoutSection")
+            assert layout_section is not None
+            assert isinstance(layout_section, DataLayoutSection)
+            if layout_section.validation_designs:
+                for vd in layout_section.validation_designs:
+                    dataset_validation = validation_dto.ValidationDesign.from_peh(vd, cache_view)
+                    # For an expression that relies on a field reference spec for its arguments, set the validation arguments
+                    # as the actual values from the dataset (e.g. for an "is_in" check on a foreign key relation)
+                    if vd.validation_expression.validation_arg_contextual_field_references:
+                        arg_values = vd.validation_expression.validation_arg_values
+                        for ref in vd.validation_expression.validation_arg_contextual_field_references:
+                            arg_values.extend(
+                                dependent_dataset_series[ref.dataset_label].data.get_column(ref.field_label).to_list()
+                            )
+                        dataset_validation.expression.arg_values = arg_values
+                        dataset_validation.expression.arg_columns = None
+                    dataset_validations.append(dataset_validation)
+
+        validation_config = validation_dto.ValidationConfig.from_dataset(
+            dataset,
+            dataset_validations,
+            cache_view,
+        )
         join_required = False
         # check whether data requires join to perform validation (cross DataLayoutSection validation)
         dependent_observable_property_ids = validation_config.dependent_observable_property_ids
@@ -163,7 +188,7 @@ class ValidationInterface(OutDataOpsInterface, Generic[T_DataType]):
                 identifying_obs_prop_id_list = dataset.schema.primary_keys
                 assert (
                     identifying_obs_prop_id_list is not None
-                ), "identitfying_obs_prop_id_list in `ValidationInterface.validate` should not be None"
+                ), "identifying_obs_prop_id_list in `ValidationInterface.validate` should not be None"
 
                 to_validate = self._join_dataset(
                     identifying_observable_property_ids=identifying_obs_prop_id_list,
@@ -184,9 +209,8 @@ class ValidationInterface(OutDataOpsInterface, Generic[T_DataType]):
         observable_properties: List[ObservableProperty],
         dataset_validations: Sequence[ValidationDesign] | None = None,
         dependent_data: dict[str, dict[str, Sequence]] | dict[str, T_DataType] | None = None,
+        cache_view: CacheContainerView | None = None,
     ) -> ValidationErrorReport:
-        observable_property_dict = {op.id: op for op in observable_properties}
-
         # TODO: Temporary column label read from dataset; to be replaced with smarter object
         if isinstance(data, dict):
             observable_property_id_selection = data.keys()
@@ -197,11 +221,8 @@ class ValidationInterface(OutDataOpsInterface, Generic[T_DataType]):
                 f"Unsupported data argument encountered while validating observation {observation.id}"
             )
 
-        validation_config = ValidationConfig.from_observation(
-            observation,
-            observable_property_id_selection,
-            observable_property_dict,
-            dataset_validations,
+        validation_config = validation_dto.ValidationConfig.from_observation(
+            observation, observable_properties, dataset_validations, cache_view=cache_view
         )
         to_validate = data
         join_required = False
