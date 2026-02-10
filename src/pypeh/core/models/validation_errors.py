@@ -29,6 +29,7 @@ class EntityLocation(ValidationErrorLocation):
     location_type: Literal["entity"] = "entity"
     identifying_property_list: List[str]
     identifying_property_values: List[Tuple[Union[int, float, str, None], ...]]
+    property_names: Optional[List[str]] = None
 
 
 # Example of another ValidationErrorLocation subclass

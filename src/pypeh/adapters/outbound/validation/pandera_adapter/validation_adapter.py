@@ -71,6 +71,7 @@ class DataFrameValidationAdapter(DataFrameAdapter, ValidationInterface[DataFrame
                 for location in error.locations:
                     row_ids = getattr(location, "row_ids", None)
                     key_columns = getattr(location, "key_columns", None)
+                    column_names = getattr(location, "column_names", None)
                     if row_ids and key_columns:
                         entity_ids = [
                             tuple(get_data_item(data, row_id, id_obs_prop) for id_obs_prop in key_columns)
@@ -81,6 +82,7 @@ class DataFrameValidationAdapter(DataFrameAdapter, ValidationInterface[DataFrame
                                 location_type="entity",
                                 identifying_property_list=key_columns,
                                 identifying_property_values=entity_ids,
+                                property_names=column_names,
                             )
                         )
                     else:
