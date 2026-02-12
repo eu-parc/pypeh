@@ -2,8 +2,6 @@ import pytest
 import peh_model.peh as peh
 import logging
 
-from pypeh.core.cache.containers import CacheContainerView
-from pypeh.core.interfaces.outbound.dataops import DataImportInterface
 from pypeh.core.models.constants import ObservablePropertyValueType, ValidationErrorLevel
 from tests.test_utils.dirutils import get_absolute_path
 

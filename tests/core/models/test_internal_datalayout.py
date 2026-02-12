@@ -288,12 +288,12 @@ class TestToTarget:
             observations=set(["peh:urine_lab_this"]),
         )
 
-        urine_lab_dataset = Dataset(
-            label="urine_lab",
-            schema=urine_lab_schema,
-            data=None,
-            observations=set(["peh:urine_lab_this", "peh:urine_lab_other"]),
-        )
+        # urine_lab_dataset = Dataset(
+        #     label="urine_lab",
+        #     schema=urine_lab_schema,
+        #     data=None,
+        #     observations=set(["peh:urine_lab_this", "peh:urine_lab_other"]),
+        # )
 
         analyticalinfo_dataset = Dataset(
             label="analyticalinfo",

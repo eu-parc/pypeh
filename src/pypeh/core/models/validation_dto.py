@@ -236,7 +236,7 @@ class ValidationDesign(BaseModel):
         type_annotations: dict[str, dict[str, ObservablePropertyValueType]],
         dataset_label: str | None = None,
     ) -> list["ValidationDesign"]:
-        expression_list = []
+        name_expression_list = []
         numeric_commands = set(
             [
                 "min",
@@ -299,22 +299,25 @@ class ValidationDesign(BaseModel):
                     generate = True
 
             if generate:
-                expression_list.append(
-                    ValidationExpression.from_peh(
-                        pehs.ValidationExpression.model_construct(
-                            **{
-                                "validation_command": validation_command,
-                                "validation_arg_values": [typed_metadata_value],
-                            }
+                name_expression_list.append(
+                    (
+                        metadatum.field.lower(),
+                        ValidationExpression.from_peh(
+                            pehs.ValidationExpression.model_construct(
+                                **{
+                                    "validation_command": validation_command,
+                                    "validation_arg_values": [typed_metadata_value],
+                                }
+                            ),
+                            type_annotations=type_annotations,
+                            dataset_label=dataset_label,
                         ),
-                        type_annotations=type_annotations,
-                        dataset_label=dataset_label,
                     )
                 )
 
         return [
-            cls(name=metadatum.field.lower(), error_level=ValidationErrorLevel.ERROR, expression=expression)
-            for expression in expression_list
+            cls(name=name, error_level=ValidationErrorLevel.ERROR, expression=expression)
+            for name, expression in name_expression_list
         ]
 
 

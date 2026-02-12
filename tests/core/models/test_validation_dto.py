@@ -60,10 +60,26 @@ class TestBasicValidationConfig:
         for dataset_label, fake_dataset in fake_dataset_series.items():
             dataset_series.add_data(dataset_label, fake_dataset, non_empty_dataset_elements=list(fake_dataset.keys()))
 
-        for dataset_label, dataset in dataset_series.parts.items():
-            config = validation_interface.build_validation_config(
-                dataset=dataset,
-                dataset_series=dataset_series,
-                cache_view=cache_view,
-            )
-            assert isinstance(config, ValidationConfig)
+        sample_dataset = dataset_series.parts.get("SAMPLE", None)
+        sample_config = validation_interface.build_validation_config(
+            dataset=sample_dataset,
+            dataset_series=dataset_series,
+            cache_view=cache_view,
+        )
+        assert isinstance(sample_config, ValidationConfig)
+        assert [c.unique_name for c in sample_config.columns] == ["id_sample", "matrix"]
+        assert sample_config.columns[1].validations[0].name == "check_categorical"
+        assert sample_config.columns[1].validations[0].expression.command == "is_in"
+
+        sample_tp_dataset = dataset_series.parts.get("SAMPLETIMEPOINT_BS", None)
+        sample_tp_config = validation_interface.build_validation_config(
+            dataset=sample_tp_dataset,
+            dataset_series=dataset_series,
+            cache_view=cache_view,
+        )
+        assert isinstance(sample_tp_config, ValidationConfig)
+        assert [c.unique_name for c in sample_tp_config.columns] == ["id_sample", "adults_u_crt"]
+        assert sample_tp_config.columns[1].validations[1].name == "min"
+        assert sample_tp_config.columns[1].validations[1].expression.command == "is_greater_than_or_equal_to"
+        assert sample_tp_config.columns[1].validations[2].name == "max"
+        assert sample_tp_config.columns[1].validations[2].expression.command == "is_less_than_or_equal_to"
