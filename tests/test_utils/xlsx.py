@@ -2,9 +2,7 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
 
-def write_minimal_xlsx(
-    path: Path, sheet_name: str, headers: list[str], rows: list[list[object]]
-) -> None:
+def write_minimal_xlsx(path: Path, sheet_name: str, headers: list[str], rows: list[list[object]]) -> None:
     def render_cell(value: object, cell_ref: str) -> str:
         if isinstance(value, (int, float)) and not isinstance(value, bool):
             return f'<c r="{cell_ref}"><v>{value}</v></c>'
@@ -12,10 +10,7 @@ def write_minimal_xlsx(
 
     xml_rows: list[str] = []
     for row_idx, row_values in enumerate([headers, *rows], start=1):
-        xml_cells = [
-            render_cell(value, f"{chr(65 + col_idx)}{row_idx}")
-            for col_idx, value in enumerate(row_values)
-        ]
+        xml_cells = [render_cell(value, f"{chr(65 + col_idx)}{row_idx}") for col_idx, value in enumerate(row_values)]
         xml_rows.append(f'<row r="{row_idx}">{"".join(xml_cells)}</row>')
 
     content_types = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

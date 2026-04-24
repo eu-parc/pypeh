@@ -290,9 +290,7 @@ class Session(Generic[T_AdapterType, T_DataType]):
         else:
             connection_label = DEFAULT_CONNECTION_LABEL
 
-        with self.connection_manager.get_connection(
-            connection_label=connection_label
-        ) as connection:
+        with self.connection_manager.get_connection(connection_label=connection_label) as connection:
             data_dict = connection.load(
                 source,
                 format=file_format,

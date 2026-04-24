@@ -70,12 +70,8 @@ class ExcelIOImpl(IOAdapter):
         for key, value in data_schema.items():
             polars_type = DATAFRAME_TYPE_MAPPING.get(value, None)
             if polars_type is None:
-                logger.debug(
-                    f"Cound not find {value} in DATAFRAME_TYPE_MAPPING"
-                )
-                raise KeyError(
-                    f"Could not find {value} in DATAFRAME_TYPE_MAPPING"
-                )
+                logger.debug(f"Cound not find {value} in DATAFRAME_TYPE_MAPPING")
+                raise KeyError(f"Could not find {value} in DATAFRAME_TYPE_MAPPING")
             typed_schema[key] = polars_type
         return typed_schema
 
@@ -84,9 +80,7 @@ class ExcelIOImpl(IOAdapter):
         cast_error_policy: str,
     ) -> CastErrorPolicy:
         if cast_error_policy not in {"null", "raise"}:
-            raise ValueError(
-                "cast_error_policy must be either 'null' or 'raise'"
-            )
+            raise ValueError("cast_error_policy must be either 'null' or 'raise'")
         return cast_error_policy
 
     def _cast_frame_to_schema(
@@ -115,8 +109,7 @@ class ExcelIOImpl(IOAdapter):
             return data.with_columns(cast_expressions)
         except pl.exceptions.InvalidOperationError as exc:
             raise DataFrameTypeCastError(
-                "Failed to cast Excel sheet "
-                f"{section_name!r} using cast_error_policy='raise': {exc}"
+                "Failed to cast Excel sheet " f"{section_name!r} using cast_error_policy='raise': {exc}"
             ) from exc
 
     def _load(
@@ -192,9 +185,7 @@ class ExcelIOImpl(IOAdapter):
         **kwargs,
     ) -> dict[str, pl.DataFrame]:
         try:
-            cast_error_policy = self._validate_cast_error_policy(
-                cast_error_policy
-            )
+            cast_error_policy = self._validate_cast_error_policy(cast_error_policy)
             # if data_schema is provided we need to load each sheet individually
             if data_schema is not None:
                 cached_data = self._read_source_data(source)

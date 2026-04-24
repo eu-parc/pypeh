@@ -169,9 +169,7 @@ class TestSessionValidation:
                 LocalFileConfig(
                     label="local_file",
                     config_dict={
-                        "root_folder": get_absolute_path(
-                            "./input/load_data_collection_basic"
-                        ),
+                        "root_folder": get_absolute_path("./input/load_data_collection_basic"),
                     },
                 ),
             ],
@@ -185,9 +183,7 @@ class TestSessionValidation:
                 section_mapping_links=[
                     DataImportSectionMappingLink(
                         section="SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BSS",
-                        observation_id_list=[
-                            "peh:VALIDATION_TEST_SAMPLE_TIMEPOINT"
-                        ],
+                        observation_id_list=["peh:VALIDATION_TEST_SAMPLE_TIMEPOINT"],
                     ),
                 ]
             ),

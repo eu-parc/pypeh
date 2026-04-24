@@ -1,6 +1,6 @@
 [project]
 name = "pypeh"
-version = "0.2.1"
+version = "0.2.2"
 description = "A modular project with a core library and multiple adapters"
 authors = [{ name = "VITO Health DMT" }]
 requires-python = ">=3.10, <4.0.0"
