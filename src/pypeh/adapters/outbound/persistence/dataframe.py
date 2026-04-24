@@ -5,15 +5,11 @@ import polars as pl
 import io
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Union, IO
+from typing import Union, IO, Literal, Mapping
 from polars.datatypes import DataType, DataTypeClass
 
 from pypeh.core.models.constants import ObservablePropertyValueType
 from pypeh.adapters.outbound.persistence.serializations import IOAdapter
-
-if TYPE_CHECKING:
-    from typing import Mapping
-
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +24,13 @@ DATAFRAME_TYPE_MAPPING: dict[ObservablePropertyValueType, DataType | DataTypeCla
     ObservablePropertyValueType.CATEGORICAL: pl.Utf8,
     ObservablePropertyValueType.DECIMAL: pl.Float64,
 }
+
+
+CastErrorPolicy = Literal["null", "raise"]
+
+
+class DataFrameTypeCastError(ValueError):
+    """Raised when a dataframe column cannot be cast to the declared type."""
 
 
 class CsvIOImpl(IOAdapter):
@@ -56,6 +59,66 @@ class CsvIOImpl(IOAdapter):
 
 
 class ExcelIOImpl(IOAdapter):
+    @staticmethod
+    def _build_typed_schema(
+        data_schema: dict[str, str] | None,
+    ) -> Mapping[str, DataType | DataTypeClass] | None:
+        if data_schema is None:
+            return None
+
+        typed_schema: dict[str, DataType | DataTypeClass] = {}
+        for key, value in data_schema.items():
+            polars_type = DATAFRAME_TYPE_MAPPING.get(value, None)
+            if polars_type is None:
+                logger.debug(
+                    f"Cound not find {value} in DATAFRAME_TYPE_MAPPING"
+                )
+                raise KeyError(
+                    f"Could not find {value} in DATAFRAME_TYPE_MAPPING"
+                )
+            typed_schema[key] = polars_type
+        return typed_schema
+
+    @staticmethod
+    def _validate_cast_error_policy(
+        cast_error_policy: str,
+    ) -> CastErrorPolicy:
+        if cast_error_policy not in {"null", "raise"}:
+            raise ValueError(
+                "cast_error_policy must be either 'null' or 'raise'"
+            )
+        return cast_error_policy
+
+    def _cast_frame_to_schema(
+        self,
+        data: pl.DataFrame,
+        typed_schema: Mapping[str, DataType | DataTypeClass] | None,
+        *,
+        section_name: str,
+        cast_error_policy: CastErrorPolicy,
+    ) -> pl.DataFrame:
+        if typed_schema is None:
+            return data
+
+        cast_expressions = [
+            pl.col(column_name).cast(
+                polars_type,
+                strict=cast_error_policy == "raise",
+            )
+            for column_name, polars_type in typed_schema.items()
+            if column_name in data.columns
+        ]
+        if not cast_expressions:
+            return data
+
+        try:
+            return data.with_columns(cast_expressions)
+        except pl.exceptions.InvalidOperationError as exc:
+            raise DataFrameTypeCastError(
+                "Failed to cast Excel sheet "
+                f"{section_name!r} using cast_error_policy='raise': {exc}"
+            ) from exc
+
     def _load(
         self, source: Union[str, Path, IO[str], IO[bytes], bytes], **options
     ) -> pl.DataFrame | dict[str, pl.DataFrame]:
@@ -97,17 +160,11 @@ class ExcelIOImpl(IOAdapter):
         source: Union[str, Path, IO[str], IO[bytes], bytes],
         section_name: str,
         data_schema: dict[str, str] | None = None,
+        cast_error_policy: CastErrorPolicy = "null",
         cached_data: bytes | None = None,
     ) -> pl.DataFrame:
-        typed_schema: Mapping[str, DataType | DataTypeClass] | None = None
-        if data_schema is not None:
-            typed_schema = {}
-            for key, value in data_schema.items():
-                polars_type = DATAFRAME_TYPE_MAPPING.get(value, None)
-                if polars_type is None:
-                    logger.debug(f"Cound not find {value} in DATAFRAME_TYPE_MAPPING")
-                    raise KeyError(f"Could not find {value} in DATAFRAME_TYPE_MAPPING")
-                typed_schema[key] = polars_type
+        typed_schema = self._build_typed_schema(data_schema)
+        cast_error_policy = self._validate_cast_error_policy(cast_error_policy)
 
         default = {
             "engine": "calamine",
@@ -116,27 +173,40 @@ class ExcelIOImpl(IOAdapter):
         options = {
             **default,
             "sheet_name": section_name,
-            "schema_overrides": typed_schema,
         }
 
         ret = self._load(source, **options)
         assert isinstance(ret, pl.DataFrame)
-        return ret
+        return self._cast_frame_to_schema(
+            ret,
+            typed_schema,
+            section_name=section_name,
+            cast_error_policy=cast_error_policy,
+        )
 
     def load(
         self,
         source: Union[str, Path, IO[str], IO[bytes]],
         data_schema: dict[str, dict[str, str]] | None = None,
+        cast_error_policy: CastErrorPolicy = "null",
         **kwargs,
     ) -> dict[str, pl.DataFrame]:
         try:
+            cast_error_policy = self._validate_cast_error_policy(
+                cast_error_policy
+            )
             # if data_schema is provided we need to load each sheet individually
             if data_schema is not None:
                 cached_data = self._read_source_data(source)
                 assert cached_data is not None
                 result = {}
                 for section_name, typing_dict in data_schema.items():
-                    result[section_name] = self.load_section(cached_data, section_name, typing_dict)
+                    result[section_name] = self.load_section(
+                        cached_data,
+                        section_name,
+                        typing_dict,
+                        cast_error_policy=cast_error_policy,
+                    )
 
             else:
                 default = {

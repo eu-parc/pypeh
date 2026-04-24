@@ -1,4 +1,5 @@
 import io
+
 import fsspec
 import linkml_runtime.loaders
 import pytest
@@ -18,6 +19,7 @@ from peh_model.peh import EntityList
 
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory
 from tests.test_utils.dirutils import get_absolute_path
+from tests.test_utils.xlsx import write_minimal_xlsx
 
 
 class MockAdapter(IOAdapter):
@@ -168,6 +170,62 @@ class TestXlsIO:
                 data_schema=typed_dict,
             )
         assert isinstance(result, dict)
+
+    def test_typed_sheet_type_mismatch_is_loaded_as_null(self, tmp_path):
+        source = tmp_path / "typed_mismatch.xlsx"
+        write_minimal_xlsx(
+            source,
+            sheet_name="SAMPLE",
+            headers=["id_sample", "chol"],
+            rows=[
+                ["sample_a", 1.2],
+                ["sample_b", "oops"],
+                ["sample_c", 3.4],
+            ],
+        )
+
+        excel_io = ExcelIO()
+        result = excel_io.load_section(
+            source,
+            section_name="SAMPLE",
+            data_schema={"id_sample": "string", "chol": "float"},
+            cast_error_policy="null",
+        )
+
+        assert result.shape == (3, 2)
+        assert result["id_sample"].to_list() == [
+            "sample_a",
+            "sample_b",
+            "sample_c",
+        ]
+        assert result["chol"].to_list() == [1.2, None, 3.4]
+
+    def test_typed_sheet_type_mismatch_raises_when_requested(self, tmp_path):
+        from pypeh.adapters.persistence.dataframe import DataFrameTypeCastError
+
+        source = tmp_path / "typed_mismatch.xlsx"
+        write_minimal_xlsx(
+            source,
+            sheet_name="SAMPLE",
+            headers=["id_sample", "chol"],
+            rows=[
+                ["sample_a", 1.2],
+                ["sample_b", "oops"],
+                ["sample_c", 3.4],
+            ],
+        )
+
+        excel_io = ExcelIO()
+        with pytest.raises(
+            DataFrameTypeCastError,
+            match="Failed to cast Excel sheet 'SAMPLE'",
+        ):
+            excel_io.load_section(
+                source,
+                section_name="SAMPLE",
+                data_schema={"id_sample": "string", "chol": "float"},
+                cast_error_policy="raise",
+            )
 
 
 @pytest.mark.core

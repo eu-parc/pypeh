@@ -9,6 +9,7 @@ from pypeh.core.models.settings import LocalFileConfig
 from pypeh.core.models.validation_dto import ValidationConfig
 from pypeh.core.utils.namespaces import NamespaceManager
 from tests.test_utils.dirutils import get_absolute_path
+from tests.test_utils.xlsx import write_minimal_xlsx
 
 
 @pytest.mark.dataframe
@@ -148,6 +149,61 @@ class TestSessionValidation:
         dataset = result["SAMPLE"]
         assert isinstance(dataset, Dataset)
         assert dataset.data.shape == (1, 7)
+
+    def test_load_dataset_series_cast_error_policy_raise(self, tmp_path):
+        from pypeh.adapters.persistence.dataframe import DataFrameTypeCastError
+
+        source = tmp_path / "typed_mismatch.xlsx"
+        write_minimal_xlsx(
+            source,
+            sheet_name="SAMPLETIMEPOINT_BSS",
+            headers=["id_sample", "chol", "chol_loq", "chol_lod"],
+            rows=[
+                [1, 1.2, 0.1, 0.01],
+                [2, "oops", 0.1, 0.01],
+            ],
+        )
+
+        session = Session(
+            connection_config=[
+                LocalFileConfig(
+                    label="local_file",
+                    config_dict={
+                        "root_folder": get_absolute_path(
+                            "./input/load_data_collection_basic"
+                        ),
+                    },
+                ),
+            ],
+            default_connection="local_file",
+            load_from_default_connection="",
+        )
+        data_import_config = DataImportConfig(
+            id="peh:IMPORT_CONFIG_CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA",
+            layout="peh:CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA",
+            section_mapping=DataImportSectionMapping(
+                section_mapping_links=[
+                    DataImportSectionMappingLink(
+                        section="SAMPLE_METADATA_SECTION_SAMPLETIMEPOINT_BSS",
+                        observation_id_list=[
+                            "peh:VALIDATION_TEST_SAMPLE_TIMEPOINT"
+                        ],
+                    ),
+                ]
+            ),
+        )
+
+        with pytest.raises(
+            DataFrameTypeCastError,
+            match="Failed to cast Excel sheet 'SAMPLETIMEPOINT_BSS'",
+        ):
+            session.load_tabular_dataset_series(
+                source=str(source),
+                file_format="xlsx",
+                data_import_config=data_import_config,
+                connection_label="local_file",
+                cast_error_policy="raise",
+            )
 
     @pytest.mark.skip(reason="ObservableProperty info is lacking")
     def test_invalid_sheets(self, monkeypatch):

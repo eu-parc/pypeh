@@ -31,6 +31,7 @@ class TestDataFrameEnrichment:
         dataset_series = session.load_tabular_dataset_series(
             source=excel_path,
             data_import_config=data_import_config,
+            cast_error_policy="null",
         )
         assert isinstance(dataset_series, DatasetSeries)
         cache_view = CacheContainerView(session.cache)

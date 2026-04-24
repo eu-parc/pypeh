@@ -5,7 +5,13 @@ import importlib
 import logging
 import peh_model.peh as peh
 
-from typing import TYPE_CHECKING, TypeVar, Sequence, Generic
+from typing import (
+    TYPE_CHECKING,
+    TypeVar,
+    Sequence,
+    Generic,
+    Literal,
+)
 
 from pypeh.core.cache.containers import CacheContainer, CacheContainerFactory, CacheContainerView
 from pypeh.core.models.proxy import TypedLazyProxy
@@ -256,6 +262,7 @@ class Session(Generic[T_AdapterType, T_DataType]):
         file_format: str | None = None,
         connection_label: str | None = None,
         allow_incomplete: bool = False,
+        cast_error_policy: Literal["null", "raise"] = "raise",
         namespace_key: str | None = None,
     ) -> DatasetSeries[DataFrame]:
         cache_view = CacheContainerView(self.cache)
@@ -283,8 +290,15 @@ class Session(Generic[T_AdapterType, T_DataType]):
         else:
             connection_label = DEFAULT_CONNECTION_LABEL
 
-        with self.connection_manager.get_connection(connection_label=connection_label) as connection:
-            data_dict = connection.load(source, format=file_format, data_schema=data_schema)
+        with self.connection_manager.get_connection(
+            connection_label=connection_label
+        ) as connection:
+            data_dict = connection.load(
+                source,
+                format=file_format,
+                data_schema=data_schema,
+                cast_error_policy=cast_error_policy,
+            )
         assert isinstance(data_dict, dict)
         import_adapter = self.get_adapter("dataops")
         for raw_dataset_label, raw_dataset in data_dict.items():
