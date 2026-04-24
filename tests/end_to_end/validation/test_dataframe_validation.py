@@ -104,7 +104,7 @@ class TestRoundTripDataset:
 
     @pytest.mark.parametrize("test_label", ["01", "02", "04", "05", "06"])
     def test_load_data(self, monkeypatch, import_config_label, test_label):
-        from pypeh.adapters.persistence.dataframe import DataFrameTypeCastError
+        from pypeh.adapters.outbound.persistence.dataframe import DataFrameTypeCastError
 
         monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_TYPE", "LocalFile")
         monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_ROOT_FOLDER", get_absolute_path(f"./input/test_{test_label}"))
@@ -225,7 +225,7 @@ class TestRoundTripDataset:
         ],
     )
     def test_full(self, monkeypatch, import_config_label, test_label):
-        from pypeh.adapters.persistence.dataframe import DataFrameTypeCastError
+        from pypeh.adapters.outbound.persistence.dataframe import DataFrameTypeCastError
 
         monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_TYPE", "LocalFile")
         monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_ROOT_FOLDER", get_absolute_path(f"./input/test_{test_label}"))

@@ -151,7 +151,7 @@ class TestSessionValidation:
         assert dataset.data.shape == (1, 7)
 
     def test_load_dataset_series_cast_error_policy_raise(self, tmp_path):
-        from pypeh.adapters.persistence.dataframe import DataFrameTypeCastError
+        from pypeh.adapters.outbound.persistence.dataframe import DataFrameTypeCastError
 
         source = tmp_path / "typed_mismatch.xlsx"
         write_minimal_xlsx(

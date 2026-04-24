@@ -201,7 +201,7 @@ class TestXlsIO:
         assert result["chol"].to_list() == [1.2, None, 3.4]
 
     def test_typed_sheet_type_mismatch_raises_when_requested(self, tmp_path):
-        from pypeh.adapters.persistence.dataframe import DataFrameTypeCastError
+        from pypeh.adapters.outbound.persistence.dataframe import DataFrameTypeCastError
 
         source = tmp_path / "typed_mismatch.xlsx"
         write_minimal_xlsx(
