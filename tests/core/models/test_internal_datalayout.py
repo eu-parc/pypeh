@@ -322,6 +322,7 @@ class TestInternalDataLayout:
         assert contextual_field_reference.dataset_label == "SAMPLETIMEPOINT_BS"
         assert contextual_field_reference.field_label == "adults_u_crt"
 
+<<<<<<< HEAD
     def test_from_peh_data_config_with_export_config_construction(
         self, get_cache
     ):
@@ -393,6 +394,43 @@ class TestInternalDataLayout:
             == expected_pair
         )
 
+=======
+    def test_from_peh_data_config_matches_import_config(self, get_cache):
+        cache_view = get_cache
+        data_import_config = cache_view.get(
+            "peh:IMPORT_CONFIG_CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA",
+            "DataImportConfig",
+        )
+        assert isinstance(data_import_config, peh.DataImportConfig)
+
+        via_import = DatasetSeries.from_peh_data_import_config(
+            data_import_config=data_import_config,
+            cache_view=cache_view,
+        )
+        via_shared = DatasetSeries.from_peh_data_config(
+            data_config=data_import_config,
+            cache_view=cache_view,
+        )
+
+        assert set(via_import.parts) == set(via_shared.parts)
+        for dataset_label, dataset in via_import.parts.items():
+            other = via_shared.parts[dataset_label]
+            assert dataset.observation_ids == other.observation_ids
+            assert set(dataset.get_element_labels()) == set(
+                other.get_element_labels()
+            )
+        assert dict(via_import._context_index) == dict(
+            via_shared._context_index
+        )
+        assert {
+            obs_id: set(labels)
+            for obs_id, labels in via_import._obs_index.items()
+        } == {
+            obs_id: set(labels)
+            for obs_id, labels in via_shared._obs_index.items()
+        }
+
+>>>>>>> ab721c1 (add from peh_data_config class method)
     def test_one_observation_to_many_datasets(self):
         ds = DatasetSeries(label="test")
         with pytest.raises(AssertionError, match=r".*obs_test.*"):
