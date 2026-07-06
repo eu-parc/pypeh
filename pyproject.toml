@@ -1,6 +1,6 @@
 [project]
 name = "pypeh"
-version = "0.4.0"
+version = "0.4.1"
 description = "A modular project with a core library and multiple adapters"
 authors = [{ name = "VITO Health DMT" }]
 requires-python = ">=3.10, <4.0.0"
@@ -19,7 +19,7 @@ core = []
 rocrate-adapter = ["rocrate"]
 dataframe-adapter = [
     "peh-dataguard>=0.4,<1.0",
-	"pandera>=0.27.0, <0.32.0",
+	"pandera>=0.27.0, <0.33.0",
     "polars",
     "pyarrow",
     "fastexcel",
