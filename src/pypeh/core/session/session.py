@@ -539,13 +539,45 @@ class Session(Generic[T_AdapterType, T_DataType]):
 
         return exported
 
+    def _resolve_observation_groups(
+        self,
+        alignment_plan: ObservationAlignment,
+    ) -> tuple[peh.ObservationGroup, ...]:
+        """
+        Resolve the ObservationGroups referenced by id in `alignment_plan`
+        (via `ObservationAssembly.source_observation_groups`) from the session
+        cache, the same way `data_export_config` resources are resolved from
+        cache by id.
+        """
+        resolved: dict[str, peh.ObservationGroup] = {}
+        if observation_assemblies := alignment_plan.observation_assemblies:
+            if isinstance(observation_assemblies, peh.ObservationAssembly):
+                observation_assemblies = [observation_assemblies]
+        else:
+            return ()
+
+        for assembly in observation_assemblies:
+            if observation_groups := assembly.source_observation_groups:
+                if isinstance(observation_groups, str):
+                    observation_groups = (observation_groups,)
+
+                for group_id in observation_groups:
+                    group_id = str(group_id)
+                    if group_id in resolved:
+                        continue
+                    cached = self.cache.get(group_id, "ObservationGroup")
+                    if cached is not None:
+                        assert isinstance(cached, peh.ObservationGroup)
+                        resolved[group_id] = cached
+
+        return tuple(resolved.values())
+
     def concatenate_tabular_dataset_series(
         self,
         dataset_series: Sequence[DatasetSeries[DataFrame]],
         *,
         output_label: str | None = None,
         alignment_plan: ObservationAlignment | None = None,
-        observation_groups: Sequence[peh.ObservationGroup] = (),
         adapter_label: str = "dataops",
     ) -> DatasetSeries[DataFrame]:
         """
@@ -555,6 +587,10 @@ class Session(Generic[T_AdapterType, T_DataType]):
         dataset labels and the same observable property ids within each paired
         Dataset. With an alignment plan, source Observations and
         ObservableProperties can be assembled into target Observations.
+
+        ObservationGroups referenced by id in `alignment_plan` are resolved
+        from the session cache automatically; register any referenced
+        ObservationGroup in the cache (`session.cache.add(...)`) before calling.
         """
         adapter = self.get_adapter(adapter_label)
         assert isinstance(adapter, DataOpsInterface)
@@ -568,7 +604,9 @@ class Session(Generic[T_AdapterType, T_DataType]):
                 dataset_series=dataset_series,
                 alignment=DatasetSeriesAlignment(
                     alignment_plan=alignment_plan,
-                    observation_groups=tuple(observation_groups),
+                    observation_groups=self._resolve_observation_groups(
+                        alignment_plan
+                    ),
                     output_label=output_label,
                 ),
             )
@@ -576,6 +614,108 @@ class Session(Generic[T_AdapterType, T_DataType]):
             dataset_series=dataset_series,
             plan=plan,
         )
+
+    def create_tabular_extract(
+        self,
+        dataset_series: Sequence[DatasetSeries[DataFrame]],
+        data_export_config: peh.DataExportConfig,
+        *,
+        alignment_plan: ObservationAlignment | None = None,
+        output_label: str | None = None,
+        adapter_label: str = "extract",
+    ) -> DatasetSeries[DataFrame]:
+        """
+        Build a single tabular extract from a sequence of source DatasetSeries.
+
+        For each source series in `dataset_series`, this reshapes it according
+        to `data_export_config` and then applies each resulting section's
+        `data_filter` (falling back to that same source series for filter
+        dependencies that reshaping projected away). The per-source extracts
+        are then concatenated into a single DatasetSeries.
+        """
+        adapter = self.get_adapter(adapter_label)
+        assert isinstance(adapter, DataExtractInterface)
+        cache_view = CacheContainerView(self.cache)
+
+        per_source_extracts: list[DatasetSeries[DataFrame]] = []
+        for source in dataset_series:
+            reshaped = self.export_tabular_dataset_series(
+                source,
+                data_export_config,
+                adapter_label=adapter_label,
+            )
+            for dataset_label, dataset in list(reshaped.parts.items()):
+                section_id = dataset.described_by
+                if section_id is None:
+                    continue
+                layout_section = cache_view.require(
+                    section_id, "DataLayoutSection"
+                )
+                assert isinstance(layout_section, peh.DataLayoutSection)
+                data_filter = layout_section.data_filter
+                if data_filter is None:
+                    continue
+                assert isinstance(data_filter, peh.DataFilter)
+                reshaped = adapter.apply_filter(
+                    reshaped,
+                    data_filter.filter_expression,
+                    dataset_label,
+                    source_dataset_series=source,
+                )
+            per_source_extracts.append(reshaped)
+
+        if len(per_source_extracts) == 1:
+            extract = per_source_extracts[0]
+            if output_label is not None:
+                extract.label = output_label
+            return extract
+
+        concatenated = self.concatenate_tabular_dataset_series(
+            per_source_extracts,
+            output_label=output_label,
+            alignment_plan=alignment_plan,
+            adapter_label=adapter_label,
+        )
+        return self._propagate_described_by(
+            concatenated, per_source_extracts[0]
+        )
+
+    @staticmethod
+    def _propagate_described_by(
+        concatenated: DatasetSeries[DataFrame],
+        reference: DatasetSeries[DataFrame],
+    ) -> DatasetSeries[DataFrame]:
+        """
+        Copy `described_by` provenance (the originating DataLayout/
+        DataLayoutSection ids) from a per-source reshaped extract onto the
+        concatenated result.
+
+        `concatenate_dataset_series` builds a brand new DatasetSeries and new
+        Datasets that only carry `source_dataset_series`/`source_datasets`
+        metadata, not `described_by`. Without this, downstream validation
+        config lookups (`ValidationInterface.collect_column_validations`,
+        `build_dataset_level_validations`) silently skip the configured
+        `DataLayoutSection` rules because `dataset.described_by` is None,
+        making `create_tabular_extract` behave inconsistently depending on
+        whether one or several source series were concatenated. All
+        per-source extracts share the same `data_export_config`, so their
+        `described_by` ids apply unchanged to the concatenated series/datasets.
+        """
+        if (
+            concatenated.described_by is None
+            and reference.described_by is not None
+        ):
+            concatenated.add_metadata("described_by", reference.described_by)
+        for dataset_label, dataset in concatenated.parts.items():
+            if dataset.described_by is not None:
+                continue
+            reference_dataset = reference[dataset_label]
+            if reference_dataset is None:
+                continue
+            section_id = reference_dataset.described_by
+            if section_id is not None:
+                dataset.add_metadata("described_by", section_id)
+        return concatenated
 
     def read_tabular_dataset_series(
         self,
