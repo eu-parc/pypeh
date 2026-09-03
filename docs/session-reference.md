@@ -134,6 +134,58 @@ This method currently supports parquet only. XLSX files produced by
 inspection or downstream spreadsheet workflows, not semantic persistence files.
 
 ```python
+export_tabular_dataset_series(
+    source_dataset_series: DatasetSeries,
+    data_export_config: DataExportConfig,
+    adapter_label: str = "dataops",
+) -> DatasetSeries
+```
+
+Reshape a `DatasetSeries` according to a PEH `DataExportConfig` and return the
+reshaped `DatasetSeries`. The `DataLayout` referenced by `data_export_config`
+defines the requested export shape: `section_mapping_links` bind layout
+sections to source Observations, and the adapter projects/joins the source
+series into the requested datasets.
+
+```python
+concatenate_tabular_dataset_series(
+    dataset_series: Sequence[DatasetSeries],
+    output_label: str | None = None,
+    alignment_plan: ObservationAlignment | None = None,
+    adapter_label: str = "dataops",
+) -> DatasetSeries
+```
+
+Concatenate already-loaded `DatasetSeries` objects. Without `alignment_plan`,
+pypeh uses strict matching: every source series must have the same dataset
+labels and the same observable property identifiers within each paired
+dataset. With `alignment_plan`, source Observations and ObservableProperties
+can be assembled into target Observations; any `ObservationGroup` referenced by
+id in `alignment_plan` is resolved from the session cache automatically (add
+groups with `session.cache.add(...)` before calling). See
+[Dataset Series Alignment](dataset-series-alignment.md) for details.
+
+```python
+create_tabular_extract(
+    dataset_series: Sequence[DatasetSeries],
+    data_export_config: DataExportConfig,
+    alignment_plan: ObservationAlignment | None = None,
+    output_label: str | None = None,
+    adapter_label: str = "extract",
+) -> DatasetSeries
+```
+
+Build a single tabular extract from a sequence of source `DatasetSeries`. For
+each source series, reshapes it with `export_tabular_dataset_series` using
+`data_export_config`, then applies each resulting `DataLayoutSection`'s
+`data_filter` (falling back to that same source series to resolve filter
+predicate columns that reshaping projected away). The per-source extracts are
+then concatenated with `concatenate_tabular_dataset_series` (same
+`alignment_plan`/cache-based `ObservationGroup` resolution). When only one
+source series is given, concatenation is skipped and the single
+reshaped/filtered series is returned directly.
+
+```python
 split_dataset_series_by_observation(
     source_dataset_series: DatasetSeries,
     new_dataset_series_label: str | None = None,

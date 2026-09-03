@@ -9,6 +9,12 @@ Use a PEH `ObservationAlignment` when source series use different observation
 or observable property identifiers, or when one target observation should be
 assembled from more than one source observation.
 
+When `alignment_plan` references `ObservationGroup`s by id (via
+`ObservationAssembly.source_observation_groups`), register those groups in the
+session cache (`session.cache.add(...)`) before calling
+`concatenate_tabular_dataset_series`; they are resolved from the cache
+automatically.
+
 ## Strict Concatenation
 
 If all source `DatasetSeries` already use matching dataset labels and matching
@@ -44,6 +50,8 @@ observation_groups = (
         observation_id_list=["study_b:obs_lab"],
     ),
 )
+for group in observation_groups:
+    session.cache.add(group)
 
 alignment_plan = ObservationAlignment(
     id="peh:alignment_lab",
@@ -77,7 +85,6 @@ alignment_plan = ObservationAlignment(
 combined = session.concatenate_tabular_dataset_series(
     [series_a, series_b],
     alignment_plan=alignment_plan,
-    observation_groups=observation_groups,
     output_label="aligned_lab",
 )
 ```
@@ -104,6 +111,8 @@ observation_groups = (
         observation_id_list=["study_b:obs_subject"],
     ),
 )
+for group in observation_groups:
+    session.cache.add(group)
 
 alignment_plan = ObservationAlignment(
     id="peh:alignment_assembled_lab",
@@ -137,7 +146,6 @@ alignment_plan = ObservationAlignment(
 combined = session.concatenate_tabular_dataset_series(
     [series_a, series_b],
     alignment_plan=alignment_plan,
-    observation_groups=observation_groups,
     output_label="assembled_lab",
 )
 ```
@@ -165,6 +173,8 @@ observation_groups = (
         observation_id_list=["peh:obs_lab"],
     ),
 )
+for group in observation_groups:
+    session.cache.add(group)
 
 alignment_plan = ObservationAlignment(
     id="peh:alignment_inferred_lab",
@@ -179,7 +189,6 @@ alignment_plan = ObservationAlignment(
 combined = session.concatenate_tabular_dataset_series(
     [series_a, series_b],
     alignment_plan=alignment_plan,
-    observation_groups=observation_groups,
     output_label="inferred_lab",
 )
 ```
@@ -204,3 +213,27 @@ Direct concatenation currently assumes:
 
 Transformations, derivations, unit conversion, and cross-dataset assembly within
 one source series are not represented by this direct alignment model yet.
+
+## Filtering And Reshaping Before Concatenation
+
+`create_tabular_extract` combines reshaping, per-section filtering, and
+concatenation in one call. For each source `DatasetSeries`, it reshapes the
+series with `export_tabular_dataset_series` using `data_export_config`, then
+applies each resulting `DataLayoutSection`'s `data_filter` (falling back to
+that same source series to resolve filter predicate columns that reshaping
+projected away). The per-source extracts are then concatenated exactly like
+`concatenate_tabular_dataset_series`, including `alignment_plan` handling and
+cache-based `ObservationGroup` resolution.
+
+```python
+extract = session.create_tabular_extract(
+    [series_a, series_b],
+    data_export_config,
+    alignment_plan=alignment_plan,
+    output_label="filtered_lab",
+)
+```
+
+When only one source series is given, concatenation is skipped and the single
+reshaped/filtered series is returned directly (`alignment_plan` is ignored in
+that case).

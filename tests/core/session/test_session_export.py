@@ -35,8 +35,9 @@ def export_session(tmp_path):
     )
 
 
-@pytest.fixture
-def source_dataset_series():
+def _build_source_dataset_series(
+    sample_ids: list[str], chol_values: list[float]
+) -> DatasetSeries:
     pl = importlib.import_module("polars")
 
     series = DatasetSeries(label="session_series")
@@ -50,7 +51,7 @@ def source_dataset_series():
         element_label="id_sample",
         is_primary_key=True,
     )
-    sample.data = pl.DataFrame({"id_sample": ["sample-a", "sample-b"]})
+    sample.data = pl.DataFrame({"id_sample": sample_ids})
 
     lab = series.add_empty_dataset("LAB")
     lab.add_observation_to_index("peh:obs_lab")
@@ -73,14 +74,20 @@ def source_dataset_series():
         foreign_key_dataset_label="SAMPLE",
         foreign_key_element_label="id_sample",
     )
-    lab.data = pl.DataFrame(
-        {"id_sample": ["sample-a", "sample-b"], "chol": [1.2, 3.4]}
-    )
+    lab.data = pl.DataFrame({"id_sample": sample_ids, "chol": chol_values})
 
     return series
 
 
-def _populate_export_cache(session: Session) -> peh.DataExportConfig:
+@pytest.fixture
+def source_dataset_series():
+    return _build_source_dataset_series(["sample-a", "sample-b"], [1.2, 3.4])
+
+
+def _populate_export_cache(
+    session: Session,
+    data_filter: peh.DataFilter | None = None,
+) -> peh.DataExportConfig:
     session.cache.add(
         peh.ObservableProperty(id="peh:prop_id_sample", value_type="string")
     )
@@ -122,6 +129,7 @@ def _populate_export_cache(session: Session) -> peh.DataExportConfig:
                 observable_property="peh:prop_chol",
             ),
         ],
+        data_filter=data_filter,
     )
     session.cache.add(export_section)
     session.cache.add(
@@ -442,6 +450,12 @@ class TestSessionExport:
             _observation_group(("peh:obs_lab",)),
             _observation_group(("study_b:obs_lab",)),
         )
+        # register the ObservationGroups in the session cache, like any other
+        # peh resource; `concatenate_tabular_dataset_series` resolves them by
+        # id from `alignment_plan.observation_assemblies[].source_observation_groups`
+        for observation_group in observation_groups:
+            export_session.cache.add(observation_group)
+
         alignment_plan = peh.ObservationAlignment(
             id="peh:alignment_lab_export",
             observation_assemblies=[
@@ -476,7 +490,6 @@ class TestSessionExport:
         concatenated = export_session.concatenate_tabular_dataset_series(
             [first_export, second_export],
             alignment_plan=alignment_plan,
-            observation_groups=observation_groups,
             output_label="aligned_lab_export",
         )
 
@@ -537,6 +550,8 @@ class TestSessionExport:
             _observation_group(("study_b:t1_lab",)),
         )
         observation_groups = (*baseline_groups, *followup_groups)
+        for observation_group in observation_groups:
+            export_session.cache.add(observation_group)
         alignment_plan = peh.ObservationAlignment(
             id="peh:alignment_longitudinal_lab",
             observation_assemblies=[
@@ -596,7 +611,6 @@ class TestSessionExport:
         concatenated = export_session.concatenate_tabular_dataset_series(
             [first_export, second_export],
             alignment_plan=alignment_plan,
-            observation_groups=observation_groups,
             output_label="aligned_longitudinal_lab",
         )
 
@@ -667,6 +681,8 @@ class TestSessionExport:
             _observation_group(("study_a:sample", "study_a:lab")),
             _observation_group(("study_b:subject",)),
         )
+        for observation_group in observation_groups:
+            export_session.cache.add(observation_group)
         alignment_plan = peh.ObservationAlignment(
             id="peh:alignment_contributed_lab",
             observation_assemblies=[
@@ -701,7 +717,6 @@ class TestSessionExport:
         concatenated = export_session.concatenate_tabular_dataset_series(
             [first_export, second_export],
             alignment_plan=alignment_plan,
-            observation_groups=observation_groups,
             output_label="contributed_lab_export",
         )
 
@@ -755,6 +770,8 @@ class TestSessionExport:
             _observation_group(("peh:obs_sample", "peh:obs_lab")),
             _observation_group(("peh:obs_lab",)),
         )
+        for observation_group in observation_groups:
+            export_session.cache.add(observation_group)
         alignment_plan = peh.ObservationAlignment(
             id="peh:alignment_inferred_lab",
             observation_assemblies=[
@@ -772,7 +789,6 @@ class TestSessionExport:
         concatenated = export_session.concatenate_tabular_dataset_series(
             [first_export, second_export],
             alignment_plan=alignment_plan,
-            observation_groups=observation_groups,
             output_label="inferred_lab_export",
         )
 
@@ -815,6 +831,145 @@ class TestSessionExport:
             export_session.concatenate_tabular_dataset_series(
                 [first_export, second_export]
             )
+
+
+@pytest.mark.dataframe
+class TestSessionCreateTabularExtract:
+    @staticmethod
+    def _cholesterol_filter() -> peh.DataFilter:
+        return peh.DataFilter(
+            filter_expression=peh.FilterExpression(
+                filter_command="is_greater_than_or_equal_to",
+                filter_subject_contextual_field_references=[
+                    peh.ContextualFieldReference(
+                        field_label="cholesterol_mg_dl",
+                        dataset_label="LAB_EXPORT",
+                    )
+                ],
+                filter_arg_values=[2.0],
+            )
+        )
+
+    def test_single_source_skips_concatenation(
+        self, export_session, source_dataset_series
+    ):
+        data_export_config = _populate_export_cache(
+            export_session, data_filter=self._cholesterol_filter()
+        )
+
+        extract = export_session.create_tabular_extract(
+            [source_dataset_series],
+            data_export_config,
+        )
+
+        assert isinstance(extract, DatasetSeries)
+        # a single source is returned as-is (no "..._concatenated" label
+        # suffix), proving `concatenate_tabular_dataset_series` was skipped
+        assert extract.label == "LAB_EXPORT_LAYOUT"
+        result_dataset = extract.parts["LAB_EXPORT"]
+        assert result_dataset.data.get_column("sample_id").to_list() == [
+            "sample-b"
+        ]
+        assert result_dataset.data.get_column(
+            "cholesterol_mg_dl"
+        ).to_list() == [3.4]
+
+    def test_single_source_applies_output_label(
+        self, export_session, source_dataset_series
+    ):
+        data_export_config = _populate_export_cache(export_session)
+
+        extract = export_session.create_tabular_extract(
+            [source_dataset_series],
+            data_export_config,
+            output_label="my_extract",
+        )
+
+        assert extract.label == "my_extract"
+
+    def test_multiple_sources_are_filtered_before_concatenating(
+        self, export_session
+    ):
+        data_export_config = _populate_export_cache(
+            export_session, data_filter=self._cholesterol_filter()
+        )
+        first_source = _build_source_dataset_series(
+            ["sample-a", "sample-b"], [1.2, 3.4]
+        )
+        second_source = _build_source_dataset_series(
+            ["sample-c", "sample-d"], [0.5, 6.0]
+        )
+
+        extract = export_session.create_tabular_extract(
+            [first_source, second_source],
+            data_export_config,
+            output_label="combined_filtered_extract",
+        )
+
+        assert extract.label == "combined_filtered_extract"
+        result_dataset = extract.parts["LAB_EXPORT"]
+        # each source is filtered independently (dropping sample-a and
+        # sample-c) before the two single-row extracts are concatenated
+        assert result_dataset.data.get_column("sample_id").to_list() == [
+            "sample-b",
+            "sample-d",
+        ]
+        assert result_dataset.data.get_column(
+            "cholesterol_mg_dl"
+        ).to_list() == [3.4, 6.0]
+
+    def test_without_data_filter_behaves_like_plain_export_and_concatenate(
+        self, export_session
+    ):
+        data_export_config = _populate_export_cache(export_session)
+        first_source = _build_source_dataset_series(
+            ["sample-a", "sample-b"], [1.2, 3.4]
+        )
+        second_source = _build_source_dataset_series(
+            ["sample-c", "sample-d"], [0.5, 6.0]
+        )
+
+        extract = export_session.create_tabular_extract(
+            [first_source, second_source],
+            data_export_config,
+        )
+
+        result_dataset = extract.parts["LAB_EXPORT"]
+        assert result_dataset.data.get_column("sample_id").to_list() == [
+            "sample-a",
+            "sample-b",
+            "sample-c",
+            "sample-d",
+        ]
+        assert result_dataset.data.get_column(
+            "cholesterol_mg_dl"
+        ).to_list() == [1.2, 3.4, 0.5, 6.0]
+
+    def test_multiple_sources_preserve_described_by_provenance(
+        self, export_session
+    ):
+        data_export_config = _populate_export_cache(export_session)
+        first_source = _build_source_dataset_series(
+            ["sample-a", "sample-b"], [1.2, 3.4]
+        )
+        second_source = _build_source_dataset_series(
+            ["sample-c", "sample-d"], [0.5, 6.0]
+        )
+
+        extract = export_session.create_tabular_extract(
+            [first_source, second_source],
+            data_export_config,
+        )
+
+        # `concatenate_dataset_series` builds a brand new DatasetSeries/Dataset
+        # that would otherwise drop the `described_by` provenance carried by
+        # each per-source reshaped extract - verify it survives concatenation
+        # so validation config lookups can still resolve the DataLayoutSection.
+        assert extract.described_by == "peh:LAB_EXPORT_LAYOUT"
+        assert (
+            extract.parts["LAB_EXPORT"].described_by
+            == "peh:LAB_EXPORT_SECTION"
+        )
 
 
 @pytest.mark.xlsx
