@@ -1530,6 +1530,37 @@ class ValidationInterface(DataOpsInterface, Generic[T_DataType]):
                 )
                 validations.append(validation)
 
+            significant_decimals_raw = getattr(
+                observable_property, "significantdecimals", None
+            )
+            if (
+                significant_decimals_raw is not None
+                and dataset_schema_element.data_type
+                == ObservablePropertyValueType.FLOAT
+            ):
+                try:
+                    significant_decimals = int(significant_decimals_raw)
+                except (TypeError, ValueError):
+                    significant_decimals = -1
+
+                if significant_decimals >= 0:
+                    expr = validation_dto.ValidationExpression(
+                        command="decimals_precision",
+                        arg_values=[significant_decimals],
+                        arg_columns=None,
+                        subject=None,
+                    )
+                    validation = validation_dto.ValidationDesign(
+                        name="check_significant_decimals",
+                        error_level=validation_dto.ValidationErrorLevel.ERROR,
+                        expression=expr,
+                        error_message=(
+                            f"Decimal precision exceeds {significant_decimals} "
+                            "allowed decimal places."
+                        ),
+                    )
+                    validations.append(validation)
+
         assert dataset_schema_element.data_type.value != "decimal"
         # transformation using context_magic
         assert isinstance(required, bool)

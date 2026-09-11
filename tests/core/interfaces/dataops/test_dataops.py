@@ -755,6 +755,47 @@ class TestValidation(abc.ABC):
         assert bounds_by_name["min"].expression.arg_values == [0.2]
         assert bounds_by_name["max"].expression.arg_values == [999.9]
 
+    def test_build_column_validation_with_significant_decimals(self):
+        adapter = self.get_adapter()
+        cache_view = self.get_container_validation_example_03()
+        data_layout = cache_view.get(
+            "peh:CODEBOOK_v2.4_LAYOUT_SAMPLE_METADATA", "DataLayout"
+        )
+        assert isinstance(data_layout, DataLayout)
+        dataset_series = DatasetSeries.from_peh_datalayout(
+            data_layout=data_layout, cache_view=cache_view
+        )
+        type_annotations = dataset_series.get_type_annotations()
+        dataset = dataset_series.get("SAMPLETIMEPOINT_BSS")
+        assert dataset is not None
+        dataset_schema_element = dataset.get_schema_element_by_label("chol")
+        assert dataset_schema_element is not None
+        observable_property = cache_view.get(
+            dataset_schema_element.observable_property_id, "ObservableProperty"
+        )
+        assert isinstance(observable_property, ObservableProperty)
+        observable_property.significantdecimals = 3
+
+        cv = adapter.build_column_validation(
+            dataset_schema_element=dataset_schema_element,
+            type_annotations=type_annotations,
+            cache_view=cache_view,
+        )
+
+        assert cv.validations is not None
+        sig_dec_validations = [
+            v for v in cv.validations if v.name == "check_significant_decimals"
+        ]
+        assert len(sig_dec_validations) == 1
+        assert (
+            sig_dec_validations[0].expression.command == "decimals_precision"
+        )
+        assert sig_dec_validations[0].expression.arg_values == [3]
+        assert (
+            sig_dec_validations[0].error_message
+            == "Decimal precision exceeds 3 allowed decimal places."
+        )
+
 
 class TestDataImport(abc.ABC):
     """Abstract base class for testing dataops adapters."""

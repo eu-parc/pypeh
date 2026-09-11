@@ -121,7 +121,7 @@ class TestBasicValidationConfig:
         ]
         assert sample_tp_config.columns[0].required
         assert not sample_tp_config.columns[0].nullable
-        assert len(sample_tp_config.columns[1].validations) == 3
+        assert len(sample_tp_config.columns[1].validations) == 4
         assert sample_tp_config.columns[1].validations[1].name == "min"
         assert (
             sample_tp_config.columns[1].validations[1].expression.command
@@ -132,6 +132,17 @@ class TestBasicValidationConfig:
             sample_tp_config.columns[1].validations[2].expression.command
             == "is_less_than_or_equal_to"
         )
+        assert (
+            sample_tp_config.columns[1].validations[3].name
+            == "check_significant_decimals"
+        )
+        assert (
+            sample_tp_config.columns[1].validations[3].expression.command
+            == "decimals_precision"
+        )
+        assert sample_tp_config.columns[1].validations[
+            3
+        ].expression.arg_values == [6]
 
     def test_config_from_dataset_allow_incomplete(self, get_cache):
         dataops_adapter_class = ValidationInterface.get_default_adapter_class()
@@ -361,7 +372,14 @@ class TestBasicValidationConfig:
         for column in sample_tp_config_incomplete.columns:
             if column.unique_name == "adults_u_crt":
                 assert column.validations is not None
-                assert len(column.validations) == 3
+                assert len(column.validations) == 4
+                assert column.validations[3].name == (
+                    "check_significant_decimals"
+                )
+                assert (
+                    column.validations[3].expression.command
+                    == "decimals_precision"
+                )
         ret = validation_adapter.validate(
             dataset=sample_tp_dataset,
             dependent_dataset_series=dataset_series,

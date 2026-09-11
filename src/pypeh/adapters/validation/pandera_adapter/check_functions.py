@@ -94,19 +94,17 @@ AVAILABLE_CHECKS = {
 }
 
 
-def decimals_precision(
-    data: pa.PolarsData,
-    arg_values: Sequence[Any],
-    arg_columns: Sequence[str] | None = None,
-    subject: Sequence[str] | None = None,
-) -> pl.LazyFrame:
+def decimals_precision(data, arg_values, arg_columns=None, subject=None):
+    precision = arg_values[0]
+    col = pl.col(data.key).cast(pl.Float64)
+    # A value respects the precision if rounding it to `precision` decimals
+    # leaves it unchanged. Comparison is done at the value's own magnitude
+    # (rather than scaling by 10**precision) so that float representation
+    # error does not grow with the number of decimals and produce false
+    # positives. The tolerance scales with magnitude to stay above the ULP.
+    tolerance = 1e-9 * col.abs().clip(lower_bound=1.0)
     return data.lazyframe.select(
-        pl.col(data.key)
-        .cast(pl.String)
-        .str.split(".")
-        .list.get(1)
-        .str.len_chars()
-        .le(arg_values[0])
+        (col - col.round(precision)).abs().le(tolerance) | col.is_null()
     )
 
 

@@ -336,8 +336,8 @@ class TestRoundTripDataset:
             if dataset_label == "SAMPLETIMEPOINT_BWB":
                 assert (
                     validation_report.error_counts[ValidationErrorLevel.ERROR]
-                    == 0
-                )
+                    == 13
+                )  # from automatic significantdecimals enforcement
             else:
                 assert (
                     validation_report.error_counts[ValidationErrorLevel.ERROR]
@@ -406,6 +406,11 @@ class TestRoundTripDataset:
                     validation_report.error_counts[ValidationErrorLevel.ERROR]
                     == 1
                 )
+            elif dataset_label == "SAMPLETIMEPOINT_BWB":
+                assert (
+                    validation_report.error_counts[ValidationErrorLevel.ERROR]
+                    == 13
+                )  # from automatic significantdecimals enforcement
             else:
                 assert (
                     validation_report.error_counts[ValidationErrorLevel.ERROR]
