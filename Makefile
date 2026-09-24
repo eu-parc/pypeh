@@ -43,10 +43,11 @@ docs:
 docs-serve:
 	uv run --group docs mkdocs serve
 
+# Always use the ruff version pinned in the `dev` dependency group so that
+# local formatting matches what CI checks. Do not `uv pip install ruff`:
+# an unpinned ruff reformats differently from the pinned one.
 format:
-	uv pip install ruff
-	uv run ruff format .
+	uv run --group dev ruff format .
 
 format-diff:
-	uv pip install ruff
-	uv run ruff format . --diff
+	uv run --group dev ruff format . --diff
