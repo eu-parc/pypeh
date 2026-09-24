@@ -1,6 +1,6 @@
 [project]
 name = "pypeh"
-version = "0.6.1"
+version = "0.7.0"
 description = "A modular project with a core library and multiple adapters"
 authors = [{ name = "VITO Health DMT" }]
 # Keep in sync with [tool.ruff] target-version and the CI matrix in
