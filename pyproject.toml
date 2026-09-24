@@ -3,7 +3,9 @@ name = "pypeh"
 version = "0.6.1"
 description = "A modular project with a core library and multiple adapters"
 authors = [{ name = "VITO Health DMT" }]
-requires-python = ">=3.10, <4.0.0"
+# Keep in sync with [tool.ruff] target-version and the CI matrix in
+# .github/workflows/tests.yml.
+requires-python = ">=3.11, <4.0.0"
 readme = "README.md"
 license = "MIT"
 dependencies = [
@@ -52,10 +54,8 @@ docs = [
     "mkdocs>=1.6.0,<2",
 ]
 dev = [
+    # Pinned: `make format` / `make format-diff` run this exact ruff version.
     "ruff>=0.4.4,<0.5",
-    "black",
-    "mypy",
-    "isort",
     "pytest-cov>=7.0.0",
 ]
 
@@ -111,7 +111,7 @@ markers = [
 line-length  = 79
 indent-width = 4
 
-# Assume Python 3.11
+# Lowest supported Python version, see [project] requires-python.
 target-version = "py311"
 
 [tool.ruff.lint]
