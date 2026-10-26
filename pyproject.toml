@@ -55,7 +55,7 @@ docs = [
 ]
 dev = [
     # Pinned: `make format` / `make format-diff` run this exact ruff version.
-    "ruff>=0.17.1,<0.18",
+    "ruff>=0.17.2,<0.18",
     "pytest-cov>=7.1.0",
 ]
 
