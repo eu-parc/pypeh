@@ -20,14 +20,14 @@ dependencies = [
 core = []
 rocrate-adapter = ["rocrate"]
 dataframe-adapter = [
-    "peh-dataguard>=0.6.1,<1.0",
+    "peh-dataguard>=0.7.0,<1.0",
     "polars",
     "pyarrow",
     "fastexcel",
 ]
 s3-adapter = ["s3fs"]
 polars-adapter=["polars", "pyarrow", "fastexcel"]
-compehndly=["compehndly>=0.0.1a4"]
+compehndly=["compehndly>=0.0.1a5"]
 test-core = ["pytest>=9.1.1,<10"]
 test-dataframe=["numpy", "scipy>=1.17.1"]
 test-s3 = ["s3fs", "moto[s3,server]"]
@@ -38,7 +38,7 @@ test-core = [
     "pytest>=9.1.1,<10",
 ]
 test-dataframe = [
-    "peh-dataguard>=0.6.1,<1.0",
+    "peh-dataguard>=0.7.0,<1.0",
     "polars",
     "pyarrow",
     "fastexcel",
@@ -49,7 +49,7 @@ test-rocrate = [
     "rocrate",
 ]
 test-s3 = ["s3fs", "moto[s3,server]"]
-test-compehndly = ["compehndly>=0.0.1a4"]
+test-compehndly = ["compehndly>=0.0.1a5"]
 docs = [
     "mkdocs>=1.6.1,<2",
 ]
