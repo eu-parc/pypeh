@@ -13,7 +13,7 @@ dependencies = [
     "peh-model>=0.7.3,<0.8.0",
     "pydantic-settings",
     "fsspec",
-	"python-ulid>=4.0.1",
+	"python-ulid>=4.1.0",
 ]
 
 [project.optional-dependencies]
@@ -28,14 +28,14 @@ dataframe-adapter = [
 s3-adapter = ["s3fs"]
 polars-adapter=["polars", "pyarrow", "fastexcel"]
 compehndly=["compehndly>=0.0.1a5"]
-test-core = ["pytest>=9.1.1,<10"]
+test-core = ["pytest>=9.2.0,<10"]
 test-dataframe=["numpy", "scipy>=1.17.1"]
 test-s3 = ["s3fs", "moto[s3,server]"]
 xlsxwriter = ["polars[xlsxwriter]"]
 
 [dependency-groups]
 test-core = [
-    "pytest>=9.1.1,<10",
+    "pytest>=9.2.0,<10",
 ]
 test-dataframe = [
     "peh-dataguard>=0.7.0,<1.0",
@@ -55,7 +55,7 @@ docs = [
 ]
 dev = [
     # Pinned: `make format` / `make format-diff` run this exact ruff version.
-    "ruff>=0.17.1,<0.18",
+    "ruff>=0.17.3,<0.18",
     "pytest-cov>=7.1.0",
 ]
 
