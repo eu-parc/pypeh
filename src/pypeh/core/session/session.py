@@ -797,14 +797,11 @@ class Session(Generic[T_AdapterType, T_DataType]):
         """
         Build the study-metadata tree for an imported DatasetSeries.
 
-        Starting from the `DataImportConfig` the service walks the PEH
-        resources in the session cache (observations, observation
-        groups, study, projects, population) and combines them with
-        the imported `DatasetSeries` (datasets, variables, dtypes)
-        into a nested dictionary:
-
-            study / projects / observation_groups /
-            observations (variable catalogue) / datasets / provenance
+        Starting from the `DataImportConfig`, the service walks cached
+        observations, designs and observable properties, then combines
+        them with the imported `DatasetSeries` into a dictionary with
+        observations (variable catalogue), datasets and provenance.
+        Study, Project and ObservationGroup links are not resolved here.
 
         Sections are gated through `metadata_config`
         (`StudyMetadataConfig`); disabled sections are omitted from the

@@ -28,21 +28,6 @@ DEMO_XLSX_FILE = "peh_demo_data.xlsx"
 # on the installed environment and are checked separately by
 # the test.
 EXPECTED_TREE_YAML = """
-study:
-- id: peh:STUDY_DEMO
-  label: Demo cohort study
-  population:
-  - id: peh:POP_DEMO_ADULTS
-    label: Demo study population
-    definition: Adults of both sexes from the general population, sampled in 2024.
-projects:
-- id: peh:PROJECT_DEMO
-  label: Demo exposure project
-observation_groups:
-- id: peh:OG_ENRICHMENT
-  label: Enrichment targets
-- id: peh:OG_AGGREGATION
-  label: Aggregation targets
 observations:
 - id: peh:OBS_SAMPLE_METADATA
   label: SAMPLE_METADATA
@@ -580,13 +565,13 @@ def test_control_variables_excluded(demo_workflow):
     assert chol["data_type"] == "FLOAT"
 
 
-def test_population_and_derivation_chain(demo_workflow):
+def test_derivation_chain_without_study_links(demo_workflow):
     session, import_config, series = demo_workflow
     tree = session.create_study_metadata(
         dataset_series=series,
         data_import_config=import_config,
     )
-    assert tree["study"][0]["population"][0]["id"] == "peh:POP_DEMO_ADULTS"
+    assert set(tree) == {"observations", "datasets", "provenance"}
     assert tree["provenance"]["derived_observations"] == [
         {
             "derived_observation": "peh:OBS_LAB_ENRICHED",

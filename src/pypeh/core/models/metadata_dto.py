@@ -24,12 +24,6 @@ class StudyMetadataConfig:
     meaning "this section was requested".
     """
 
-    include_link_keys: bool = True
-    """study / projects / observation_groups sections."""
-
-    include_population: bool = True
-    """population entries under each study (requires include_link_keys)."""
-
     include_variable_catalogue: bool = True
     """observations[].observable_properties catalogue section."""
 

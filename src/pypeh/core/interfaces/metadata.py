@@ -1,8 +1,8 @@
 """
 The metadata interface provides the study-metadata service: given an
 imported `DatasetSeries` and its `DataImportConfig`, it builds a
-nested metadata tree (link keys, variable catalogue, datasets,
-provenance) by walking the PEH resources in the session cache.
+nested metadata tree (variable catalogue, datasets, provenance) by
+walking the PEH resources in the session cache.
 
 Usage:
     Session.create_study_metadata(...) resolves this interface through
@@ -225,29 +225,6 @@ class MetadataInterface(DataOpsInterface, Generic[T_DataType]):
             control_ids = set()
         tree: dict[str, Any] = {}
 
-        if metadata_config.include_link_keys:
-            groups, studies, projects = self._resolve_link_keys(
-                cache_view, lineage
-            )
-            if not studies:
-                logger.warning(
-                    "No Study could be resolved for data import config "
-                    f"{data_import_config.id!r}; the link-keys sections "
-                    "will be empty."
-                )
-            tree["study"] = [
-                self._study_entry(cache_view, study, metadata_config)
-                for study in studies
-            ]
-            tree["projects"] = [
-                {"id": project.id, "label": self._label_of(project)}
-                for project in projects
-            ]
-            tree["observation_groups"] = [
-                {"id": group.id, "label": self._label_of(group)}
-                for group in groups
-            ]
-
         structure_by_op: dict[str, dict] = {}
         if metadata_config.include_variable_catalogue:
             tree["observations"] = self._catalogue_section(
@@ -276,7 +253,7 @@ class MetadataInterface(DataOpsInterface, Generic[T_DataType]):
 
         return _to_plain(tree)
 
-    #### LINK KEYS (study / population / projects / groups) ####
+    #### OBSERVATION LINEAGE ####
 
     @staticmethod
     def _config_observations(
@@ -435,80 +412,6 @@ class MetadataInterface(DataOpsInterface, Generic[T_DataType]):
                 if _as_text(op.observation_result_type) == "control":
                     control_ids.add(op.id)
         return control_ids
-
-    def _resolve_link_keys(
-        self,
-        cache_view: CacheContainerView,
-        lineage: set[str],
-    ) -> tuple[list, list, list]:
-        """
-        Walk ObservationGroups -> Study -> Project from the
-        observation lineage (grouping path of the linking backbone).
-        """
-        groups = [
-            group
-            for group in cache_view.get_all("ObservationGroup")
-            if set(_as_list(group.observation_id_list)) & lineage
-        ]
-        group_ids = {group.id for group in groups}
-        studies = [
-            study
-            for study in cache_view.get_all("Study")
-            if set(_as_list(study.observation_group_id_list)) & group_ids
-        ]
-        study_ids = {study.id for study in studies}
-        linked_project_ids = {
-            project_id
-            for study in studies
-            for project_id in _as_list(study.project_id_list)
-        }
-        projects = [
-            project
-            for project in cache_view.get_all("Project")
-            if set(_as_list(project.study_id_list)) & study_ids
-            or project.id in linked_project_ids
-        ]
-        return groups, studies, projects
-
-    def _study_entry(
-        self,
-        cache_view: CacheContainerView,
-        study: peh.Study,
-        metadata_config: metadata_dto.StudyMetadataConfig,
-    ) -> dict[str, Any]:
-        entry: dict[str, Any] = {
-            "id": study.id,
-            "label": self._label_of(study),
-        }
-        if metadata_config.include_population:
-            entry["population"] = self._population_entries(cache_view, study)
-        return entry
-
-    def _population_entries(
-        self, cache_view: CacheContainerView, study: peh.Study
-    ) -> list[dict[str, Any]]:
-        """
-        Population entries come from `Study.study_entity_id_list`.
-
-        Note: peh_model's EntityList has no `study_populations` slot,
-        so a `StudyPopulation` loads as a base `StudyEntity` and its
-        discriminating fields (`research_population_type`, member
-        lists) are not representable today. Entries therefore carry
-        id / label / definition only.
-        """
-        entries: list[dict[str, Any]] = []
-        for entity_id in _as_list(study.study_entity_id_list):
-            entity = cache_view.get(entity_id, "StudyEntity")
-            entries.append(
-                {
-                    "id": entity_id,
-                    "label": self._label_of(entity, entity_id),
-                    "definition": _clean_text(
-                        getattr(entity, "description", None)
-                    ),
-                }
-            )
-        return entries
 
     #### VARIABLE CATALOGUE ####
 
