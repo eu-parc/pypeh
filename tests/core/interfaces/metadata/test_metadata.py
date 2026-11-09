@@ -134,35 +134,6 @@ def _populate_metadata_cache(session: Session) -> peh.DataImportConfig:
             was_derived_from="peh:obs_lab",
         )
     )
-    session.cache.add(
-        peh.ObservationGroup(
-            id="peh:og_lab",
-            ui_label="Lab assays",
-            observation_id_list=["peh:obs_summary"],
-        )
-    )
-    session.cache.add(
-        peh.StudyEntity(
-            id="peh:population_adults",
-            ui_label="Adults",
-            description="Adults of both sexes.",
-        )
-    )
-    session.cache.add(
-        peh.Study(
-            id="peh:study_demo",
-            ui_label="Demo study",
-            observation_group_id_list=["peh:og_lab"],
-            study_entity_id_list=["peh:population_adults"],
-        )
-    )
-    session.cache.add(
-        peh.Project(
-            id="peh:project_demo",
-            ui_label="Demo project",
-            study_id_list=["peh:study_demo"],
-        )
-    )
     layout = peh.DataLayout(
         id="peh:layout_demo",
         ui_label="LAYOUT_DEMO",
@@ -270,72 +241,23 @@ def test_default_adapter_is_dataframe_adapter():
     )
 
 
-class TestLinkKeys:
-    def test_resolves_study_population_projects_and_groups(
-        self, metadata_adapter, metadata_workflow
-    ):
-        tree = _build(metadata_adapter, metadata_workflow)
-        assert tree["study"] == [
-            {
-                "id": "peh:study_demo",
-                "label": "Demo study",
-                "population": [
-                    {
-                        "id": "peh:population_adults",
-                        "label": "Adults",
-                        "definition": "Adults of both sexes.",
-                    }
-                ],
-            }
-        ]
-        assert tree["projects"] == [
-            {"id": "peh:project_demo", "label": "Demo project"}
-        ]
-        assert tree["observation_groups"] == [
-            {"id": "peh:og_lab", "label": "Lab assays"}
-        ]
-
-    def test_study_reached_through_derived_observation_lineage(
-        self, metadata_adapter, metadata_workflow
-    ):
-        # the group only lists the derived observation; the config only
-        # the base observation — the lineage walk must bridge them.
-        tree = _build(metadata_adapter, metadata_workflow)
-        assert [group["id"] for group in tree["observation_groups"]] == [
-            "peh:og_lab"
-        ]
-
-    def test_unresolvable_study_warns_and_empties_sections(
+class TestMetadataScope:
+    def test_builds_without_study_context(
         self, metadata_adapter, metadata_workflow, caplog
     ):
-        session, import_config, series = metadata_workflow
-        session.cache.pop("peh:og_lab", "ObservationGroup")
         with caplog.at_level(
             "WARNING", logger="pypeh.core.interfaces.metadata"
         ):
-            tree = metadata_adapter.build_study_metadata(
-                dataset_series=series,
-                data_import_config=import_config,
-                metadata_config=StudyMetadataConfig(),
-                cache_view=CacheContainerView(session.cache),
-            )
-        assert tree["study"] == []
-        assert tree["projects"] == []
-        assert any(
-            "No Study could be resolved" in r.message for r in caplog.records
-        )
-
-    def test_population_omitted_when_gated_off(
-        self, metadata_adapter, metadata_workflow
-    ):
-        tree = _build(
-            metadata_adapter,
-            metadata_workflow,
-            StudyMetadataConfig(include_population=False),
-        )
-        assert tree["study"] == [
-            {"id": "peh:study_demo", "label": "Demo study"}
+            tree = _build(metadata_adapter, metadata_workflow)
+        assert set(tree) == {"observations", "datasets", "provenance"}
+        assert [obs["id"] for obs in tree["observations"]] == [
+            "peh:obs_lab",
+            "peh:obs_summary",
         ]
+        assert not any(
+            "No Study could be resolved" in record.message
+            for record in caplog.records
+        )
 
 
 class TestCatalogue:
@@ -913,7 +835,6 @@ class TestSectionGating:
     @pytest.mark.parametrize(
         ("flag", "expected_absent"),
         [
-            ("include_link_keys", ["study", "projects", "observation_groups"]),
             ("include_variable_catalogue", ["observations"]),
             ("include_datasets", ["datasets"]),
             ("include_provenance", ["provenance"]),

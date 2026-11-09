@@ -8,9 +8,8 @@ from pypeh.core.models.metadata_dto import StudyMetadataConfig
 @pytest.fixture
 def session_with_demo_workflow():
     """
-    Minimal in-cache workflow: one observation, one study, one
-    population entry, one project — enough to exercise the Session
-    facade of the metadata service without any dataframe I/O.
+    Minimal in-cache workflow with one observation, without study-level
+    resources, to exercise the Session facade without dataframe I/O.
     """
     session = Session()
     session.cache.add(
@@ -28,28 +27,6 @@ def session_with_demo_workflow():
     )
     session.cache.add(
         peh.Observation(id="peh:obs_lab", observation_design="peh:od_lab")
-    )
-    session.cache.add(
-        peh.ObservationGroup(
-            id="peh:og_lab",
-            observation_id_list=["peh:obs_lab"],
-        )
-    )
-    session.cache.add(peh.StudyEntity(id="peh:population", ui_label="Adults"))
-    session.cache.add(
-        peh.Study(
-            id="peh:study",
-            ui_label="Demo study",
-            observation_group_id_list=["peh:og_lab"],
-            study_entity_id_list=["peh:population"],
-        )
-    )
-    session.cache.add(
-        peh.Project(
-            id="peh:project",
-            ui_label="Demo project",
-            study_id_list=["peh:study"],
-        )
     )
     session.cache.add(
         peh.DataLayout(
@@ -115,7 +92,7 @@ class TestCreateStudyMetadata:
             def build_study_metadata(self, **kwargs):
                 self.called = True
                 self.kwargs = kwargs
-                return {"study": []}
+                return {"observations": []}
 
         adapter = RecordingAdapter()
         session.register_adapter("metadata", adapter)
@@ -124,7 +101,7 @@ class TestCreateStudyMetadata:
             data_import_config=import_config,
         )
         assert adapter.called
-        assert result == {"study": []}
+        assert result == {"observations": []}
 
     def test_non_metadata_adapter_raises(self, session_with_demo_workflow):
         session, import_config, series = session_with_demo_workflow
@@ -147,17 +124,11 @@ class TestCreateStudyMetadataWithDataAdapter:
             data_import_config=import_config,
         )
         assert set(tree) == {
-            "study",
-            "projects",
-            "observation_groups",
             "observations",
             "datasets",
             "provenance",
         }
-        assert tree["study"][0]["id"] == "peh:study"
-        assert tree["study"][0]["population"] == [
-            {"id": "peh:population", "label": "Adults", "definition": None}
-        ]
+        assert tree["observations"][0]["id"] == "peh:obs_lab"
         assert tree["provenance"]["data_import_config"] == "peh:import"
 
     def test_metadata_config_forwarded(self, session_with_demo_workflow):
@@ -165,8 +136,6 @@ class TestCreateStudyMetadataWithDataAdapter:
         tree = session.create_study_metadata(
             dataset_series=series,
             data_import_config=import_config,
-            metadata_config=StudyMetadataConfig(
-                include_link_keys=False, include_provenance=False
-            ),
+            metadata_config=StudyMetadataConfig(include_provenance=False),
         )
         assert set(tree) == {"observations", "datasets"}

@@ -272,18 +272,11 @@ create_study_metadata(
 ```
 
 Build the study-metadata tree for an imported `DatasetSeries`. Starting from
-the `DataImportConfig`, the service walks the PEH resources in the session
-cache and combines them with the imported series into a nested dictionary:
+the `DataImportConfig`, the service walks cached observations, designs and
+observable properties and combines them with the imported series into a
+nested dictionary. The caller owns Study and Project context; this service
+does not resolve or validate Study, Project or ObservationGroup links.
 
-- `study` — resolved studies with their `population` entries
-  (`Study.study_entity_id_list` → `StudyEntity`; id / label / definition).
-  Note that a `StudyPopulation` currently loads as a base `StudyEntity`
-  (the peh model has no `study_populations` slot on `EntityList`), so its
-  discriminating fields (`research_population_type`, member lists) are not
-  representable yet.
-- `projects` — projects linked to those studies.
-- `observation_groups` — groups containing the configured observations or
-  anything derived from them (the enrichment / aggregation lineage).
 - `observations` — the variable catalogue: every observable property of the
   reachable observations (the configured ones first, then the derived ones
   in dependency order: each derived observation follows the observation it
@@ -308,21 +301,18 @@ cache and combines them with the imported series into a nested dictionary:
   `ValidationErrorReportCollection` in its JSON form. Validation is never
   run here; the report is accepted from the caller.
 
-Sections are gated through `StudyMetadataConfig` (`include_link_keys`,
-`include_population`, `include_variable_catalogue`, `include_datasets`,
-`include_provenance`, `exclude_control_variables`);
-disabled sections are omitted from the tree entirely. Caller-provided
-`extra_provenance` fields (e.g. `source_file`) are appended to the
-provenance section; a key that collides with a built-in provenance field
+Sections are gated through `StudyMetadataConfig`
+(`include_variable_catalogue`, `include_datasets`, `include_provenance`,
+`exclude_control_variables`); disabled sections are omitted from the tree
+entirely. Caller-provided `extra_provenance` fields (e.g. `source_file`) are
+appended to the provenance section; a key that collides with a built-in field
 raises `ValueError`, as does a non-JSON value (`Path`, `set`, ... —
 values must be finite `str` / `int` / `float` / `bool` / `None` /
 `list` / str-keyed `dict`; `NaN` / `Infinity` and self-referencing
-containers are rejected). When no study can be
-resolved for the config, the link-keys sections are empty and a warning
-is logged. Observations or observation designs missing from the cache are
-left out with a warning. A `ValueError` is raised when the series holds
-observations that are neither configured by nor derived from the
-`DataImportConfig`.
+containers are rejected). Observations or observation designs missing from
+the cache are left out with a warning. A `ValueError` is raised when the
+series holds observations that are neither configured by nor derived from
+the `DataImportConfig`.
 
 The returned tree holds builtin types only (`dict` / `list` / `str` /
 numbers / `bool` / `None`) and shares no objects between branches, so it
@@ -330,8 +320,6 @@ serializes directly with `json.dumps` or `yaml.safe_dump`.
 
 ```python
 class StudyMetadataConfig:
-    include_link_keys: bool = True
-    include_population: bool = True
     include_variable_catalogue: bool = True
     include_datasets: bool = True
     include_provenance: bool = True
