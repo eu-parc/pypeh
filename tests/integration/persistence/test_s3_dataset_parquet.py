@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import importlib
+import json
 
 import pytest
+import yaml
 
 from pypeh import S3Config, Session
 from pypeh.core.models.constants import ObservablePropertyValueType
@@ -181,3 +183,87 @@ class TestS3Integration:
         )
 
         assert set(loaded.parts) == {"SAMPLE", "LAB"}
+
+    def test_study_metadata_roundtrip_via_moto_s3(
+        self, s3_session, moto_s3_client
+    ):
+        metadata = {
+            "observations": [],
+            "datasets": [{"described_by": None, "variables": []}],
+            "provenance": {
+                "pypeh_version": "0.9.1",
+                "peh_model_version": "1.2.3",
+                "validation_report": None,
+            },
+        }
+        for file_format in ("yaml", "json"):
+            path = f"metadata/study.{file_format}"
+            written = s3_session.dump_study_metadata(
+                metadata,
+                path,
+                file_format=file_format,
+                connection_label="data",
+            )
+            assert written == path
+            response = moto_s3_client.get_object(
+                Bucket="pypeh-parquet-test",
+                Key=f"project-prefix/{path}",
+            )
+            payload = response["Body"].read().decode("utf-8")
+            loaded = (
+                yaml.safe_load(payload)
+                if file_format == "yaml"
+                else json.loads(payload)
+            )
+            assert loaded == metadata
+
+        outside = "s3://pypeh-parquet-test/other/study.json"
+        written = s3_session.dump_study_metadata(
+            metadata,
+            outside,
+            file_format="json",
+            connection_label="data",
+        )
+        assert written == outside
+        response = moto_s3_client.get_object(
+            Bucket="pypeh-parquet-test", Key="other/study.json"
+        )
+        assert json.loads(response["Body"].read()) == metadata
+
+        # Moto's in-memory bucket survives across server fixtures, so leave
+        # no metadata keys for the parquet tests' exact listing assertion.
+        for key in (
+            "project-prefix/metadata/study.yaml",
+            "project-prefix/metadata/study.json",
+            "other/study.json",
+        ):
+            moto_s3_client.delete_object(Bucket="pypeh-parquet-test", Key=key)
+
+    @pytest.mark.parametrize(
+        "output_path",
+        [
+            "",
+            "metadata/",
+            "s3://pypeh-parquet-test/project-prefix",
+            "s3://pypeh-parquet-test/project-prefix/",
+            "s3://another-bucket/project-prefix/metadata.yaml",
+        ],
+    )
+    def test_study_metadata_rejects_bad_s3_paths_without_writing(
+        self, s3_session, moto_s3_client, output_path
+    ):
+        def keys():
+            response = moto_s3_client.list_objects_v2(
+                Bucket="pypeh-parquet-test"
+            )
+            return {obj["Key"] for obj in response.get("Contents", [])}
+
+        before = keys()
+        with pytest.raises(ValueError, match="output_path|bucket"):
+            s3_session.dump_study_metadata(
+                {"observations": []},
+                output_path,
+                file_format="yaml",
+                connection_label="data",
+            )
+        assert keys() == before

@@ -59,6 +59,13 @@ from pypeh.adapters.persistence.dataset_parquet import (
 from pypeh.adapters.persistence.dataset_excel import (
     dump_dataset_series_to_excel_filesystem,
 )
+from pypeh.adapters.persistence.filesystem import (
+    ensure_filesystem_parent_directory,
+    filesystem_parent,
+)
+from pypeh.adapters.persistence.study_metadata import (
+    serialize_study_metadata,
+)
 from pypeh.core.session.connections import ConnectionManager
 from pypeh.core.utils.namespaces import NamespaceManager
 from pypeh.core.utils.resolve_identifiers import is_url
@@ -476,8 +483,7 @@ class Session(Generic[T_AdapterType, T_DataType]):
         file_system = getattr(connection, "file_system", None)
         if file_system is None:
             raise NotImplementedError(
-                "DatasetSeries tabular persistence requires a filesystem-backed "
-                "connection."
+                "File persistence requires a filesystem-backed connection."
             )
         return file_system
 
@@ -820,6 +826,63 @@ class Session(Generic[T_AdapterType, T_DataType]):
             cache_view=CacheContainerView(self.cache),
             validation_report=validation_report,
         )
+
+    def dump_study_metadata(
+        self,
+        metadata: dict[str, Any],
+        output_path: str,
+        *,
+        file_format: Literal["yaml", "json"],
+        connection_label: str | None = None,
+    ) -> str:
+        """
+        Persist a study-metadata tree to a local or remote file.
+
+        `file_format` is required: the output path's extension is never
+        used to select the serializer. The returned path is addressed by
+        the connection, as with `dump_tabular_dataset_series`.
+        """
+        if (
+            not isinstance(output_path, str)
+            or not output_path.strip()
+            or "\x00" in output_path
+            or output_path.endswith("/")
+            or output_path.rsplit("/", 1)[-1] in {".", ".."}
+        ):
+            raise ValueError(
+                "Session.dump_study_metadata output_path must name a file; "
+                f"got {output_path!r}."
+            )
+        serialized = serialize_study_metadata(metadata, file_format)
+        if connection_label is None:
+            connection_label = DEFAULT_CONNECTION_LABEL
+
+        with self.connection_manager.get_connection(
+            connection_label=connection_label
+        ) as connection:
+            destination = self._connection_path(connection, output_path)
+            file_system = self._connection_file_system(connection)
+            root = getattr(connection, "root", None)
+            if (
+                root is not None
+                and destination.rstrip("/") == str(root).rstrip("/")
+            ) or file_system.isdir(destination):
+                raise ValueError(
+                    "Session.dump_study_metadata output_path must name a "
+                    f"file, not a directory: {output_path!r}."
+                )
+            parent = filesystem_parent(file_system, destination)
+            if parent and file_system.isfile(parent):
+                raise ValueError(
+                    "Session.dump_study_metadata output_path has a file "
+                    f"as its parent: {output_path!r}."
+                )
+            ensure_filesystem_parent_directory(file_system, destination)
+            with file_system.open(
+                destination, "wt", encoding="utf-8"
+            ) as output_file:
+                output_file.write(serialized)
+            return self._connection_relative_path(connection, destination)
 
     def get_resource(
         self, resource_identifier: str, resource_type: str
