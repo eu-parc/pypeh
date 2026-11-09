@@ -54,6 +54,6 @@ def serialize_study_metadata(
     _validate_metadata_value(metadata, "metadata", set())
     if file_format == "json":
         return json.dumps(
-            metadata, indent=2, ensure_ascii=False, allow_nan=False
+            metadata, indent=2, ensure_ascii=True, allow_nan=False
         )
     return yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True)
