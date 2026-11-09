@@ -1,3 +1,5 @@
+import json
+
 from pathlib import Path
 
 import pytest
@@ -582,3 +584,32 @@ def test_derivation_chain_without_study_links(demo_workflow):
             "was_derived_from": "peh:OBS_LAB_ENRICHED",
         },
     ]
+
+
+@pytest.mark.parametrize("file_format", ["yaml", "json"])
+def test_generated_metadata_roundtrips_through_dump(
+    demo_workflow, tmp_path, file_format
+):
+    session, import_config, series = demo_workflow
+    tree = session.create_study_metadata(
+        dataset_series=series,
+        data_import_config=import_config,
+    )
+    assert "schema_version" not in tree
+    output_path = tmp_path / f"metadata.{file_format}"
+    written = session.dump_study_metadata(
+        tree,
+        str(output_path),
+        file_format=file_format,
+        connection_label=CONNECTION_LABEL,
+    )
+    assert written == str(output_path)
+    payload = output_path.read_text(encoding="utf-8")
+    loaded = (
+        yaml.safe_load(payload)
+        if file_format == "yaml"
+        else json.loads(payload)
+    )
+    assert loaded == tree
+    assert loaded["provenance"]["pypeh_version"]
+    assert loaded["provenance"]["peh_model_version"]

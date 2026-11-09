@@ -330,6 +330,31 @@ class StudyMetadataConfig:
 Configuration DTO for `create_study_metadata`, defined in
 `pypeh.core.models.metadata_dto`.
 
+```python
+dump_study_metadata(
+    metadata: dict,
+    output_path: str,
+    *,
+    file_format: Literal["yaml", "json"],
+    connection_label: str | None = None,
+) -> str
+```
+
+Write a metadata tree to a file on the selected local or S3 connection.
+`file_format` is required; the output path's extension does not select the
+serializer. The output path names a file, not a directory. The returned path
+uses the connection's addressing convention: an absolute path for local files,
+a connection-relative key for remote files, or a full URI for a remote path
+outside the connection's prefix. Parent directories are created as needed.
+Empty paths, directory paths, and paths beneath a file are rejected before
+writing; remote URIs must address the selected connection's bucket.
+
+YAML and JSON preserve null values, empty lists and section order; they do not
+use the PEH resource serializers. Invalid metadata values raise `ValueError`,
+and unsupported formats raise `NotImplementedError`. No separate schema
+version is added: when provenance is included, `pypeh_version` and
+`peh_model_version` identify the producing code and model versions.
+
 ## Adapter Methods
 
 ```python
