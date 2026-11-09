@@ -846,8 +846,9 @@ class Session(Generic[T_AdapterType, T_DataType]):
             not isinstance(output_path, str)
             or not output_path.strip()
             or "\x00" in output_path
-            or output_path.endswith("/")
-            or output_path.rsplit("/", 1)[-1] in {".", ".."}
+            or output_path.endswith(("/", os.sep))
+            or output_path.replace(os.sep, "/").rsplit("/", 1)[-1]
+            in {".", ".."}
         ):
             raise ValueError(
                 "Session.dump_study_metadata output_path must name a file; "

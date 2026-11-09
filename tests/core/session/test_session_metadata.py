@@ -1,4 +1,5 @@
 import json
+import os
 import yaml
 import pytest
 import peh_model.peh as peh
@@ -285,6 +286,22 @@ class TestDumpStudyMetadata:
                 metadata_tree,
                 output_path,
                 file_format="json",
+                connection_label="local_file",
+            )
+        assert list(tmp_path.iterdir()) == []
+
+    @pytest.mark.skipif(os.name != "nt", reason="Windows path syntax")
+    @pytest.mark.parametrize(
+        "output_path", ["nested\\", "nested\\.", "nested\\.."]
+    )
+    def test_windows_directory_paths_are_rejected(
+        self, local_metadata_session, metadata_tree, tmp_path, output_path
+    ):
+        with pytest.raises(ValueError, match="output_path must name a file"):
+            local_metadata_session.dump_study_metadata(
+                metadata_tree,
+                output_path,
+                file_format="yaml",
                 connection_label="local_file",
             )
         assert list(tmp_path.iterdir()) == []
