@@ -8,7 +8,7 @@ from pypeh.core.models.constants import (
 )
 from tests.test_utils.dirutils import get_absolute_path
 
-from pypeh import Session
+from pypeh import LocalFileConfig, Session
 from pypeh.core.models.validation_errors import (
     ValidationErrorReport,
     EntityLocation,
@@ -27,6 +27,61 @@ logger = logging.getLogger(__name__)
 
 @pytest.mark.end_to_end
 class TestDatasetValidation:
+    def test_session_validation_accepts_four_term_disjunction(self):
+        from polars import DataFrame
+
+        session = Session(
+            connection_config=[
+                LocalFileConfig(
+                    label="demo_cache",
+                    config_dict={
+                        "root_folder": get_absolute_path(
+                            "../../integration/metadata/input"
+                        ),
+                    },
+                ),
+            ],
+            default_connection=None,
+        )
+        session.load_persisted_cache(
+            source="peh_demo.yaml",
+            connection_label="demo_cache",
+        )
+
+        dataset = Dataset(
+            label="LAB_ASSAYS",
+            schema=DatasetSchema(
+                elements={
+                    "chol": DatasetSchemaElement(
+                        label="chol",
+                        observable_property_id="chol",
+                        data_type=ObservablePropertyValueType.FLOAT,
+                    )
+                }
+            ),
+            data=DataFrame(
+                {
+                    "chol": [2.0, -1.0, -2.0, -10.0, 3.25],
+                }
+            ),
+        )
+        dataset_series = DatasetSeries(
+            label="demo_validation",
+            parts={"LAB_ASSAYS": dataset},
+        )
+
+        # The demo property leaves `required` unset; allow incomplete data so
+        # this test focuses on its four-term validation rule.
+        reports = session.validate_tabular_dataset_series(
+            dataset_series,
+            allow_incomplete=True,
+        )
+
+        report = reports["LAB_ASSAYS"]
+        assert report.error_counts[ValidationErrorLevel.WARNING] == 1
+        assert report.error_counts[ValidationErrorLevel.ERROR] == 0
+        assert report.unexpected_errors == []
+
     def test_end_to_end_dataframe_validation(self, monkeypatch):
         monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_TYPE", "LocalFile")
         monkeypatch.setenv(

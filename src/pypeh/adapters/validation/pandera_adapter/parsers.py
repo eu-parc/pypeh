@@ -57,15 +57,16 @@ def parse_single_expression(expression: ValidationExpression) -> Mapping:
 
 
 def parse_validation_expression(expression: ValidationExpression) -> Mapping:
+    logical_commands = ("conjunction", "disjunction")
+    is_logical = expression.command in logical_commands
+
     if conditional_expr := expression.conditional_expression:
-        case = "condition"
-        exp_1 = parse_validation_expression(conditional_expr)
         arg_expressions = expression.arg_expressions
-        if arg_expressions is None or (
-            isinstance(arg_expressions, list) and len(arg_expressions) == 0
-        ):
-            expression.conditional_expression = None
-            exp_2 = parse_validation_expression(expression)
+
+        if not arg_expressions or (is_logical and len(arg_expressions) > 1):
+            consequence = expression.model_copy(
+                update={"conditional_expression": None}
+            )
         else:
             if len(arg_expressions) != 1:
                 raise NotImplementedError(
@@ -73,29 +74,30 @@ def parse_validation_expression(expression: ValidationExpression) -> Mapping:
                     "currently support exactly one arg expression. "
                     f"received={len(arg_expressions)}."
                 )
-            exp_2 = parse_validation_expression(arg_expressions[0])
+            consequence = arg_expressions[0]
 
         return {
-            "check_case": case,
-            "expressions": [exp_1, exp_2],
+            "check_case": "condition",
+            "expressions": [
+                parse_validation_expression(conditional_expr),
+                parse_validation_expression(consequence),
+            ],
         }
-    if expression.command in ("conjunction", "disjunction"):
-        if expression.arg_expressions is not None:
-            if len(expression.arg_expressions) != 2:
-                raise NotImplementedError(
-                    "Conjunction/disjunction expressions currently support "
-                    "exactly two arg expressions. "
-                    f"received={len(expression.arg_expressions)}."
-                )
-            case = expression.command
-            exp_1 = parse_validation_expression(expression.arg_expressions[0])
-            exp_2 = parse_validation_expression(expression.arg_expressions[1])
-            return {
-                "check_case": case,
-                "expressions": [exp_1, exp_2],
-            }
-        else:
-            raise ValueError
+    if is_logical:
+        arg_expressions = expression.arg_expressions or []
+
+        if len(arg_expressions) < 2:
+            raise ValueError(
+                "Conjunction/disjunction expressions need "
+                f"two or more arg expressions. received={len(arg_expressions)}."
+            )
+
+        return {
+            "check_case": expression.command,
+            "expressions": [
+                parse_validation_expression(exp) for exp in arg_expressions
+            ],
+        }
     return parse_single_expression(expression)
 
 
