@@ -70,6 +70,22 @@ class TestDatasetValidation:
             parts={"LAB_ASSAYS": dataset},
         )
 
+        # Give each disjunct a value that only it accepts.
+        observable_property = session.cache.require("chol", "ObservableProperty")
+        assert isinstance(observable_property, peh.ObservableProperty)
+        assert observable_property.validation_designs is not None
+        design = next(
+            design
+            for design in observable_property.validation_designs
+            if design.validation_name == "chol_coding_flag_allowed"
+        )
+        expression = design.validation_expression
+        assert expression is not None
+        assert expression.validation_arg_expressions is not None
+        first_operand = expression.validation_arg_expressions[0]
+        first_operand.validation_command = "is_equal_to"
+        first_operand.validation_arg_values = ["2.0"]
+
         # The demo property leaves `required` unset; allow incomplete data so
         # this test focuses on its four-term validation rule.
         reports = session.validate_tabular_dataset_series(
@@ -81,6 +97,16 @@ class TestDatasetValidation:
         assert report.error_counts[ValidationErrorLevel.WARNING] == 1
         assert report.error_counts[ValidationErrorLevel.ERROR] == 0
         assert report.unexpected_errors == []
+        warning_locations = [
+            location
+            for group in report.groups
+            for error in group.errors
+            if error.level == ValidationErrorLevel.WARNING
+            for location in (error.locations or [])
+        ]
+        assert len(warning_locations) == 1
+        assert warning_locations[0].location_type == "dataframe"
+        assert warning_locations[0].row_ids == [4]
 
     def test_end_to_end_dataframe_validation(self, monkeypatch):
         monkeypatch.setenv("DEFAULT_PERSISTED_CACHE_TYPE", "LocalFile")
