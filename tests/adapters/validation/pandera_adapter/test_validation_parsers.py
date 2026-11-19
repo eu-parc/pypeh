@@ -168,6 +168,213 @@ class TestPydanticToDto:
         result = parse_validation_expression(input_data)
         assert result == expected_output
 
+    @pytest.mark.parametrize("command", ["conjunction", "disjunction"])
+    @pytest.mark.parametrize("operand_count", [3, 4])
+    def test_parse_multiple_validation_expressions(
+        self, command, operand_count
+    ):
+        expressions = [
+            ValidationExpression(
+                command="is_equal_to",
+                arg_values=[value],
+            )
+            for value in range(operand_count)
+        ]
+
+        result = parse_validation_expression(
+            ValidationExpression(
+                command=command,
+                arg_expressions=expressions,
+            )
+        )
+
+        assert result == {
+            "check_case": command,
+            "expressions": [
+                {
+                    "command": "is_equal_to",
+                    "arg_values": [value],
+                    "arg_columns": None,
+                    "subject": None,
+                }
+                for value in range(operand_count)
+            ],
+        }
+
+    def test_parse_nested_multiple_validation_expressions(self):
+        nested_expression = ValidationExpression(
+            command="disjunction",
+            arg_expressions=[
+                ValidationExpression(
+                    command="is_equal_to",
+                    arg_values=[value],
+                )
+                for value in range(3)
+            ],
+        )
+        expression = ValidationExpression(
+            command="conjunction",
+            arg_expressions=[
+                nested_expression,
+                ValidationExpression(
+                    command="is_greater_than",
+                    arg_values=[10],
+                ),
+            ],
+        )
+
+        result = parse_validation_expression(expression)
+
+        assert result == {
+            "check_case": "conjunction",
+            "expressions": [
+                {
+                    "check_case": "disjunction",
+                    "expressions": [
+                        {
+                            "command": "is_equal_to",
+                            "arg_values": [value],
+                            "arg_columns": None,
+                            "subject": None,
+                        }
+                        for value in range(3)
+                    ],
+                },
+                {
+                    "command": "is_greater_than",
+                    "arg_values": [10],
+                    "arg_columns": None,
+                    "subject": None,
+                },
+            ],
+        }
+
+    def test_parse_conditional_multiple_disjunction_operands(self):
+        expression = ValidationExpression(
+            conditional_expression=ValidationExpression(
+                command="is_not_null",
+                arg_columns=["chol"],
+            ),
+            command="disjunction",
+            arg_expressions=[
+                ValidationExpression(
+                    command="is_less_than",
+                    arg_values=[2.5],
+                ),
+                ValidationExpression(
+                    command="is_equal_to",
+                    arg_values=[-1],
+                ),
+                ValidationExpression(
+                    command="is_equal_to",
+                    arg_values=[-2],
+                ),
+                ValidationExpression(
+                    command="is_equal_to",
+                    arg_values=[-10],
+                ),
+            ],
+        )
+
+        result = parse_validation_expression(expression)
+
+        assert result == {
+            "check_case": "condition",
+            "expressions": [
+                {
+                    "command": "is_not_null",
+                    "arg_values": None,
+                    "subject": None,
+                    "arg_columns": ["chol"],
+                },
+                {
+                    "check_case": "disjunction",
+                    "expressions": [
+                        {
+                            "command": "is_less_than",
+                            "arg_values": [2.5],
+                            "arg_columns": None,
+                            "subject": None,
+                        },
+                        {
+                            "command": "is_equal_to",
+                            "arg_values": [-1],
+                            "arg_columns": None,
+                            "subject": None,
+                        },
+                        {
+                            "command": "is_equal_to",
+                            "arg_values": [-2],
+                            "arg_columns": None,
+                            "subject": None,
+                        },
+                        {
+                            "command": "is_equal_to",
+                            "arg_values": [-10],
+                            "arg_columns": None,
+                            "subject": None,
+                        },
+                    ],
+                },
+            ],
+        }
+
+    def test_parse_conditional_single_arg_conjunction_wrapper(self):
+        expression = ValidationExpression(
+            conditional_expression=ValidationExpression(
+                command="is_not_null",
+                arg_columns=["chol"],
+            ),
+            command="conjunction",
+            arg_expressions=[
+                ValidationExpression(
+                    command="is_in",
+                    arg_values=[1, 2, 3],
+                )
+            ],
+        )
+
+        result = parse_validation_expression(expression)
+
+        assert result == {
+            "check_case": "condition",
+            "expressions": [
+                {
+                    "command": "is_not_null",
+                    "arg_values": None,
+                    "subject": None,
+                    "arg_columns": ["chol"],
+                },
+                {
+                    "command": "is_in",
+                    "arg_values": [1, 2, 3],
+                    "arg_columns": None,
+                    "subject": None,
+                },
+            ],
+        }
+
+    @pytest.mark.parametrize("command", ["conjunction", "disjunction"])
+    @pytest.mark.parametrize(
+        "arg_expressions",
+        [
+            None,
+            [],
+            [ValidationExpression(command="is_equal_to")],
+        ],
+        ids=["missing-operands", "zero-operands", "one-operand"],
+    )
+    def test_parse_conjunction_or_disjunction_requires_two_operands(
+        self, command, arg_expressions
+    ):
+        expression = ValidationExpression(
+            command=command,
+            arg_expressions=arg_expressions,
+        )
+
+        with pytest.raises(ValueError, match="two or more arg expressions"):
+            parse_validation_expression(expression)
+
     @pytest.mark.parametrize(
         "columns, expected_output",
         [
