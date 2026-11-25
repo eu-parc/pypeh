@@ -149,12 +149,6 @@ observation_designs:
     specification_category: optional
   - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR2787
     specification_category: optional
-  - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR2788
-    specification_category: optional
-  - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR2789
-    specification_category: optional
-  - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR278A
-    specification_category: optional
   - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR278B
     specification_category: optional
   - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR278C
@@ -166,10 +160,6 @@ observation_designs:
   - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447E
     specification_category: optional
   - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447F
-    specification_category: optional
-  - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447G
-    specification_category: optional
-  - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447H
     specification_category: optional
   - observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447J
     specification_category: optional
@@ -4015,12 +4005,6 @@ layouts:
       observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR2786
     - label: sex_extended
       observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR2787
-    - label: birthdate_year
-      observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR2788
-    - label: birthdate_month
-      observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR2789
-    - label: birthdate_day
-      observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR278A
     - label: birthcountry
       observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPJGNZSDH74CMFR278B
     - label: birthcountryother
@@ -4033,10 +4017,6 @@ layouts:
       observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447E
     - label: location_address_months
       observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447F
-    - label: location_address_street
-      observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447G
-    - label: location_address_postalcode
-      observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447H
     - label: education_participant_raw
       observable_property: https://w3id.org/peh/id/observable-property/01KMRAVNPKYZ9TG86PDAHF447J
     - label: education_participant_other
